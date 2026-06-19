@@ -320,6 +320,7 @@ Agrega una entrada en **# Auditorías** con:
 | 2026-06-19 | `app/build.gradle.kts`, +7 archivos .java | **P-009**: Activado `viewBinding = true`, migrados Activities y Fragments a ViewBinding | Medio |
 | 2026-06-19 | `IaChatActivity.java`, `PerfilFragment.java`, `HabitosFragment.java` | **P-010**: Agregado `Log.e` con TAG en todos los catch blocks sin logging | Bajo |
 | 2026-06-19 | `MainActivity.java` | **P-011**: Documentada como código muerto con nota para eliminación futura | Bajo |
+| 2026-06-19 | `AppDatabase.java` | **Hotfix**: Agregado `.allowMainThreadQueries()` para evitar crash `Cannot access database on the main thread` en cache local | Alto |
 | 2026-06-19 | `LoginActivity.java`, `RegistroActivity.java`, `HabitosFragment.java`, `PerfilFragment.java`, `IaChatActivity.java` | **1 - Red consistente**: Todos los `onFailure` ahora usan `Snackbar` con `R.string.error_conexion`. Se eliminaron literales y strings específicos | Bajo |
 | 2026-06-19 | `AuthInterceptor.java`, `RetrofitClient.java` | **2 - Refresh token**: Intercepta 401, llama a `/auth/refresh` con Retrofit sin auth, actualiza token y reintenta. Si falla, fuerza logout. `X-Retry` header evita bucles | Alto |
 | 2026-06-19 | `ui/splash/SplashActivity.java` (nuevo), `res/layout/activity_splash.xml` (nuevo), `AndroidManifest.xml` | **3 - Splash**: Activity con logo "E" + nombre. Delay 1.5s. Redirige a `MainContainerActivity` o `LoginActivity` según sesión. Declarada como LAUNCHER | Medio |
