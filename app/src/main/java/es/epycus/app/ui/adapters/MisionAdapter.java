@@ -2,9 +2,8 @@ package es.epycus.app.ui.adapters;
 
 import android.content.res.TypedArray;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.epycus.app.R;
+import es.epycus.app.databinding.ItemMisionBinding;
 import es.epycus.app.model.dto.MisionDto;
 
 public class MisionAdapter extends RecyclerView.Adapter<MisionAdapter.ViewHolder> {
@@ -69,20 +69,24 @@ public class MisionAdapter extends RecyclerView.Adapter<MisionAdapter.ViewHolder
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_mision, parent, false);
-        return new ViewHolder(view);
+        ItemMisionBinding binding = ItemMisionBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         MisionDto mision = misiones.get(position);
-        holder.tvNombre.setText(mision.getNombre());
-        holder.tvPrioridad.setText(mision.getPrioridad());
-        holder.tvFecha.setText(mision.getFechaLimite());
+        holder.binding.tvMisionNombre.setText(mision.getNombre());
+        holder.binding.tvMisionPrioridad.setText(mision.getPrioridad());
+        holder.binding.tvMisionFecha.setText(mision.getFechaLimite() != null ? mision.getFechaLimite() : "");
+
+        holder.binding.cbCompletada.setChecked(mision.isCompletada());
 
         if (mision.isCompletada()) {
             holder.itemView.setAlpha(0.5f);
+        } else {
+            holder.itemView.setAlpha(1.0f);
         }
 
         int color;
@@ -96,20 +100,24 @@ public class MisionAdapter extends RecyclerView.Adapter<MisionAdapter.ViewHolder
             default:
                 color = ContextCompat.getColor(holder.itemView.getContext(), R.color.priority_baja);
         }
-        holder.tvPrioridad.setTextColor(color);
+        holder.binding.tvMisionPrioridad.setTextColor(color);
+
+        holder.binding.cbCompletada.setOnClickListener(v -> {
+            if (listener != null && !mision.isCompletada()) {
+                listener.onCompletar(mision.getId());
+            }
+        });
     }
 
     @Override
     public int getItemCount() { return misiones.size(); }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvNombre, tvPrioridad, tvFecha;
+        final ItemMisionBinding binding;
 
-        ViewHolder(View view) {
-            super(view);
-            tvNombre = view.findViewById(R.id.tvMisionNombre);
-            tvPrioridad = view.findViewById(R.id.tvMisionPrioridad);
-            tvFecha = view.findViewById(R.id.tvMisionFecha);
+        ViewHolder(ItemMisionBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

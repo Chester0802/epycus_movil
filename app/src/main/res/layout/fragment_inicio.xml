@@ -14,14 +14,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="16dp">
 
             <!-- Header -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="20dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -35,43 +34,34 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/hola_formato"
-                        android:textSize="26sp"
+                        android:textSize="22sp"
                         android:textColor="?attr/epTextPrimary"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/tvFrase"
+                        android:id="@+id/tvNivelTitulo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/frase_motivacional_defecto"
-                        android:textSize="14sp"
-                        android:textColor="?attr/epTextSecondary"
+                        android:text="Nivel 1"
+                        android:textSize="13sp"
+                        android:textColor="?attr/epAccentSecondary"
                         android:layout_marginTop="2dp" />
-
-                    <TextView
-                        android:id="@+id/tvFraseAutor"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=""
-                        android:textSize="12sp"
-                        android:textColor="?attr/epTextTertiary" />
                 </LinearLayout>
 
                 <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/ivPerfil"
-                    android:layout_width="52dp"
-                    android:layout_height="52dp"
+                    android:id="@+id/ivPersonaje"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:padding="2dp"
-                    app:strokeWidth="2dp"
+                    android:padding="4dp"
+                    android:scaleType="centerCrop"
+                    app:strokeWidth="3dp"
                     app:strokeColor="?attr/epAccent"
-                    app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
-                    android:src="@drawable/ic_profile"
-                    app:tint="?attr/epAccent" />
+                    app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
             </RelativeLayout>
 
-            <!-- Loading/Empty -->
+            <!-- Loading -->
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -82,8 +72,8 @@
                     android:gravity="center"
                     android:visibility="gone">
                     <ProgressBar
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:indeterminateTint="?attr/epAccent" />
                 </LinearLayout>
                 <LinearLayout
@@ -96,31 +86,33 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="No hay datos disponibles"
+                        android:text="@string/sin_conexion_datos"
                         android:textSize="14sp"
                         android:textColor="?attr/epTextSecondary" />
                 </LinearLayout>
             </FrameLayout>
 
-            <!-- Stats cards row -->
+            <!-- Stats Cards Row (3 cards, 110dp) -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="110dp"
                 android:orientation="horizontal"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="16dp">
 
                 <LinearLayout
+                    android:id="@+id/cardHabitosPendientes"
                     android:layout_width="0dp"
-                    android:layout_height="100dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="6dp"
                     android:background="@drawable/bg_card_rounded"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:foreground="?attr/selectableItemBackground">
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         android:src="@drawable/ic_habits"
                         app:tint="?attr/epAccent"
                         android:layout_marginBottom="4dp"
@@ -131,7 +123,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
-                        android:textSize="22sp"
+                        android:textSize="24sp"
                         android:textColor="?attr/epTextPrimary"
                         android:textStyle="bold" />
 
@@ -144,18 +136,20 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/cardRacha"
                     android:layout_width="0dp"
-                    android:layout_height="100dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginHorizontal="4dp"
+                    android:layout_marginHorizontal="3dp"
                     android:background="@drawable/bg_card_rounded"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:foreground="?attr/selectableItemBackground">
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/shape_dot"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_streak"
                         app:tint="?attr/epWarning"
                         android:layout_marginBottom="4dp"
                         android:contentDescription="@null" />
@@ -165,7 +159,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
-                        android:textSize="22sp"
+                        android:textSize="24sp"
                         android:textColor="?attr/epTextPrimary"
                         android:textStyle="bold" />
 
@@ -178,18 +172,20 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/cardNivel"
                     android:layout_width="0dp"
-                    android:layout_height="100dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="6dp"
                     android:background="@drawable/bg_card_rounded"
                     android:gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:foreground="?attr/selectableItemBackground">
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_launcher_foreground"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_level"
                         app:tint="?attr/epAccentSecondary"
                         android:layout_marginBottom="4dp"
                         android:contentDescription="@null" />
@@ -198,8 +194,8 @@
                         android:id="@+id/tvNivel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="1"
-                        android:textSize="22sp"
+                        android:text="Nv.1"
+                        android:textSize="24sp"
                         android:textColor="?attr/epTextPrimary"
                         android:textStyle="bold" />
 
@@ -212,14 +208,14 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- XP Section -->
+            <!-- XP Progress Card -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/bg_card_rounded"
-                android:padding="20dp"
-                android:layout_marginBottom="24dp">
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -240,7 +236,7 @@
                         android:id="@+id/tvXpText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0 / 0 XP"
+                        android:text="0 XP"
                         android:textSize="13sp"
                         android:textColor="?attr/epAccent"
                         android:textStyle="bold" />
@@ -249,40 +245,79 @@
                 <ProgressBar
                     android:id="@+id/pbXp"
                     android:layout_width="match_parent"
-                    android:layout_height="10dp"
+                    android:layout_height="12dp"
                     android:progress="0"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:progressTint="?attr/epAccent"
                     android:progressBackgroundTint="?attr/epSurfaceBorder"
-                    android:layout_marginTop="12dp" />
+                    android:layout_marginTop="8dp" />
+
+                <TextView
+                    android:id="@+id/tvXpPorcentaje"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0% para siguiente nivel"
+                    android:textSize="11sp"
+                    android:textColor="?attr/epTextSecondary"
+                    android:layout_marginTop="4dp" />
             </LinearLayout>
 
-            <!-- Quick actions -->
+            <!-- Motivational Quote -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_rounded"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/tvFrase"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/frase_motivacional_defecto"
+                    android:textSize="14sp"
+                    android:textColor="?attr/epTextPrimary"
+                    android:textStyle="italic" />
+
+                <TextView
+                    android:id="@+id/tvFraseAutor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="12sp"
+                    android:textColor="?attr/epAccentSecondary"
+                    android:layout_marginTop="4dp"
+                    android:layout_gravity="end" />
+            </LinearLayout>
+
+            <!-- Quick Actions -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/acciones_rapidas"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textColor="?attr/epTextPrimary"
                 android:textStyle="bold"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="12dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="130dp"
                 android:orientation="horizontal">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardAddHabit"
                     android:layout_width="0dp"
-                    android:layout_height="120dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="6dp"
                     app:cardCornerRadius="16dp"
                     app:cardBackgroundColor="?attr/epSurface"
-                    app:cardElevation="2dp"
+                    app:cardElevation="3dp"
                     app:strokeWidth="1dp"
-                    app:strokeColor="?attr/epSurfaceBorder">
+                    app:strokeColor="?attr/epSurfaceBorder"
+                    android:foreground="?attr/selectableItemBackground">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -292,8 +327,8 @@
                         android:padding="8dp">
 
                         <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
                             android:src="@drawable/ic_habits"
                             app:tint="?attr/epAccent"
                             android:layout_marginBottom="8dp"
@@ -311,16 +346,17 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardAddMision"
+                    android:id="@+id/cardMision"
                     android:layout_width="0dp"
-                    android:layout_height="120dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginHorizontal="4dp"
+                    android:layout_marginHorizontal="3dp"
                     app:cardCornerRadius="16dp"
                     app:cardBackgroundColor="?attr/epSurface"
-                    app:cardElevation="2dp"
+                    app:cardElevation="3dp"
                     app:strokeWidth="1dp"
-                    app:strokeColor="?attr/epSurfaceBorder">
+                    app:strokeColor="?attr/epSurfaceBorder"
+                    android:foreground="?attr/selectableItemBackground">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -330,8 +366,8 @@
                         android:padding="8dp">
 
                         <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
                             android:src="@drawable/shape_dot"
                             app:tint="?attr/epAccentSecondary"
                             android:layout_marginBottom="8dp"
@@ -351,14 +387,15 @@
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardFocus"
                     android:layout_width="0dp"
-                    android:layout_height="120dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="6dp"
                     app:cardCornerRadius="16dp"
                     app:cardBackgroundColor="?attr/epSurface"
-                    app:cardElevation="2dp"
+                    app:cardElevation="3dp"
                     app:strokeWidth="1dp"
-                    app:strokeColor="?attr/epSurfaceBorder">
+                    app:strokeColor="?attr/epSurfaceBorder"
+                    android:foreground="?attr/selectableItemBackground">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -368,8 +405,8 @@
                         android:padding="8dp">
 
                         <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
                             android:src="@drawable/ic_pomodoro"
                             app:tint="?attr/epAccent"
                             android:layout_marginBottom="8dp"
@@ -386,6 +423,7 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

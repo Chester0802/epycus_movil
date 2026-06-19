@@ -1,9 +1,7 @@
 package es.epycus.app.ui.adapters;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,8 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.epycus.app.R;
+import es.epycus.app.databinding.ItemChatEdyBinding;
+import es.epycus.app.databinding.ItemChatUsuarioBinding;
 
-public class MensajeChatAdapter extends RecyclerView.Adapter<MensajeChatAdapter.ViewHolder> {
+public class MensajeChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int MAX_MENSAJES = 200;
     private List<Mensaje> mensajes = new ArrayList<>();
@@ -49,26 +49,45 @@ public class MensajeChatAdapter extends RecyclerView.Adapter<MensajeChatAdapter.
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        int layout = viewType == 0 ? R.layout.item_chat_usuario : R.layout.item_chat_edy;
-        View view = LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
-        return new ViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        if (viewType == 0) {
+            ItemChatUsuarioBinding binding = ItemChatUsuarioBinding.inflate(inflater, parent, false);
+            return new UsuarioViewHolder(binding);
+        } else {
+            ItemChatEdyBinding binding = ItemChatEdyBinding.inflate(inflater, parent, false);
+            return new EdyViewHolder(binding);
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.tvMensaje.setText(mensajes.get(position).getTexto());
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        Mensaje mensaje = mensajes.get(position);
+        if (holder instanceof UsuarioViewHolder) {
+            ((UsuarioViewHolder) holder).binding.tvMensaje.setText(mensaje.getTexto());
+        } else if (holder instanceof EdyViewHolder) {
+            ((EdyViewHolder) holder).binding.tvMensaje.setText(mensaje.getTexto());
+        }
     }
 
     @Override
     public int getItemCount() { return mensajes.size(); }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvMensaje;
+    static class UsuarioViewHolder extends RecyclerView.ViewHolder {
+        final ItemChatUsuarioBinding binding;
 
-        ViewHolder(View view) {
-            super(view);
-            tvMensaje = view.findViewById(R.id.tvMensaje);
+        UsuarioViewHolder(ItemChatUsuarioBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+    }
+
+    static class EdyViewHolder extends RecyclerView.ViewHolder {
+        final ItemChatEdyBinding binding;
+
+        EdyViewHolder(ItemChatEdyBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

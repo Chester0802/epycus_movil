@@ -4,35 +4,37 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="20dp">
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="16dp"
         style="@style/Widget.Epycus.Input"
         app:endIconMode="password_toggle">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etContrasenaActual"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Contraseña actual"
+            android:layout_height="52dp"
+            android:hint="@string/contrasena_actual_hint"
+            android:textSize="15sp"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="16dp"
         style="@style/Widget.Epycus.Input"
         app:endIconMode="password_toggle">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etNuevaContrasena"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nueva contraseña"
+            android:layout_height="52dp"
+            android:hint="@string/nueva_contrasena_hint"
+            android:textSize="15sp"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -45,8 +47,9 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etConfirmarNuevaContrasena"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Confirmar nueva contraseña"
+            android:layout_height="52dp"
+            android:hint="@string/confirmar_nueva_contrasena_hint"
+            android:textSize="15sp"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 

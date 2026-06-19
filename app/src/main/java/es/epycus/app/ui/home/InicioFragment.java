@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
@@ -74,25 +75,17 @@ public class InicioFragment extends Fragment {
             }
         });
 
-        binding.cardAddMision.setOnClickListener(v -> {
-            // Podría abrir una pantalla de misiones o el diario
+        binding.cardMision.setOnClickListener(v -> {
             if (getActivity() instanceof MainContainerActivity) {
                 ((MainContainerActivity) getActivity()).seleccionarTab(R.id.nav_diario);
             }
         });
 
-        binding.cardFocus.setOnClickListener(v -> {
-            // El Pomodoro ya no está en el nav principal, pero podemos navegar a él manualmente
-            // o si decidimos mantenerlo oculto en el nav.
-            // Por ahora, si no está en el nav, podemos hacer swap manual del fragment.
-            // Pero como queremos mejorar UX, lo ideal es que esté accesible.
-            // Si el user quiere "Modo Enfoque", le llevamos al fragment de Pomodoro.
-            navegarAPomodoro();
-        });
-        
-        binding.ivPerfil.setOnClickListener(v -> {
+        binding.cardFocus.setOnClickListener(v -> navegarAPomodoro());
+
+        binding.cardHabitosPendientes.setOnClickListener(v -> {
             if (getActivity() instanceof MainContainerActivity) {
-                ((MainContainerActivity) getActivity()).seleccionarTab(R.id.nav_perfil);
+                ((MainContainerActivity) getActivity()).seleccionarTab(R.id.nav_habitos);
             }
         });
     }
@@ -199,8 +192,18 @@ public class InicioFragment extends Fragment {
 
                         binding.tvRacha.setText(String.valueOf(data.getRachaActual()));
                         binding.tvNivel.setText(getString(R.string.nv_formato, data.getNivel()));
+                        binding.tvNivelTitulo.setText(getString(R.string.nivel_formato, data.getNivel())
+                                + (data.getTitulo() != null ? " - " + data.getTitulo() : ""));
                         binding.pbXp.setProgress((int) data.getPorcentajeProgreso());
                         binding.tvXpText.setText(getString(R.string.xp_formato, data.getXpTotal()));
+                        binding.tvXpPorcentaje.setText(getString(R.string.porcentaje_nivel, (int) data.getPorcentajeProgreso()));
+
+                        if (data.getImagenPersonaje() != null && !data.getImagenPersonaje().isEmpty()) {
+                            Glide.with(InicioFragment.this)
+                                    .load(data.getImagenPersonaje())
+                                    .circleCrop()
+                                    .into(binding.ivPersonaje);
+                        }
                     } catch (Exception e) {
                         Log.e(TAG, "Error parsing progreso", e);
                     }
@@ -231,6 +234,7 @@ public class InicioFragment extends Fragment {
                 binding.tvNivel.setText(getString(R.string.nv_formato, data.getNivel()));
                 binding.pbXp.setProgress((int) data.getPorcentajeProgreso());
                 binding.tvXpText.setText(getString(R.string.xp_formato, data.getXpTotal()));
+                binding.tvXpPorcentaje.setText(getString(R.string.porcentaje_nivel, (int) data.getPorcentajeProgreso()));
                 return true;
             } catch (Exception e) {
                 Log.e(TAG, "Error loading cached progreso", e);

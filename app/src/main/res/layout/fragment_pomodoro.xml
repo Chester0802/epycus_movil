@@ -1,130 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/epBgPrimary"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:padding="16dp">
+    android:background="?attr/epBgPrimary">
 
-    <!-- Loading -->
     <LinearLayout
-        android:id="@+id/loadingView"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:gravity="center"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:gravity="center_horizontal"
+        android:padding="16dp">
 
-        <ProgressBar
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:indeterminateTint="?attr/epAccent" />
-    </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pomodoro"
-        android:textSize="22sp"
-        android:textColor="?attr/epTextPrimary"
-        android:textStyle="bold"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="8dp" />
-
-    <TextView
-        android:id="@+id/tvEstado"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Foco"
-        android:textSize="14sp"
-        android:textColor="?attr/epAccent"
-        android:layout_marginBottom="24dp" />
-
-    <!-- Timer circle -->
-    <LinearLayout
-        android:layout_width="260dp"
-        android:layout_height="260dp"
-        android:background="@drawable/bg_card_rounded"
-        android:gravity="center"
-        android:orientation="vertical">
+        <!-- Loading -->
+        <LinearLayout
+            android:id="@+id/loadingView"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <ProgressBar
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:indeterminateTint="?attr/epAccent" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/tvTiempo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="25:00"
-            android:textSize="56sp"
+            android:text="@string/pomodoro"
+            android:textSize="22sp"
+            android:textColor="?attr/epTextPrimary"
+            android:textStyle="bold"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/tvEstado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/foco"
+            android:textSize="14sp"
             android:textColor="?attr/epAccent"
-            android:textStyle="bold" />
-    </LinearLayout>
+            android:layout_marginBottom="32dp" />
 
-    <!-- Controls -->
-    <Button
-        android:id="@+id/btnControl"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:text="Iniciar"
-        android:textAllCaps="false"
-        android:textSize="12sp"
-        android:backgroundTint="?attr/epAccent"
-        app:cornerRadius="32dp"
-        android:layout_marginTop="32dp" />
-
-    <!-- Tip -->
-    <TextView
-        android:id="@+id/tvTip"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="13sp"
-        android:textColor="?attr/epTextSecondary"
-        android:gravity="center"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp" />
-
-    <!-- Stats -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="16dp">
-
+        <!-- Timer Circle -->
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
+            android:layout_width="260dp"
+            android:layout_height="260dp"
+            android:background="@drawable/bg_card_rounded"
             android:gravity="center"
-            android:orientation="vertical"
-            android:background="@drawable/bg_card_rounded">
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tvCiclos"
+                android:id="@+id/tvTiempo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ciclos: 0"
-                android:textSize="13sp"
-                android:textColor="?attr/epTextPrimary" />
+                android:text="@string/tiempo_inicial"
+                android:textSize="56sp"
+                android:textColor="?attr/epAccent"
+                android:textStyle="bold" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
+        <!-- Control Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnControl"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:text="@string/iniciar"
+            android:textAllCaps="false"
+            android:textSize="13sp"
+            android:backgroundTint="?attr/epAccent"
+            android:textColor="?attr/epTextOnPrimary"
+            app:cornerRadius="36dp"
+            android:layout_marginTop="32dp" />
+
+        <!-- Tip -->
+        <TextView
+            android:id="@+id/tvTip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:textColor="?attr/epTextSecondary"
             android:gravity="center"
-            android:orientation="vertical"
-            android:background="@drawable/bg_card_rounded">
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp" />
 
-            <TextView
-                android:id="@+id/tvTotalHoy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hoy: 0"
-                android:textSize="13sp"
-                android:textColor="?attr/epTextPrimary" />
+        <!-- Stats -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_rounded">
+
+                <TextView
+                    android:id="@+id/tvCiclos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ciclos_inicial"
+                    android:textSize="14sp"
+                    android:textColor="?attr/epTextPrimary"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_rounded">
+
+                <TextView
+                    android:id="@+id/tvTotalHoy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hoy_inicial"
+                    android:textSize="14sp"
+                    android:textColor="?attr/epAccent"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
 
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

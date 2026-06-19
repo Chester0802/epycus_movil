@@ -7,14 +7,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -42,6 +45,8 @@ public class HabitosFragment extends Fragment {
     private HabitoHoyAdapter adapter;
     private final List<Call<?>> activeCalls = new ArrayList<>();
     private List<String> categorias = new ArrayList<>();
+    private List<HabitoHoyDto> todosHabitos = new ArrayList<>();
+    private String categoriaSeleccionada = null;
 
     @Nullable
     @Override
@@ -62,10 +67,23 @@ public class HabitosFragment extends Fragment {
             public void onFallar(int id) {
                 fallarHabito(id);
             }
+
+            @Override
+            public void onEditar(int id) {
+                mostrarDialogoEditarHabito(id);
+            }
+
+            @Override
+            public void onEliminar(int id) {
+                eliminarHabito(id);
+            }
         });
 
         binding.rvHabitos.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvHabitos.setAdapter(adapter);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new HabitoSwipeCallback(adapter));
+        itemTouchHelper.attachToRecyclerView(binding.rvHabitos);
 
         binding.swipeRefresh.setOnRefreshListener(this::cargarHabitos);
         binding.swipeRefresh.setColorSchemeResources(R.color.light_accent, R.color.light_accent_secondary);
@@ -80,7 +98,7 @@ public class HabitosFragment extends Fragment {
 
     private void cargarHabitos() {
         binding.loadingView.setVisibility(View.VISIBLE);
-        binding.tvEmpty.setVisibility(View.GONE);
+        binding.layoutEmpty.setVisibility(View.GONE);
         binding.rvHabitos.setVisibility(View.GONE);
 
         Call<RespuestaApi<List<HabitoHoyDto>>> call = repository.hoy();
@@ -96,24 +114,19 @@ public class HabitosFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null && response.body().isExito()
                         && response.body().getDatos() != null) {
                     try {
-                        List<HabitoHoyDto> habitos = response.body().getDatos();
+                        todosHabitos = response.body().getDatos();
                         Gson gson = new Gson();
-                        String json = gson.toJson(habitos);
+                        String json = gson.toJson(todosHabitos);
                         repository.cacheHabitosJson(CACHE_KEY_HABITOS, json);
 
-                        if (habitos.isEmpty()) {
-                            binding.tvEmpty.setVisibility(View.VISIBLE);
-                        } else {
-                            binding.rvHabitos.setVisibility(View.VISIBLE);
-                            adapter.setHabitos(habitos);
-                            binding.tvHabitosCount.setText(getString(R.string.habitos_hoy_formato, habitos.size()));
-                        }
+                        aplicarFiltro();
+                        binding.tvHabitosCount.setText(getString(R.string.habitos_hoy_formato, todosHabitos.size()));
                     } catch (Exception e) {
                         Log.e(TAG, "Error processing habitos", e);
-                        binding.tvEmpty.setVisibility(View.VISIBLE);
+                        mostrarEmpty();
                     }
                 } else {
-                    binding.tvEmpty.setVisibility(View.VISIBLE);
+                    mostrarEmpty();
                 }
             }
 
@@ -127,26 +140,52 @@ public class HabitosFragment extends Fragment {
                     try {
                         Gson gson = new Gson();
                         HabitoHoyDto[] habitosArray = gson.fromJson(cached, HabitoHoyDto[].class);
-                        List<HabitoHoyDto> habitos = java.util.Arrays.asList(habitosArray);
-                        binding.rvHabitos.setVisibility(View.VISIBLE);
-                        adapter.setHabitos(habitos);
+                        todosHabitos = new ArrayList<>(java.util.Arrays.asList(habitosArray));
+                        aplicarFiltro();
                     } catch (Exception e) {
-                        binding.tvEmpty.setVisibility(View.VISIBLE);
-                        binding.tvEmpty.setText(getString(R.string.error_conexion));
+                        mostrarEmpty();
                     }
                 } else {
-                    binding.tvEmpty.setVisibility(View.VISIBLE);
-                    binding.tvEmpty.setText(getString(R.string.error_conexion));
+                    mostrarEmpty();
                 }
                 mostrarErrorRed(t);
             }
         });
     }
 
+    private void aplicarFiltro() {
+        List<HabitoHoyDto> filtrados;
+        if (categoriaSeleccionada != null && !categoriaSeleccionada.equals("Todas")) {
+            filtrados = new ArrayList<>();
+            for (HabitoHoyDto h : todosHabitos) {
+                if (categoriaSeleccionada.equals(h.getCategoria())) {
+                    filtrados.add(h);
+                }
+            }
+        } else {
+            filtrados = new ArrayList<>(todosHabitos);
+        }
+
+        if (filtrados.isEmpty()) {
+            mostrarEmpty();
+        } else {
+            binding.rvHabitos.setVisibility(View.VISIBLE);
+            binding.layoutEmpty.setVisibility(View.GONE);
+            adapter.setHabitos(filtrados);
+        }
+    }
+
+    private void mostrarEmpty() {
+        binding.rvHabitos.setVisibility(View.GONE);
+        binding.layoutEmpty.setVisibility(View.VISIBLE);
+        binding.tvEmpty.setText(todosHabitos.isEmpty() ?
+                getString(R.string.crea_primer_habito) : getString(R.string.error_conexion_habitos));
+    }
+
     private void cargarCategorias() {
         Call<RespuestaApi<Object>> call = repository.categorias();
         activeCalls.add(call);
-        call.enqueue(new Callback<RespuestaApi<Object>>() {
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<RespuestaApi<Object>> call, Response<RespuestaApi<Object>> response) {
                 activeCalls.remove(call);
@@ -154,10 +193,8 @@ public class HabitosFragment extends Fragment {
                     try {
                         Gson gson = new Gson();
                         String json = gson.toJson(response.body().getDatos());
-                        // Parse categories - might be a list of strings or objects with nombre
                         if (json.startsWith("[")) {
                             if (json.contains("nombre")) {
-                                // Array of objects with nombre field
                                 com.google.gson.JsonArray arr = com.google.gson.JsonParser.parseString(json).getAsJsonArray();
                                 for (int i = 0; i < arr.size(); i++) {
                                     JsonObject obj = arr.get(i).getAsJsonObject();
@@ -166,7 +203,6 @@ public class HabitosFragment extends Fragment {
                                     }
                                 }
                             } else {
-                                // Array of plain strings
                                 String[] items = gson.fromJson(json, String[].class);
                                 for (String item : items) {
                                     categorias.add(item);
@@ -177,25 +213,62 @@ public class HabitosFragment extends Fragment {
                         Log.e(TAG, "Error parsing categorias", e);
                     }
                 }
-                if (categorias.isEmpty()) {
-                    categorias.add("General");
-                    categorias.add("Salud");
-                    categorias.add("Estudio");
-                    categorias.add("Trabajo");
-                    categorias.add("Personal");
-                }
+                actualizarChips();
             }
 
             @Override
             public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
                 activeCalls.remove(call);
-                categorias.add("General");
-                categorias.add("Salud");
-                categorias.add("Estudio");
-                categorias.add("Trabajo");
-                categorias.add("Personal");
+                actualizarChips();
             }
         });
+    }
+
+    private void actualizarChips() {
+        if (categorias.isEmpty()) {
+            categorias.add("General");
+            categorias.add("Salud");
+            categorias.add("Estudio");
+            categorias.add("Trabajo");
+            categorias.add("Personal");
+        }
+
+        binding.chipGroupCategorias.removeAllViews();
+
+        Chip chipTodas = new Chip(requireContext());
+        chipTodas.setText(getString(R.string.todas));
+        chipTodas.setChipBackgroundColorResource(android.R.color.transparent);
+        chipTodas.setChipStrokeColorResource(R.color.light_accent);
+        chipTodas.setChipStrokeWidth(1f);
+        chipTodas.setChipCornerRadius(18f);
+        chipTodas.setCheckedIconVisible(false);
+        chipTodas.setCheckable(true);
+        chipTodas.setChecked(true);
+        chipTodas.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                categoriaSeleccionada = null;
+                aplicarFiltro();
+            }
+        });
+        binding.chipGroupCategorias.addView(chipTodas);
+
+        for (String cat : categorias) {
+            Chip chip = new Chip(requireContext());
+            chip.setText(cat);
+            chip.setChipBackgroundColorResource(android.R.color.transparent);
+            chip.setChipStrokeColorResource(R.color.light_accent);
+            chip.setChipStrokeWidth(1f);
+            chip.setChipCornerRadius(18f);
+            chip.setCheckedIconVisible(false);
+            chip.setCheckable(true);
+            chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    categoriaSeleccionada = cat;
+                    aplicarFiltro();
+                }
+            });
+            binding.chipGroupCategorias.addView(chip);
+        }
     }
 
     private void mostrarDialogoNuevoHabito() {
@@ -203,13 +276,20 @@ public class HabitosFragment extends Fragment {
         builder.setTitle(getString(R.string.nuevo_habito));
 
         View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_nuevo_habito, null);
-        EditText etNombre = view.findViewById(R.id.etNombreHabito);
+        android.widget.EditText etNombre = view.findViewById(R.id.etNombreHabito);
         Spinner spCategoria = view.findViewById(R.id.spCategoriaHabito);
+        Spinner spFrecuencia = view.findViewById(R.id.spFrecuenciaHabito);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
+        ArrayAdapter<String> catAdapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_spinner_item, categorias);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spCategoria.setAdapter(adapter);
+        catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spCategoria.setAdapter(catAdapter);
+
+        String[] frecuencias = {"Diaria", "Semanal", "Personalizada"};
+        ArrayAdapter<String> freqAdapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item, frecuencias);
+        freqAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spFrecuencia.setAdapter(freqAdapter);
 
         builder.setView(view);
         builder.setPositiveButton(getString(R.string.crear), (dialog, which) -> {
@@ -219,22 +299,22 @@ public class HabitosFragment extends Fragment {
                 return;
             }
             String categoria = spCategoria.getSelectedItem().toString();
-            crearHabito(nombre, categoria);
+            String frecuencia = spFrecuencia.getSelectedItem().toString();
+            crearHabito(nombre, categoria, frecuencia);
         });
         builder.setNegativeButton(getString(R.string.cancelar), null);
         builder.show();
     }
 
-    private void crearHabito(String nombre, String categoria) {
+    private void crearHabito(String nombre, String categoria, String frecuencia) {
         JsonObject body = new JsonObject();
         body.addProperty("nombre", nombre);
         body.addProperty("categoria", categoria);
-        body.addProperty("frecuencia", "Diaria");
-        body.addProperty("notas", "");
+        body.addProperty("frecuencia", frecuencia);
 
         Call<RespuestaApi<Object>> call = repository.crear(body);
         activeCalls.add(call);
-        call.enqueue(new Callback<RespuestaApi<Object>>() {
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<RespuestaApi<Object>> call, Response<RespuestaApi<Object>> response) {
                 activeCalls.remove(call);
@@ -297,6 +377,28 @@ public class HabitosFragment extends Fragment {
         });
     }
 
+    private void mostrarDialogoEditarHabito(int id) {
+        Snackbar.make(binding.getRoot(), getString(R.string.funcionalidad_pronto), Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void eliminarHabito(int id) {
+        Call<RespuestaApi<Object>> call = repository.eliminar(id);
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<Object>> call, Response<RespuestaApi<Object>> response) {
+                activeCalls.remove(call);
+                cargarHabitos();
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+                activeCalls.remove(call);
+                mostrarErrorRed(t);
+            }
+        });
+    }
+
     private void mostrarErrorRed(Throwable t) {
         Snackbar.make(binding.rvHabitos,
                 getString(NetworkUtils.getNetworkErrorResId(t)), Snackbar.LENGTH_SHORT).show();
@@ -310,5 +412,32 @@ public class HabitosFragment extends Fragment {
         activeCalls.clear();
         super.onDestroyView();
         binding = null;
+    }
+
+    private static class HabitoSwipeCallback extends ItemTouchHelper.SimpleCallback {
+        private final HabitoHoyAdapter adapter;
+
+        HabitoSwipeCallback(HabitoHoyAdapter adapter) {
+            super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
+            this.adapter = adapter;
+        }
+
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            int position = viewHolder.getAdapterPosition();
+            HabitoHoyDto habito = adapter.getHabitoAt(position);
+            if (direction == ItemTouchHelper.RIGHT) {
+                adapter.notifyItemChanged(position);
+                adapter.getListener().onCompletar(habito.getId());
+            } else if (direction == ItemTouchHelper.LEFT) {
+                adapter.notifyItemChanged(position);
+                adapter.getListener().onFallar(habito.getId());
+            }
+        }
     }
 }

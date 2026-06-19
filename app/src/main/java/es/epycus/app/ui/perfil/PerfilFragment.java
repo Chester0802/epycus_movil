@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -111,6 +112,15 @@ public class PerfilFragment extends Fragment {
                         binding.tvMiembroDesde.setText(getString(R.string.miembro_desde_formato,
                                 perfil.getFechaRegistro()));
 
+                        if (perfilResp.getImagenPersonaje() != null && !perfilResp.getImagenPersonaje().isEmpty()) {
+                            Glide.with(PerfilFragment.this)
+                                    .load(perfilResp.getImagenPersonaje())
+                                    .circleCrop()
+                                    .into(binding.ivAvatar);
+                        } else {
+                            binding.ivAvatar.setImageDrawable(null);
+                        }
+
                         sessionManager.saveSession(
                                 sessionManager.getToken(),
                                 sessionManager.getRefreshToken(),
@@ -156,6 +166,8 @@ public class PerfilFragment extends Fragment {
         try {
             Gson gson = new Gson();
             PerfilResponse perfilResp = gson.fromJson(json, PerfilResponse.class);
+            if (perfilResp.getPerfil() == null) return false;
+
             PerfilResponse.Perfil perfil = perfilResp.getPerfil();
             binding.tvNombre.setText(perfil.getNombre());
             binding.tvCorreo.setText(perfil.getCorreoElectronico());
@@ -176,6 +188,7 @@ public class PerfilFragment extends Fragment {
     private void actualizarTextoTema() {
         boolean isLight = ThemeManager.getInstance(requireContext()).isLightTheme();
         binding.tvToggleTheme.setText(isLight ? R.string.modo_oscuro : R.string.modo_claro);
+        binding.tvThemeIcon.setText(isLight ? "\uD83C\uDF19" : "\u2600\uFE0F");
     }
 
     private void cargarDatosLocales() {
@@ -198,7 +211,7 @@ public class PerfilFragment extends Fragment {
         Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiPerfilService()
                 .personajes();
         activeCalls.add(call);
-        call.enqueue(new Callback<RespuestaApi<Object>>() {
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<RespuestaApi<Object>> call, retrofit2.Response<RespuestaApi<Object>> response) {
                 activeCalls.remove(call);
@@ -247,19 +260,18 @@ public class PerfilFragment extends Fragment {
         JsonObject body = new JsonObject();
         if (personaje.has("id")) {
             body.addProperty("personajeId", personaje.get("id").getAsInt());
-        } else if (personaje.has("nombre")) {
-            body.addProperty("personaje", personaje.get("nombre").getAsString());
         }
 
         Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiPerfilService()
                 .cambiarPersonaje(body);
         activeCalls.add(call);
-        call.enqueue(new Callback<RespuestaApi<Object>>() {
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<RespuestaApi<Object>> call, retrofit2.Response<RespuestaApi<Object>> response) {
                 activeCalls.remove(call);
                 if (response.isSuccessful()) {
-                    Snackbar.make(binding.getRoot(), "Personaje actualizado", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(binding.getRoot(), getString(R.string.personaje_actualizado), Snackbar.LENGTH_SHORT).show();
+                    cargarPerfil();
                 }
             }
 
@@ -275,7 +287,7 @@ public class PerfilFragment extends Fragment {
         Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiPerfilService()
                 .logros();
         activeCalls.add(call);
-        call.enqueue(new Callback<RespuestaApi<Object>>() {
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<RespuestaApi<Object>> call, retrofit2.Response<RespuestaApi<Object>> response) {
                 activeCalls.remove(call);
@@ -329,9 +341,9 @@ public class PerfilFragment extends Fragment {
 
             if (cachedProgreso != null) {
                 JsonObject obj = com.google.gson.JsonParser.parseString(cachedProgreso).getAsJsonObject();
-                stats.append("• XP Total: ").append(obj.has("xpTotal") ? obj.get("xpTotal").getAsString() : "0").append("\n");
-                stats.append("• Nivel: ").append(obj.has("nivel") ? obj.get("nivel").getAsString() : "1").append("\n");
-                stats.append("• Racha: ").append(obj.has("rachaActual") ? obj.get("rachaActual").getAsString() : "0").append(" días\n");
+                stats.append("\u2022 XP Total: ").append(obj.has("xpTotal") ? obj.get("xpTotal").getAsString() : "0").append("\n");
+                stats.append("\u2022 Nivel: ").append(obj.has("nivel") ? obj.get("nivel").getAsString() : "1").append("\n");
+                stats.append("\u2022 Racha: ").append(obj.has("rachaActual") ? obj.get("rachaActual").getAsString() : "0").append(" d\u00edas\n");
             }
 
             if (cachedPerfil != null) {
@@ -339,22 +351,22 @@ public class PerfilFragment extends Fragment {
                 if (obj.has("perfil")) {
                     JsonObject perfil = obj.get("perfil").getAsJsonObject();
                     if (perfil.has("rachaMaxima")) {
-                        stats.append("• Mejor racha: ").append(perfil.get("rachaMaxima").getAsString()).append(" días\n");
+                        stats.append("\u2022 Mejor racha: ").append(perfil.get("rachaMaxima").getAsString()).append(" d\u00edas\n");
                     }
                     if (perfil.has("totalHabitosCompletados")) {
-                        stats.append("• Hábitos completados: ").append(perfil.get("totalHabitosCompletados").getAsString()).append("\n");
+                        stats.append("\u2022 H\u00e1bitos completados: ").append(perfil.get("totalHabitosCompletados").getAsString()).append("\n");
                     }
                 }
             }
 
             if (stats.length() == 0) {
-                stats.append("Carga tu perfil para ver estadísticas.");
+                stats.append("Carga tu perfil para ver estad\u00edsticas.");
             }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setTitle("Estadísticas");
+            builder.setTitle(getString(R.string.estadisticas));
             builder.setMessage(stats.toString());
-            builder.setPositiveButton("Cerrar", null);
+            builder.setPositiveButton(getString(R.string.cancelar), null);
             builder.show();
         } catch (Exception e) {
             Toast.makeText(getContext(), R.string.proximamente, Toast.LENGTH_SHORT).show();
@@ -363,20 +375,20 @@ public class PerfilFragment extends Fragment {
 
     private void mostrarDialogoConfiguracion() {
         String[] opciones = {
-                "Cambiar contraseña",
+                getString(R.string.cambiar_contrasena),
                 "Preferencias de notificaciones",
-                "Acerca de Epycus"
+                getString(R.string.acerca_de)
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Configuración");
+        builder.setTitle(getString(R.string.configuracion));
         builder.setItems(opciones, (dialog, which) -> {
             switch (which) {
                 case 0:
                     mostrarDialogoCambiarContrasena();
                     break;
                 case 1:
-                    Snackbar.make(binding.getRoot(), "Notificaciones: próximamente", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(binding.getRoot(), getString(R.string.notificaciones_proximamente), Snackbar.LENGTH_SHORT).show();
                     break;
                 case 2:
                     mostrarAcercaDe();
@@ -393,36 +405,35 @@ public class PerfilFragment extends Fragment {
         android.widget.EditText etConfirmar = view.findViewById(R.id.etConfirmarNuevaContrasena);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Cambiar contraseña");
+        builder.setTitle(getString(R.string.cambiar_contrasena));
         builder.setView(view);
-        builder.setPositiveButton("Guardar", (dialog, which) -> {
+        builder.setPositiveButton(getString(R.string.guardar), (dialog, which) -> {
             String actual = etActual.getText().toString().trim();
             String nueva = etNueva.getText().toString().trim();
             String confirmar = etConfirmar.getText().toString().trim();
 
             if (actual.isEmpty() || nueva.isEmpty() || confirmar.isEmpty()) {
-                Snackbar.make(binding.getRoot(), "Completa todos los campos", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(binding.getRoot(), getString(R.string.completa_campos), Snackbar.LENGTH_SHORT).show();
                 return;
             }
             if (!nueva.equals(confirmar)) {
-                Snackbar.make(binding.getRoot(), "Las contraseñas no coinciden", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(binding.getRoot(), getString(R.string.contrasenas_no_coinciden), Snackbar.LENGTH_SHORT).show();
                 return;
             }
 
             JsonObject body = new JsonObject();
             body.addProperty("contrasenaActual", actual);
             body.addProperty("nuevaContrasena", nueva);
-            body.addProperty("confirmarNuevaContrasena", confirmar);
 
             Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiPerfilService()
                     .cambiarContrasena(body);
             activeCalls.add(call);
-            call.enqueue(new Callback<RespuestaApi<Object>>() {
+            call.enqueue(new Callback<>() {
                 @Override
                 public void onResponse(Call<RespuestaApi<Object>> call, retrofit2.Response<RespuestaApi<Object>> response) {
                     activeCalls.remove(call);
                     if (response.isSuccessful()) {
-                        Snackbar.make(binding.getRoot(), "Contraseña actualizada", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(binding.getRoot(), getString(R.string.contrasena_actualizada), Snackbar.LENGTH_SHORT).show();
                     } else {
                         String msg = NetworkUtils.getErrorMessage(requireContext(), response);
                         Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_SHORT).show();
@@ -436,25 +447,22 @@ public class PerfilFragment extends Fragment {
                 }
             });
         });
-        builder.setNegativeButton("Cancelar", null);
+        builder.setNegativeButton(getString(R.string.cancelar), null);
         builder.show();
     }
 
     private void mostrarAcercaDe() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Acerca de Epycus");
-        builder.setMessage("Epycus v" + es.epycus.app.BuildConfig.VERSION_NAME + "\n\n" +
-                "Tu compañero de productividad y bienestar.\n\n" +
-                "Desarrollado para ayudarte a mantener hábitos, \n" +
-                "gestionar tu tiempo y mejorar tu bienestar.");
-        builder.setPositiveButton("Cerrar", null);
+        builder.setTitle(getString(R.string.acerca_de));
+        builder.setMessage(getString(R.string.acerca_de_texto, es.epycus.app.BuildConfig.VERSION_NAME));
+        builder.setPositiveButton(getString(R.string.cancelar), null);
         builder.show();
     }
 
     private void cerrarSesion() {
         Call<RespuestaApi<Void>> call = authRepository.logout();
         activeCalls.add(call);
-        call.enqueue(new Callback<RespuestaApi<Void>>() {
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<RespuestaApi<Void>> call,
                                    @NonNull retrofit2.Response<RespuestaApi<Void>> response) {
@@ -472,10 +480,10 @@ public class PerfilFragment extends Fragment {
 
     private void mostrarDialogoConfirmacionCierre() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Cerrar sesión");
-        builder.setMessage("¿Estás seguro de que quieres cerrar sesión?");
-        builder.setPositiveButton("Sí, cerrar sesión", (dialog, which) -> cerrarSesion());
-        builder.setNegativeButton("Cancelar", null);
+        builder.setTitle(getString(R.string.cerrar_sesion));
+        builder.setMessage(getString(R.string.confirmar_cerrar_sesion));
+        builder.setPositiveButton(getString(R.string.si_cerrar_sesion), (dialog, which) -> cerrarSesion());
+        builder.setNegativeButton(getString(R.string.cancelar), null);
         builder.show();
     }
 

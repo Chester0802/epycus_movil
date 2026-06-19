@@ -16,7 +16,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Crear cuenta"
+            android:text="@string/crear_cuenta_titulo"
             android:textSize="24sp"
             android:textColor="?attr/epTextPrimary"
             android:textStyle="bold"
@@ -26,14 +26,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            style="@style/Widget.Epycus.Input">
+            style="@style/Widget.Epycus.Input"
+            app:startIconDrawable="@drawable/ic_mood_normal"
+            app:startIconTint="?attr/epTextTertiary">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etNombre"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Nombre completo"
+                android:layout_height="52dp"
+                android:hint="@string/nombre_completo_hint"
                 android:textColor="?attr/epTextPrimary"
+                android:textSize="15sp"
                 android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -41,14 +44,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            style="@style/Widget.Epycus.Input">
+            style="@style/Widget.Epycus.Input"
+            app:startIconDrawable="@drawable/ic_mood_normal"
+            app:startIconTint="?attr/epTextTertiary">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etCorreo"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Correo electronico"
+                android:layout_height="52dp"
+                android:hint="@string/correo_hint"
                 android:textColor="?attr/epTextPrimary"
+                android:textSize="15sp"
                 android:inputType="textEmailAddress" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -57,14 +63,17 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             style="@style/Widget.Epycus.Input"
-            app:endIconMode="password_toggle">
+            app:endIconMode="password_toggle"
+            app:startIconDrawable="@drawable/ic_lock"
+            app:startIconTint="?attr/epTextTertiary">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etContrasena"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Contrasena"
+                android:layout_height="52dp"
+                android:hint="@string/contrasena_hint"
                 android:textColor="?attr/epTextPrimary"
+                android:textSize="15sp"
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -73,14 +82,17 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             style="@style/Widget.Epycus.Input"
-            app:endIconMode="password_toggle">
+            app:endIconMode="password_toggle"
+            app:startIconDrawable="@drawable/ic_lock"
+            app:startIconTint="?attr/epTextTertiary">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etConfirmarContrasena"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Confirmar contrasena"
+                android:layout_height="52dp"
+                android:hint="@string/confirmar_contrasena_hint"
                 android:textColor="?attr/epTextPrimary"
+                android:textSize="15sp"
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -88,15 +100,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            style="@style/Widget.Epycus.Input">
+            style="@style/Widget.Epycus.Input"
+            app:startIconDrawable="@drawable/ic_mood_normal"
+            app:startIconTint="?attr/epTextTertiary">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etFechaNacimiento"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Fecha de nacimiento (YYYY-MM-DD)"
+                android:layout_height="52dp"
+                android:hint="@string/fecha_nacimiento_hint"
                 android:textColor="?attr/epTextPrimary"
-                android:inputType="date" />
+                android:textSize="15sp"
+                android:focusable="false"
+                android:clickable="true"
+                android:cursorVisible="false"
+                android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Spinner
@@ -106,30 +124,43 @@
             android:layout_marginBottom="12dp"
             android:entries="@array/generos"
             android:textColor="?attr/epTextPrimary"
-            android:popupBackground="?attr/epSurface" />
+            android:popupBackground="?attr/epSurface"
+            android:background="@drawable/bg_card_rounded"
+            android:paddingHorizontal="12dp" />
 
         <Spinner
             android:id="@+id/spCarrera"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="12dp"
             android:textColor="?attr/epTextPrimary"
-            android:popupBackground="?attr/epSurface" />
+            android:popupBackground="?attr/epSurface"
+            android:background="@drawable/bg_card_rounded"
+            android:paddingHorizontal="12dp" />
+
+        <CheckBox
+            android:id="@+id/cbTerminos"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/acepto_terminos"
+            android:textSize="13sp"
+            android:textColor="?attr/epTextSecondary"
+            android:layout_marginBottom="24dp" />
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="52dp">
+            android:layout_height="56dp">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRegistrar"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:text="Registrarse"
+                android:layout_height="56dp"
+                android:text="@string/registrarse"
                 android:textAllCaps="false"
-                android:textSize="15sp"
+                android:textSize="16sp"
                 android:backgroundTint="?attr/epAccent"
                 android:textColor="?attr/epTextOnPrimary"
-                app:cornerRadius="14dp" />
+                app:cornerRadius="16dp" />
 
             <ProgressBar
                 android:id="@+id/loadingView"

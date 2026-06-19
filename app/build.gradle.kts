@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.swiperefreshlayout)
     implementation(libs.security.crypto)
     implementation(libs.play.services.auth)
+    implementation(libs.glide)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

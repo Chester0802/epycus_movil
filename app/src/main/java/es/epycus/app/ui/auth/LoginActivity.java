@@ -107,15 +107,14 @@ public class LoginActivity extends AppCompatActivity {
         );
 
         activeCall = authRepository.loginGoogle(dto);
-        activeCall.enqueue(new Callback<RespuestaApi<AuthResponse>>() {
+        activeCall.enqueue(new Callback() {
             @Override
-            public void onResponse(Call<RespuestaApi<AuthResponse>> call,
-                                   Response<RespuestaApi<AuthResponse>> response) {
+            public void onResponse(Call call, Response response) {
                 activeCall = null;
                 setLoading(false);
 
-                if (response.isSuccessful() && response.body() != null && response.body().isExito()) {
-                    AuthResponse authData = response.body().getDatos();
+                if (response.isSuccessful() && response.body() != null && ((RespuestaApi<AuthResponse>) response.body()).isExito()) {
+                    AuthResponse authData = ((RespuestaApi<AuthResponse>) response.body()).getDatos();
                     String email = account.getEmail() != null ? account.getEmail() : "";
                     String nombre = account.getDisplayName() != null ? account.getDisplayName() : "";
                     authRepository.saveSession(authData, -1, nombre, email);
@@ -127,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<AuthResponse>> call, Throwable t) {
+            public void onFailure(Call call, Throwable t) {
                 activeCall = null;
                 setLoading(false);
                 Snackbar.make(binding.btnGoogleAuth,
@@ -153,15 +152,16 @@ public class LoginActivity extends AppCompatActivity {
         setLoading(true);
 
         activeCall = authRepository.login(correo, contrasena);
-        activeCall.enqueue(new Callback<RespuestaApi<AuthResponse>>() {
+        activeCall.enqueue(new Callback() {
             @Override
-            public void onResponse(Call<RespuestaApi<AuthResponse>> call,
-                                   Response<RespuestaApi<AuthResponse>> response) {
+            public void onResponse(Call call, Response response) {
                 activeCall = null;
                 setLoading(false);
 
-                if (response.isSuccessful() && response.body() != null && response.body().isExito()) {
-                    AuthResponse authData = response.body().getDatos();
+                if (response.isSuccessful() && response.body() != null
+                        && ((RespuestaApi<AuthResponse>) response.body()).isExito()) {
+                    RespuestaApi<AuthResponse> resp = (RespuestaApi<AuthResponse>) response.body();
+                    AuthResponse authData = resp.getDatos();
                     String nombre = SessionManager.extractNameFromToken(authData.getToken());
                     if (nombre == null) nombre = correo;
                     authRepository.saveSession(authData, -1, nombre, correo);
@@ -173,7 +173,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<AuthResponse>> call, Throwable t) {
+            public void onFailure(Call call, Throwable t) {
                 activeCall = null;
                 setLoading(false);
                 Snackbar.make(binding.btnLogin,
@@ -189,35 +189,36 @@ public class LoginActivity extends AppCompatActivity {
 
     private void mostrarDialogoRecuperarContrasena() {
         EditText input = new EditText(this);
-        input.setHint("Correo electrónico");
+        input.setHint(getString(R.string.correo_hint));
         input.setInputType(android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         input.setPadding(48, 16, 48, 16);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Recuperar contraseña");
-        builder.setMessage("Ingresa tu correo para recibir un enlace de recuperación.");
+        builder.setTitle(getString(R.string.recuperar_contrasena));
+        builder.setMessage("Ingresa tu correo para recibir un enlace de recuperaci\u00f3n.");
         builder.setView(input);
-        builder.setPositiveButton("Enviar", (dialog, which) -> {
+        builder.setPositiveButton(getString(R.string.enviar), (dialog, which) -> {
             String correo = input.getText().toString().trim();
             if (correo.isEmpty()) {
-                Snackbar.make(binding.getRoot(), "Ingresa un correo", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(binding.getRoot(), getString(R.string.ingresa_correo), Snackbar.LENGTH_SHORT).show();
                 return;
             }
             recuperarContrasena(correo);
         });
-        builder.setNegativeButton("Cancelar", null);
+        builder.setNegativeButton(getString(R.string.cancelar), null);
         builder.show();
     }
 
     private void recuperarContrasena(String correo) {
         RecuperarContrasenaDto dto = new RecuperarContrasenaDto(correo);
         activeCall = authRepository.recuperarContrasena(dto);
-        activeCall.enqueue(new Callback<RespuestaApi<Object>>() {
+        activeCall.enqueue(new Callback() {
             @Override
-            public void onResponse(Call<RespuestaApi<Object>> call, Response<RespuestaApi<Object>> response) {
+            public void onResponse(Call call, Response response) {
                 activeCall = null;
-                if (response.isSuccessful() && response.body() != null && response.body().isExito()) {
-                    Snackbar.make(binding.getRoot(), "Revisa tu correo para recuperar tu contraseña", Snackbar.LENGTH_LONG).show();
+                if (response.isSuccessful() && response.body() != null
+                        && ((RespuestaApi<Object>) response.body()).isExito()) {
+                    Snackbar.make(binding.getRoot(), getString(R.string.correo_recuperacion_enviado), Snackbar.LENGTH_LONG).show();
                 } else {
                     String msg = NetworkUtils.getErrorMessage(LoginActivity.this, response);
                     Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_LONG).show();
@@ -225,7 +226,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+            public void onFailure(Call call, Throwable t) {
                 activeCall = null;
                 Snackbar.make(binding.getRoot(), getString(NetworkUtils.getNetworkErrorResId(t)), Snackbar.LENGTH_LONG).show();
             }

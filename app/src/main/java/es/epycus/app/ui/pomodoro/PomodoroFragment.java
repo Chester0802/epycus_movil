@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.epycus.app.R;
-import es.epycus.app.api.RetrofitClient;
 import es.epycus.app.databinding.FragmentPomodoroBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.repository.PomodoroRepository;
@@ -166,14 +165,14 @@ public class PomodoroFragment extends Fragment {
             timer.cancel();
         }
         isRunning = false;
-        binding.btnControl.setText(getString(R.string.reanudar));
+        binding.btnControl.setText(R.string.reanudar);
     }
 
     private void actualizarDisplay() {
         int minutos = segundosRestantes / 60;
         int segs = segundosRestantes % 60;
         binding.tvTiempo.setText(String.format("%02d:%02d", minutos, segs));
-        binding.tvEstado.setText(isPausa ? (CharSequence) getString(R.string.pausa) : getString(R.string.foco));
+        binding.tvEstado.setText(isPausa ? getString(R.string.pausa) : getString(R.string.foco));
     }
 
     private void iniciarSesionEnBackend() {
@@ -183,7 +182,7 @@ public class PomodoroFragment extends Fragment {
 
         Call<RespuestaApi<Object>> call = repository.iniciar(body);
         activeCalls.add(call);
-        call.enqueue(new Callback<RespuestaApi<Object>>() {
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<RespuestaApi<Object>> call, Response<RespuestaApi<Object>> response) {
                 activeCalls.remove(call);
@@ -195,9 +194,7 @@ public class PomodoroFragment extends Fragment {
                         if (obj.has("id")) {
                             sesionId = obj.get("id").getAsInt();
                         }
-                    } catch (Exception e) {
-                        // sesionId remains -1, local mode
-                    }
+                    } catch (Exception ignored) {}
                 }
             }
 
@@ -215,7 +212,7 @@ public class PomodoroFragment extends Fragment {
 
         Call<RespuestaApi<Object>> call = repository.cicloCompletado(sesionId, body);
         activeCalls.add(call);
-        call.enqueue(new Callback<RespuestaApi<Object>>() {
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<RespuestaApi<Object>> call, Response<RespuestaApi<Object>> response) {
                 activeCalls.remove(call);
@@ -231,7 +228,7 @@ public class PomodoroFragment extends Fragment {
     private void cargarTipAleatorio() {
         Call<RespuestaApi<Object>> call = repository.tipAleatorio();
         activeCalls.add(call);
-        call.enqueue(new Callback<RespuestaApi<Object>>() {
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<RespuestaApi<Object>> call, Response<RespuestaApi<Object>> response) {
                 activeCalls.remove(call);
@@ -248,9 +245,7 @@ public class PomodoroFragment extends Fragment {
                             binding.tvTip.setText(obj.get("mensaje").getAsString());
                             tipCargado = true;
                         }
-                    } catch (Exception e) {
-                        // ignore
-                    }
+                    } catch (Exception ignored) {}
                 }
                 if (!tipCargado) {
                     binding.tvTip.setText(R.string.pomodoro_tip_default);
@@ -268,22 +263,10 @@ public class PomodoroFragment extends Fragment {
     private void cargarConfiguracion() {
         Call<RespuestaApi<Object>> call = repository.configuracion();
         activeCalls.add(call);
-        call.enqueue(new Callback<RespuestaApi<Object>>() {
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<RespuestaApi<Object>> call, Response<RespuestaApi<Object>> response) {
                 activeCalls.remove(call);
-                if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
-                    try {
-                        com.google.gson.Gson gson = new com.google.gson.Gson();
-                        String json = gson.toJson(response.body().getDatos());
-                        JsonObject obj = com.google.gson.JsonParser.parseString(json).getAsJsonObject();
-                        if (obj.has("duracionFoco")) {
-                            // We would update TIEMPO_FOCO based on config, but for now just notify
-                        }
-                    } catch (Exception e) {
-                        // ignore
-                    }
-                }
             }
 
             @Override

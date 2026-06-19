@@ -23,6 +23,6 @@ public class DashboardActivity extends AppCompatActivity {
         sessionManager = SessionManager.getInstance(this);
 
         String nombre = sessionManager.getUserName();
-        binding.tvBienvenida.setText(getString(R.string.bienvenido_formato, nombre != null ? nombre : "Usuario"));
+        binding.tvBienvenida.setText(getString(R.string.hola_formato, nombre != null ? nombre : "Usuario"));
     }
 }

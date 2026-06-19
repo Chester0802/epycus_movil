@@ -2,7 +2,6 @@ package es.epycus.app.ui.diario;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +16,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import es.epycus.app.R;
@@ -224,12 +222,10 @@ public class DiarioFragment extends Fragment {
                 Gson gson = new Gson();
                 PreguntaGuiaResponse data = gson.fromJson(json, PreguntaGuiaResponse.class);
                 binding.tvPreguntaGuia.setText(data.getPregunta());
-                return;
             } catch (Exception e) {
                 Log.e(TAG, "Error loading cached pregunta guia", e);
             }
         }
-        binding.tvPreguntaGuia.setText(R.string.sin_conexion_datos);
     }
 
     private void mostrarErrorRed(Throwable t) {

@@ -3,7 +3,7 @@ package es.epycus.app.ui.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.epycus.app.R;
+import es.epycus.app.databinding.ItemHabitoHoyBinding;
 import es.epycus.app.model.dto.HabitoHoyDto;
 
 public class HabitoHoyAdapter extends RecyclerView.Adapter<HabitoHoyAdapter.ViewHolder> {
@@ -26,10 +27,20 @@ public class HabitoHoyAdapter extends RecyclerView.Adapter<HabitoHoyAdapter.View
     public interface OnHabitoListener {
         void onCompletar(int id);
         void onFallar(int id);
+        void onEditar(int id);
+        void onEliminar(int id);
     }
 
     public HabitoHoyAdapter(OnHabitoListener listener) {
         this.listener = listener;
+    }
+
+    public OnHabitoListener getListener() {
+        return listener;
+    }
+
+    public HabitoHoyDto getHabitoAt(int position) {
+        return habitos.get(position);
     }
 
     public void setHabitos(List<HabitoHoyDto> habitos) {
@@ -71,35 +82,58 @@ public class HabitoHoyAdapter extends RecyclerView.Adapter<HabitoHoyAdapter.View
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_habito_hoy, parent, false);
-        return new ViewHolder(view);
+        ItemHabitoHoyBinding itemBinding = ItemHabitoHoyBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(itemBinding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         HabitoHoyDto habito = habitos.get(position);
-        holder.tvNombre.setText(habito.getNombre());
-        holder.tvCategoria.setText(habito.getCategoria());
-        holder.tvXp.setText(holder.itemView.getContext().getString(
+        holder.binding.tvHabitoNombre.setText(habito.getNombre());
+        holder.binding.tvHabitoCategoria.setText(habito.getCategoria());
+        holder.binding.tvHabitoXp.setText(holder.binding.getRoot().getContext().getString(
                 R.string.xp_formato, habito.getXpPotencial()));
 
         if (habito.isCompletado()) {
+            holder.binding.cbCompletado.setChecked(true);
+            holder.itemView.setAlpha(0.5f);
+        } else if (habito.isFallado()) {
+            holder.binding.cbCompletado.setChecked(false);
             holder.itemView.setAlpha(0.5f);
         } else {
+            holder.binding.cbCompletado.setChecked(false);
             holder.itemView.setAlpha(1.0f);
         }
 
-        holder.itemView.setOnClickListener(v -> {
+        holder.binding.cbCompletado.setOnClickListener(v -> {
             long now = System.currentTimeMillis();
             int habitoId = habito.getId();
             if (habitoId == lastClickedId && now - lastClickTime < DEBOUNCE_INTERVAL) return;
             lastClickTime = now;
             lastClickedId = habitoId;
 
-            if (habito.isPendiente()) {
+            if (habito.isPendiente() || habito.isFallado()) {
                 listener.onCompletar(habitoId);
+            } else {
+                listener.onFallar(habitoId);
             }
+        });
+
+        holder.itemView.setOnLongClickListener(v -> {
+            String[] opciones = {"Completar", "Fallar", "Editar", "Eliminar"};
+            androidx.appcompat.app.AlertDialog.Builder builder =
+                    new androidx.appcompat.app.AlertDialog.Builder(v.getContext());
+            builder.setItems(opciones, (dialog, which) -> {
+                switch (which) {
+                    case 0: listener.onCompletar(habito.getId()); break;
+                    case 1: listener.onFallar(habito.getId()); break;
+                    case 2: listener.onEditar(habito.getId()); break;
+                    case 3: listener.onEliminar(habito.getId()); break;
+                }
+            });
+            builder.show();
+            return true;
         });
     }
 
@@ -107,13 +141,11 @@ public class HabitoHoyAdapter extends RecyclerView.Adapter<HabitoHoyAdapter.View
     public int getItemCount() { return habitos.size(); }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvNombre, tvCategoria, tvXp;
+        final ItemHabitoHoyBinding binding;
 
-        ViewHolder(View view) {
-            super(view);
-            tvNombre = view.findViewById(R.id.tvHabitoNombre);
-            tvCategoria = view.findViewById(R.id.tvHabitoCategoria);
-            tvXp = view.findViewById(R.id.tvHabitoXp);
+        ViewHolder(ItemHabitoHoyBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

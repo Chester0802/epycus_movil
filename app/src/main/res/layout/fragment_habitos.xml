@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="H\u00e1bitos de hoy"
+            android:text="@string/habitos_hoy_titulo"
             android:textSize="22sp"
             android:textColor="?attr/epTextPrimary"
             android:textStyle="bold"
@@ -25,10 +25,39 @@
             android:id="@+id/tvHabitosCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cargando..."
+            android:text="@string/cargando"
             android:textSize="13sp"
             android:textColor="?attr/epTextSecondary"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="12dp" />
+
+        <!-- Category Filter Chips -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupCategorias"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true"
+                app:singleSelection="false"
+                app:chipSpacing="8dp">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipTodas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="@string/todas"
+                    app:chipBackgroundColor="?attr/epSurface"
+                    app:chipStrokeColor="?attr/epAccent"
+                    app:chipStrokeWidth="1dp"
+                    app:chipCornerRadius="18dp"
+                    app:chipIconVisible="false"
+                    app:checkedIconVisible="false" />
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
 
         <!-- Loading -->
         <LinearLayout
@@ -37,7 +66,7 @@
             android:layout_height="100dp"
             android:gravity="center"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <ProgressBar
                 android:layout_width="36dp"
@@ -46,16 +75,32 @@
         </LinearLayout>
 
         <!-- Empty state -->
-        <TextView
-            android:id="@+id/tvEmpty"
+        <LinearLayout
+            android:id="@+id/layoutEmpty"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="No hay habitos para hoy. Crea uno nuevo."
-            android:textSize="14sp"
-            android:textColor="?attr/epTextSecondary"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:gravity="center"
-            android:layout_marginTop="48dp"
-            android:visibility="gone" />
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/ic_habits"
+                app:tint="?attr/epTextTertiary"
+                android:contentDescription="@null"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:id="@+id/tvEmpty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/crea_primer_habito"
+                android:textSize="15sp"
+                android:textColor="?attr/epTextSecondary"
+                android:gravity="center" />
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvHabitos"
@@ -64,17 +109,20 @@
             android:layout_weight="1"
             android:visibility="gone" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnNuevoHabito"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="+ Nuevo habito"
+            android:layout_height="56dp"
+            android:text="@string/nuevo_habito_btn"
             android:textAllCaps="false"
-            android:textSize="15sp"
+            android:textSize="16sp"
             android:backgroundTint="?attr/epAccent"
             android:textColor="?attr/epTextOnPrimary"
-            app:cornerRadius="12dp"
-            android:layout_marginTop="8dp" />
+            app:cornerRadius="16dp"
+            android:layout_marginTop="8dp"
+            app:icon="@drawable/ic_add"
+            app:iconGravity="textStart"
+            app:iconTint="?attr/epTextOnPrimary" />
 
     </LinearLayout>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -8,163 +8,222 @@
     android:orientation="vertical"
     tools:context=".ui.auth.LoginActivity">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="32dp">
+        android:layout_height="match_parent">
 
-        <!-- Theme toggle -->
-        <TextView
-            android:id="@+id/btnToggleTheme"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:text="@string/modo_oscuro"
-            android:textSize="13sp"
-            android:textColor="?attr/epAccent"
-            android:foreground="?attr/selectableItemBackground"
-            android:padding="8dp" />
-
-        <!-- Logo area -->
         <LinearLayout
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
-            android:background="@drawable/bg_accent_circle">
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!-- Theme toggle -->
+            <TextView
+                android:id="@+id/btnToggleTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="@string/modo_oscuro"
+                android:textSize="13sp"
+                android:textColor="?attr/epAccent"
+                android:foreground="?attr/selectableItemBackground"
+                android:padding="8dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Logo area -->
+            <LinearLayout
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                android:background="@drawable/bg_accent_circle">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/logo_e"
+                    android:textColor="?attr/epTextOnPrimary"
+                    android:textSize="32sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="E"
-                android:textColor="?attr/epTextOnPrimary"
+                android:text="@string/app_name"
                 android:textSize="28sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+                android:textColor="?attr/epTextPrimary"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Epycus"
-            android:textSize="28sp"
-            android:textColor="?attr/epTextPrimary"
-            android:textStyle="bold"
-            android:layout_marginBottom="4dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tu_companero_productividad"
+                android:textSize="14sp"
+                android:textColor="?attr/epTextSecondary"
+                android:layout_marginBottom="32dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tu companero de productividad"
-            android:textSize="14sp"
-            android:textColor="?attr/epTextSecondary"
-            android:layout_marginBottom="40dp" />
-
-        <!-- Login form -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            style="@style/Widget.Epycus.Input">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etCorreo"
+            <!-- Email -->
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Correo electronico"
-                android:textColor="?attr/epTextPrimary"
-                android:inputType="textEmailAddress" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginBottom="16dp"
+                style="@style/Widget.Epycus.Input"
+                app:startIconDrawable="@drawable/ic_mood_normal"
+                app:startIconTint="?attr/epTextTertiary">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            style="@style/Widget.Epycus.Input"
-            app:endIconMode="password_toggle">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etCorreo"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:hint="@string/correo_hint"
+                    android:textColor="?attr/epTextPrimary"
+                    android:textColorHint="?attr/epTextTertiary"
+                    android:textSize="15sp"
+                    android:inputType="textEmailAddress" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etContrasena"
+            <!-- Password -->
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Contrasena"
-                android:textColor="?attr/epTextPrimary"
-                android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.Epycus.Input"
+                app:endIconMode="password_toggle"
+                app:startIconDrawable="@drawable/ic_lock"
+                app:startIconTint="?attr/epTextTertiary">
 
-        <TextView
-            android:id="@+id/tvRecuperarContrasena"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Recuperar contrasena"
-            android:textSize="13sp"
-            android:textColor="?attr/epAccent"
-            android:layout_marginBottom="24dp"
-            android:layout_gravity="end"
-            android:foreground="?attr/selectableItemBackground"
-            android:padding="4dp" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etContrasena"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:hint="@string/contrasena_hint"
+                    android:textColor="?attr/epTextPrimary"
+                    android:textColorHint="?attr/epTextTertiary"
+                    android:textSize="15sp"
+                    android:inputType="textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="52dp">
+            <!-- Forgot password -->
+            <TextView
+                android:id="@+id/tvRecuperarContrasena"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/olvidaste_contrasena"
+                android:textSize="13sp"
+                android:textColor="?attr/epAccent"
+                android:layout_marginBottom="24dp"
+                android:layout_gravity="end"
+                android:foreground="?attr/selectableItemBackground"
+                android:padding="4dp" />
 
-            <Button
-                android:id="@+id/btnLogin"
+            <!-- Login button -->
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:text="Iniciar sesion"
+                android:layout_height="56dp"
+                android:layout_marginBottom="16dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLogin"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="@string/iniciar_sesion"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:backgroundTint="?attr/epAccent"
+                    android:textColor="?attr/epTextOnPrimary"
+                    app:cornerRadius="16dp" />
+
+                <ProgressBar
+                    android:id="@+id/loadingView"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center"
+                    android:indeterminateTint="?attr/epTextOnPrimary"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <!-- Google button -->
+            <LinearLayout
+                android:id="@+id/btnGoogleAuth"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:foreground="?attr/selectableItemBackground"
+                android:background="@drawable/bg_card_rounded"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:gravity="center"
+                    android:text="@string/google_g"
+                    android:textSize="16sp"
+                    android:textColor="?attr/epAccent"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/continuar_con_google"
+                    android:textSize="15sp"
+                    android:textColor="?attr/epTextPrimary" />
+            </LinearLayout>
+
+            <!-- Divider -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginVertical="16dp">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="?attr/epSurfaceBorder" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/o_texto"
+                    android:textSize="13sp"
+                    android:textColor="?attr/epTextTertiary"
+                    android:paddingHorizontal="12dp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="?attr/epSurfaceBorder" />
+            </LinearLayout>
+
+            <!-- Register link -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_tienes_cuenta"
+                android:textSize="14sp"
+                android:textColor="?attr/epTextSecondary"
+                android:gravity="center"
+                android:layout_marginBottom="12dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRegistro"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="@string/crear_cuenta"
                 android:textAllCaps="false"
-                android:textSize="15sp"
-                android:backgroundTint="?attr/epAccent"
-                android:textColor="?attr/epTextOnPrimary"
-                app:cornerRadius="14dp" />
+                android:textSize="16sp"
+                style="@style/Widget.Epycus.Button.Outline"
+                app:cornerRadius="16dp" />
 
-            <ProgressBar
-                android:id="@+id/loadingView"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_gravity="center"
-                android:indeterminateTint="?attr/epTextOnPrimary"
-                android:visibility="gone" />
-        </FrameLayout>
-
-        <TextView
-            android:id="@+id/btnGoogleAuth"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:gravity="center"
-            android:text="Continuar con Google"
-            android:textSize="15sp"
-            android:textColor="?attr/epTextPrimary"
-            android:foreground="?attr/selectableItemBackground"
-            android:background="@drawable/bg_card_rounded"
-            android:layout_marginBottom="16dp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?attr/epSurfaceBorder"
-            android:layout_marginVertical="16dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="No tienes cuenta?"
-            android:textSize="14sp"
-            android:textColor="?attr/epTextSecondary"
-            android:gravity="center" />
-
-        <Button
-            android:id="@+id/btnRegistro"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="Crear cuenta"
-            android:textAllCaps="false"
-            android:textSize="15sp"
-            style="@style/Widget.Epycus.Button.Outline"
-            android:layout_marginTop="8dp" />
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>
-

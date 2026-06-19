@@ -9,7 +9,7 @@
     <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="64dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:paddingHorizontal="12dp"
@@ -21,21 +21,21 @@
             android:layout_height="40dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_back"
-            app:tint="?attr/epTextPrimary" />
+            app:tint="?attr/epTextPrimary"
+            android:contentDescription="@string/atras" />
 
         <LinearLayout
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:gravity="center"
-            android:background="?attr/epAccentLight"
-            app:cornerRadius="20dp"
+            android:background="@drawable/bg_accent_circle"
             android:layout_marginStart="8dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="E"
-                android:textColor="?attr/epAccent"
+                android:text="@string/edy_letra"
+                android:textColor="?attr/epTextOnPrimary"
                 android:textStyle="bold"
                 android:textSize="18sp" />
         </LinearLayout>
@@ -50,7 +50,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Edy"
+                android:text="@string/edy_nombre"
                 android:textSize="16sp"
                 android:textColor="?attr/epTextPrimary"
                 android:textStyle="bold" />
@@ -58,7 +58,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Online"
+                android:text="@string/online"
                 android:textSize="11sp"
                 android:textColor="?attr/epSuccess" />
         </LinearLayout>
@@ -77,13 +77,30 @@
             android:padding="12dp"
             android:clipToPadding="false" />
 
-        <ProgressBar
+        <LinearLayout
             android:id="@+id/loadingView"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:indeterminateTint="?attr/epAccent"
-            android:visibility="gone" />
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:visibility="gone"
+            android:padding="12dp"
+            android:background="@drawable/bg_card_rounded">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/edy_escribiendo"
+                android:textSize="13sp"
+                android:textColor="?attr/epTextSecondary"
+                android:layout_marginEnd="8dp" />
+
+            <ProgressBar
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:indeterminateTint="?attr/epAccent" />
+        </LinearLayout>
     </FrameLayout>
 
     <!-- Input -->
@@ -94,20 +111,31 @@
         android:padding="12dp"
         android:background="?attr/epSurface">
 
-        <EditText
-            android:id="@+id/etMensaje"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/bg_card_rounded"
-            android:hint="Escribe un mensaje..."
-            android:paddingHorizontal="16dp"
-            android:textColor="?attr/epTextPrimary"
-            android:textColorHint="?attr/epTextTertiary"
-            android:inputType="text"
-            android:imeOptions="actionSend" />
+            style="@style/Widget.Epycus.Input"
+            app:endIconMode="none"
+            app:boxCornerRadiusTopEnd="24dp"
+            app:boxCornerRadiusBottomEnd="24dp"
+            app:boxCornerRadiusTopStart="24dp"
+            app:boxCornerRadiusBottomStart="24dp">
 
-        <ImageButton
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etMensaje"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="@string/input_mensaje_hint"
+                android:paddingHorizontal="16dp"
+                android:textColor="?attr/epTextPrimary"
+                android:textColorHint="?attr/epTextTertiary"
+                android:inputType="text"
+                android:imeOptions="actionSend"
+                android:maxLines="3" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEnviar"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -116,6 +144,8 @@
             app:cornerRadius="24dp"
             android:padding="12dp"
             android:src="@drawable/ic_send"
-            app:tint="?attr/epTextOnPrimary" />
+            app:iconTint="?attr/epTextOnPrimary"
+            app:iconGravity="textStart"
+            android:contentDescription="@string/enviar" />
     </LinearLayout>
 </LinearLayout>

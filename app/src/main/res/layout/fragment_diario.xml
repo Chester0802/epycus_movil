@@ -23,8 +23,7 @@
                 android:layout_height="100dp"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:visibility="visible">
-
+                android:visibility="gone">
                 <ProgressBar
                     android:layout_width="36dp"
                     android:layout_height="36dp"
@@ -34,43 +33,72 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Diario de animo"
+                android:text="@string/diario_titulo"
                 android:textSize="22sp"
                 android:textColor="?attr/epTextPrimary"
                 android:textStyle="bold"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="4dp" />
 
-            <TextView
-                android:id="@+id/tvPreguntaGuia"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Como te sientes hoy?"
-                android:textSize="16sp"
-                android:textColor="?attr/epTextPrimary"
-                android:layout_marginBottom="20dp" />
-
-            <!-- Mood Selector -->
+            <!-- Guiding Question Card -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_rounded"
+                android:padding="16dp"
+                android:layout_marginBottom="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reflexion_del_dia"
+                    android:textSize="14sp"
+                    android:textColor="?attr/epTextPrimary"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/tvPreguntaGuia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cargando"
+                    android:textSize="16sp"
+                    android:textColor="?attr/epAccentSecondary"
+                    android:textStyle="italic" />
+            </LinearLayout>
+
+            <!-- Mood Selector (5 moods, 100dp each) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/como_te_sientes"
+                android:textSize="15sp"
+                android:textColor="?attr/epTextPrimary"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
                 android:orientation="horizontal"
                 android:gravity="center"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="16dp">
 
                 <LinearLayout
                     android:id="@+id/moodGenial"
                     android:layout_width="0dp"
-                    android:layout_height="96dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:background="@drawable/bg_card_rounded">
+                    android:background="@drawable/bg_card_rounded"
+                    android:foreground="?attr/selectableItemBackground">
 
                     <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:src="@drawable/ic_mood_genial"
                         android:layout_marginBottom="4dp"
                         android:contentDescription="@null" />
@@ -78,7 +106,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Genial"
+                        android:text="@string/genial"
                         android:textSize="11sp"
                         android:textColor="?attr/epTextPrimary"
                         android:textStyle="bold" />
@@ -87,16 +115,17 @@
                 <LinearLayout
                     android:id="@+id/moodBien"
                     android:layout_width="0dp"
-                    android:layout_height="96dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:background="@drawable/bg_card_rounded">
+                    android:background="@drawable/bg_card_rounded"
+                    android:foreground="?attr/selectableItemBackground">
 
                     <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:src="@drawable/ic_mood_bien"
                         android:layout_marginBottom="4dp"
                         android:contentDescription="@null" />
@@ -104,7 +133,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Bien"
+                        android:text="@string/bien"
                         android:textSize="11sp"
                         android:textColor="?attr/epTextPrimary"
                         android:textStyle="bold" />
@@ -113,16 +142,17 @@
                 <LinearLayout
                     android:id="@+id/moodNormal"
                     android:layout_width="0dp"
-                    android:layout_height="96dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:background="@drawable/bg_card_rounded">
+                    android:background="@drawable/bg_card_rounded"
+                    android:foreground="?attr/selectableItemBackground">
 
                     <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:src="@drawable/ic_mood_normal"
                         android:layout_marginBottom="4dp"
                         android:contentDescription="@null" />
@@ -130,7 +160,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Normal"
+                        android:text="@string/normal"
                         android:textSize="11sp"
                         android:textColor="?attr/epTextPrimary"
                         android:textStyle="bold" />
@@ -139,16 +169,17 @@
                 <LinearLayout
                     android:id="@+id/moodCansado"
                     android:layout_width="0dp"
-                    android:layout_height="96dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:background="@drawable/bg_card_rounded">
+                    android:background="@drawable/bg_card_rounded"
+                    android:foreground="?attr/selectableItemBackground">
 
                     <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:src="@drawable/ic_mood_cansado"
                         android:layout_marginBottom="4dp"
                         android:contentDescription="@null" />
@@ -156,7 +187,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Cansado"
+                        android:text="@string/cansado"
                         android:textSize="11sp"
                         android:textColor="?attr/epTextPrimary"
                         android:textStyle="bold" />
@@ -165,16 +196,17 @@
                 <LinearLayout
                     android:id="@+id/moodEstresado"
                     android:layout_width="0dp"
-                    android:layout_height="96dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:background="@drawable/bg_card_rounded">
+                    android:background="@drawable/bg_card_rounded"
+                    android:foreground="?attr/selectableItemBackground">
 
                     <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:src="@drawable/ic_mood_estresado"
                         android:layout_marginBottom="4dp"
                         android:contentDescription="@null" />
@@ -182,65 +214,93 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Estresado"
+                        android:text="@string/estresado"
                         android:textSize="11sp"
                         android:textColor="?attr/epTextPrimary"
                         android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- Notes -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="12dp"
                 style="@style/Widget.Epycus.Input">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etNotas"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Notas (opcional)"
+                    android:hint="@string/notas_hint"
                     android:inputType="textMultiLine"
                     android:maxLines="3"
                     android:minLines="2" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnGuardarAnimo"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="Guardar estado de animo"
+                android:layout_height="56dp"
+                android:text="@string/guardar_estado_animo"
                 android:textAllCaps="false"
+                android:textSize="16sp"
                 android:backgroundTint="?attr/epAccent"
                 android:textColor="?attr/epTextOnPrimary"
-                app:cornerRadius="12dp" />
+                app:cornerRadius="16dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Today's Entry Card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_rounded"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tu_entrada_hoy"
+                    android:textSize="14sp"
+                    android:textColor="?attr/epTextPrimary"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/tvEntradaHoy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sin_entrada_hoy"
+                    android:textSize="13sp"
+                    android:textColor="?attr/epTextSecondary" />
+            </LinearLayout>
 
             <!-- Chat with Edy -->
             <LinearLayout
                 android:id="@+id/btnChatEdy"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="72dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:background="@drawable/bg_card_rounded"
                 android:padding="16dp"
-                android:layout_marginTop="24dp"
                 android:foreground="?attr/selectableItemBackground">
 
                 <LinearLayout
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:gravity="center"
-                    android:background="?attr/epAccentLight"
-                    app:cornerRadius="18dp">
+                    android:background="@drawable/bg_accent_circle">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="E"
-                        android:textColor="?attr/epAccent"
+                        android:text="@string/edy_letra"
+                        android:textColor="?attr/epTextOnPrimary"
                         android:textStyle="bold"
-                        android:textSize="16sp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -253,46 +313,20 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Habla con Edy IA"
+                        android:text="@string/habla_con_edy"
                         android:textSize="15sp"
-                        android:textColor="?attr/epAccent"
+                        android:textColor="?attr/epTextPrimary"
                         android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tu asistente personal de bienestar"
-                        android:textSize="11sp"
-                        android:textColor="?attr/epTextTertiary" />
+                        android:text="@string/asistente_bienestar"
+                        android:textSize="12sp"
+                        android:textColor="?attr/epTextSecondary" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Today's entry -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card_rounded"
-                android:padding="16dp"
-                android:layout_marginTop="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tu entrada de hoy"
-                    android:textSize="14sp"
-                    android:textColor="?attr/epTextPrimary"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
-
-                <TextView
-                    android:id="@+id/tvEntradaHoy"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Aun no has registrado tu estado de animo hoy."
-                    android:textSize="13sp"
-                    android:textColor="?attr/epTextSecondary" />
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

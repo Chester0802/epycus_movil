@@ -3,6 +3,7 @@ package es.epycus.app.ui.auth;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ public class RegistroActivity extends AppCompatActivity {
     private AuthRepository authRepository;
     private List<Carrera> carreras;
     private Call activeCall;
+    private int carreraSeleccionadaId = -1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,6 +53,20 @@ public class RegistroActivity extends AppCompatActivity {
         binding.etFechaNacimiento.setOnClickListener(v -> mostrarDatePicker());
         binding.etFechaNacimiento.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) mostrarDatePicker();
+        });
+
+        binding.spCarrera.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (carreras != null && position >= 0 && position < carreras.size()) {
+                    carreraSeleccionadaId = carreras.get(position).getId();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                carreraSeleccionadaId = -1;
+            }
         });
 
         binding.btnRegistrar.setOnClickListener(v -> registrar());
@@ -71,15 +87,15 @@ public class RegistroActivity extends AppCompatActivity {
 
     private void cargarCarreras() {
         activeCall = authRepository.obtenerCarreras();
-        activeCall.enqueue(new Callback<RespuestaApi<List<Carrera>>>() {
+        activeCall.enqueue(new Callback() {
             @Override
-            public void onResponse(Call<RespuestaApi<List<Carrera>>> call,
-                                   Response<RespuestaApi<List<Carrera>>> response) {
+            public void onResponse(Call call, Response response) {
                 if (response.isSuccessful() && response.body() != null
-                        && response.body().isExito() && response.body().getDatos() != null) {
-                    List<Carrera> lista = response.body().getDatos();
+                        && ((RespuestaApi<List<Carrera>>) response.body()).isExito()
+                        && ((RespuestaApi<List<Carrera>>) response.body()).getDatos() != null) {
+                    carreras = ((RespuestaApi<List<Carrera>>) response.body()).getDatos();
                     List<String> nombres = new ArrayList<>();
-                    for (Carrera c : lista) {
+                    for (Carrera c : carreras) {
                         nombres.add(c.getNombre());
                     }
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(RegistroActivity.this,
@@ -93,7 +109,7 @@ public class RegistroActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<List<Carrera>>> call, Throwable t) {
+            public void onFailure(Call call, Throwable t) {
                 Snackbar.make(binding.btnRegistrar,
                         getString(NetworkUtils.getNetworkErrorResId(t)), Snackbar.LENGTH_LONG).show();
             }
@@ -107,7 +123,7 @@ public class RegistroActivity extends AppCompatActivity {
         String confirmar = binding.etConfirmarContrasena.getText().toString().trim();
         String fechaNac = binding.etFechaNacimiento.getText().toString().trim();
         String genero = binding.spGenero.getSelectedItem().toString();
-        int carreraId = binding.spCarrera.getSelectedItemPosition();
+        boolean aceptaTerminos = binding.cbTerminos.isChecked();
 
         if (nombre.isEmpty() || correo.isEmpty() || contrasena.isEmpty()) {
             Toast.makeText(this, getString(R.string.completa_campos), Toast.LENGTH_SHORT).show();
@@ -120,25 +136,30 @@ public class RegistroActivity extends AppCompatActivity {
         }
 
         if (fechaNac.isEmpty()) {
-            Toast.makeText(this, "Selecciona tu fecha de nacimiento", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.selecciona_fecha_nacimiento), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!aceptaTerminos) {
+            Toast.makeText(this, "Acepta los t\u00e9rminos y condiciones", Toast.LENGTH_SHORT).show();
             return;
         }
 
         RegistroRequestDto dto = new RegistroRequestDto(nombre, correo, contrasena,
-                confirmar, fechaNac, genero, carreraId, true);
+                confirmar, fechaNac, genero, carreraSeleccionadaId, true);
 
         binding.btnRegistrar.setVisibility(View.INVISIBLE);
         binding.loadingView.setVisibility(View.VISIBLE);
 
         activeCall = authRepository.registro(dto);
-        activeCall.enqueue(new Callback<RespuestaApi<AuthResponse>>() {
+        activeCall.enqueue(new Callback() {
             @Override
-            public void onResponse(Call<RespuestaApi<AuthResponse>> call,
-                                   Response<RespuestaApi<AuthResponse>> response) {
+            public void onResponse(Call call, Response response) {
                 binding.btnRegistrar.setVisibility(View.VISIBLE);
                 binding.loadingView.setVisibility(View.GONE);
 
-                if (response.isSuccessful() && response.body() != null && response.body().isExito()) {
+                if (response.isSuccessful() && response.body() != null
+                        && ((RespuestaApi<AuthResponse>) response.body()).isExito()) {
                     Toast.makeText(RegistroActivity.this,
                             getString(R.string.registro_exitoso),
                             Toast.LENGTH_LONG).show();
@@ -150,7 +171,7 @@ public class RegistroActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<AuthResponse>> call, Throwable t) {
+            public void onFailure(Call call, Throwable t) {
                 binding.btnRegistrar.setVisibility(View.VISIBLE);
                 binding.loadingView.setVisibility(View.GONE);
                 Snackbar.make(binding.btnRegistrar,

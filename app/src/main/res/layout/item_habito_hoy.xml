@@ -7,36 +7,47 @@
     android:layout_marginBottom="8dp"
     android:foreground="?attr/selectableItemBackground">
 
+    <CheckBox
+        android:id="@+id/cbCompletado"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:buttonTint="?attr/epAccent" />
+
     <TextView
         android:id="@+id/tvHabitoNombre"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Nombre del habito"
+        android:text="@string/nombre_habito"
         android:textSize="15sp"
         android:textColor="?attr/epTextPrimary"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/cbCompletado"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@id/tvHabitoXp"
-        android:layout_margin="16dp" />
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="14dp" />
 
     <TextView
         android:id="@+id/tvHabitoCategoria"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Categoria"
+        android:text="@string/categoria_ejemplo"
         android:textSize="12sp"
         android:textColor="?attr/epTextSecondary"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/cbCompletado"
         app:layout_constraintTop_toBottomOf="@id/tvHabitoNombre"
         app:layout_constraintEnd_toStartOf="@id/tvHabitoXp"
-        android:layout_marginStart="16dp" />
+        android:layout_marginStart="12dp" />
 
     <TextView
         android:id="@+id/tvHabitoXp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="10 XP"
+        android:text="@string/xp_ejemplo"
         android:textSize="12sp"
         android:textColor="?attr/epAccent"
         android:textStyle="bold"
