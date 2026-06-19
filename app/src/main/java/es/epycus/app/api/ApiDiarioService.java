@@ -1,6 +1,7 @@
 package es.epycus.app.api;
 
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.PreguntaGuiaResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -33,5 +34,5 @@ public interface ApiDiarioService {
     Call<RespuestaApi<Object>> promedioMes(@Query("anio") int anio, @Query("mes") int mes);
 
     @GET("api/diario/pregunta-guia")
-    Call<RespuestaApi<Object>> preguntaGuia();
+    Call<RespuestaApi<PreguntaGuiaResponse>> preguntaGuia();
 }

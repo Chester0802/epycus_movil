@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +23,8 @@ import es.epycus.app.data.local.AppDatabase;
 import es.epycus.app.data.local.entity.CacheEntity;
 import es.epycus.app.databinding.FragmentDiarioBinding;
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.PreguntaGuiaResponse;
+import es.epycus.app.repository.DiarioRepository;
 import es.epycus.app.ui.ia.IaChatActivity;
 import es.epycus.app.util.NetworkUtils;
 import retrofit2.Call;
@@ -33,10 +34,11 @@ import retrofit2.Response;
 public class DiarioFragment extends Fragment {
 
     private static final String TAG = "DiarioFragment";
+    private static final String CACHE_KEY_PREGUNTA = "pregunta_guia";
     private FragmentDiarioBinding binding;
     private View selectedMood;
     private String selectedMoodText = "";
-    private AppDatabase database;
+    private DiarioRepository repository;
     private final List<Call<?>> activeCalls = new ArrayList<>();
 
     @Nullable
@@ -46,7 +48,7 @@ public class DiarioFragment extends Fragment {
         binding = FragmentDiarioBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        database = AppDatabase.getInstance(requireContext());
+        repository = new DiarioRepository(requireContext());
 
         View.OnClickListener moodListener = v -> {
             if (selectedMood != null) {
@@ -120,36 +122,27 @@ public class DiarioFragment extends Fragment {
 
     private void cargarPreguntaGuia() {
         binding.loadingView.setVisibility(View.VISIBLE);
-        Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiDiarioService()
-                .preguntaGuia();
+        Call<RespuestaApi<PreguntaGuiaResponse>> call = repository.preguntaGuia();
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                   @NonNull Response<RespuestaApi<Object>> response) {
+            public void onResponse(@NonNull Call<RespuestaApi<PreguntaGuiaResponse>> call,
+                                   @NonNull Response<RespuestaApi<PreguntaGuiaResponse>> response) {
                 activeCalls.remove(call);
                 binding.loadingView.setVisibility(View.GONE);
                 binding.swipeRefresh.setRefreshing(false);
                 if (response.isSuccessful() && response.body() != null
                         && response.body().getDatos() != null) {
-                    try {
-                        Gson gson = new Gson();
-                        String json = gson.toJson(response.body().getDatos());
-                        AppDatabase.getWriteExecutor().execute(() ->
-                                database.cacheDao().insert(
-                                        new CacheEntity("pregunta_guia", json)));
-                        JsonObject obj = gson.fromJson(json, JsonObject.class);
-                        if (obj.has("pregunta")) {
-                            binding.tvPreguntaGuia.setText(obj.get("pregunta").getAsString());
-                        }
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error parsing pregunta guia", e);
-                    }
+                    PreguntaGuiaResponse data = response.body().getDatos();
+                    Gson gson = new Gson();
+                    String json = gson.toJson(data);
+                    repository.cacheJson(CACHE_KEY_PREGUNTA, json);
+                    binding.tvPreguntaGuia.setText(data.getPregunta());
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<RespuestaApi<PreguntaGuiaResponse>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
                 binding.loadingView.setVisibility(View.GONE);
                 binding.swipeRefresh.setRefreshing(false);
@@ -160,15 +153,13 @@ public class DiarioFragment extends Fragment {
     }
 
     private void cargarPreguntaGuiaDesdeCache() {
-        String json = database.cacheDao().getValue("pregunta_guia");
+        String json = repository.getCachedJson(CACHE_KEY_PREGUNTA);
         if (json != null) {
             try {
                 Gson gson = new Gson();
-                JsonObject obj = gson.fromJson(json, JsonObject.class);
-                if (obj.has("pregunta")) {
-                    binding.tvPreguntaGuia.setText(obj.get("pregunta").getAsString());
-                    return;
-                }
+                PreguntaGuiaResponse data = gson.fromJson(json, PreguntaGuiaResponse.class);
+                binding.tvPreguntaGuia.setText(data.getPregunta());
+                return;
             } catch (Exception e) {
                 Log.e(TAG, "Error loading cached pregunta guia", e);
             }

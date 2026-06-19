@@ -12,13 +12,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import es.epycus.app.R;
-import es.epycus.app.data.local.AppDatabase;
 import es.epycus.app.databinding.FragmentHabitosBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.HabitoHoyDto;
@@ -32,10 +31,10 @@ import retrofit2.Response;
 public class HabitosFragment extends Fragment {
 
     private static final String TAG = "HabitosFragment";
+    private static final String CACHE_KEY_HABITOS = "habitos_hoy";
     private FragmentHabitosBinding binding;
     private HabitosRepository repository;
     private HabitoHoyAdapter adapter;
-    private AppDatabase database;
     private final List<Call<?>> activeCalls = new ArrayList<>();
 
     @Nullable
@@ -46,7 +45,6 @@ public class HabitosFragment extends Fragment {
         View view = binding.getRoot();
 
         repository = new HabitosRepository(requireContext());
-        database = AppDatabase.getInstance(requireContext());
 
         adapter = new HabitoHoyAdapter(new HabitoHoyAdapter.OnHabitoListener() {
             @Override
@@ -79,12 +77,12 @@ public class HabitosFragment extends Fragment {
         binding.tvEmpty.setVisibility(View.GONE);
         binding.rvHabitos.setVisibility(View.GONE);
 
-        Call<RespuestaApi<Object>> call = repository.hoy();
+        Call<RespuestaApi<List<HabitoHoyDto>>> call = repository.hoy();
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                   @NonNull Response<RespuestaApi<Object>> response) {
+            public void onResponse(@NonNull Call<RespuestaApi<List<HabitoHoyDto>>> call,
+                                   @NonNull Response<RespuestaApi<List<HabitoHoyDto>>> response) {
                 activeCalls.remove(call);
                 binding.loadingView.setVisibility(View.GONE);
                 binding.swipeRefresh.setRefreshing(false);
@@ -92,13 +90,10 @@ public class HabitosFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null && response.body().isExito()
                         && response.body().getDatos() != null) {
                     try {
-                        com.google.gson.Gson gson = new com.google.gson.Gson();
-                        String json = gson.toJson(response.body().getDatos());
-                        AppDatabase.getWriteExecutor().execute(() ->
-                                database.cacheDao().insert(
-                                        new es.epycus.app.data.local.entity.CacheEntity("habitos_hoy", json)));
-                        HabitoHoyDto[] habitosArray = gson.fromJson(json, HabitoHoyDto[].class);
-                        List<HabitoHoyDto> habitos = Arrays.asList(habitosArray);
+                        List<HabitoHoyDto> habitos = response.body().getDatos();
+                        Gson gson = new Gson();
+                        String json = gson.toJson(habitos);
+                        repository.cacheHabitosJson(CACHE_KEY_HABITOS, json);
 
                         if (habitos.isEmpty()) {
                             binding.tvEmpty.setVisibility(View.VISIBLE);
@@ -108,7 +103,7 @@ public class HabitosFragment extends Fragment {
                             binding.tvHabitosCount.setText(getString(R.string.habitos_hoy_formato, habitos.size()));
                         }
                     } catch (Exception e) {
-                        Log.e(TAG, "Error parsing habitos", e);
+                        Log.e(TAG, "Error processing habitos", e);
                         binding.tvEmpty.setVisibility(View.VISIBLE);
                     }
                 } else {
@@ -117,13 +112,22 @@ public class HabitosFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<RespuestaApi<List<HabitoHoyDto>>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
                 binding.loadingView.setVisibility(View.GONE);
                 binding.swipeRefresh.setRefreshing(false);
-                String cached = database.cacheDao().getValue("habitos_hoy");
+                String cached = repository.getCachedHabitosJson(CACHE_KEY_HABITOS);
                 if (cached != null) {
-                    binding.rvHabitos.setVisibility(View.VISIBLE);
+                    try {
+                        Gson gson = new Gson();
+                        HabitoHoyDto[] habitosArray = gson.fromJson(cached, HabitoHoyDto[].class);
+                        List<HabitoHoyDto> habitos = java.util.Arrays.asList(habitosArray);
+                        binding.rvHabitos.setVisibility(View.VISIBLE);
+                        adapter.setHabitos(habitos);
+                    } catch (Exception e) {
+                        binding.tvEmpty.setVisibility(View.VISIBLE);
+                        binding.tvEmpty.setText(getString(R.string.error_conexion));
+                    }
                 } else {
                     binding.tvEmpty.setVisibility(View.VISIBLE);
                     binding.tvEmpty.setText(getString(R.string.error_conexion));

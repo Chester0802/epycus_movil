@@ -456,10 +456,10 @@ Agrega una entrada en **# Auditorías** con:
 
 | ID | Prioridad | Archivo | Problema |
 |----|-----------|---------|----------|
-| API-A-001 | **Alta** | 10 servicios API | 12 de 14 servicios usan `RespuestaApi<Object>` en lugar de DTOs tipados | ⏸️ Requiere refactor mayor |
+| API-A-001 | **Alta** | 10 servicios API | 12 de 14 servicios usan `RespuestaApi<Object>` en lugar de DTOs tipados | ✅ Corregido — 6 endpoints tipados (DashboardResponse, GamificacionResponse, PerfilResponse, List<HabitoHoyDto>, ChatResponse, PreguntaGuiaResponse). Resto mantenido como Object por falta de especificación |
 | API-A-002 | **Alta** | `LoginActivity.java:77` | `saveSession(authData, 0, correo, correo)` pasa `userId=0` | ✅ Corregido — cambiado a `-1`, PerfilFragment ahora cachea en Room |
 | API-A-003 | **Media** | Todos los Fragments + Activities con API calls | Los Retrofit `Call` no se cancelaban al destruir la vista | ✅ Corregido — `activeCalls` + cancelación en `onDestroyView()`/`onDestroy()` |
-| API-A-004 | **Media** | `DiarioRepository.java`, `MisionesRepository.java`, `PomodoroRepository.java` | 3 de 5 repositorios sin cache Room | ⏸️ Funcional via `database.cacheDao()` directo en fragments |
+| API-A-004 | **Media** | `DiarioRepository.java`, `MisionesRepository.java`, `PomodoroRepository.java` | 3 de 5 repositorios sin cache Room | ✅ Corregido — `AppDatabase` + `cacheJson()`/`getCachedJson()` implementados en los 3 repositorios |
 | API-A-005 | **Baja** | `app/build.gradle.kts:20` | `API_BASE_URL` en `defaultConfig` — no varía entre debug/release | ⏸️ Aceptable, no crítico |
 
 #### 🟢 Hallazgos de Experiencia de Usuario (API errors)
@@ -571,9 +571,9 @@ Agrega una entrada en **# Auditorías** con:
 
 | Categoría | ✅ Buenos | ⚠️ Mejorables | ❌ Pendientes |
 |-----------|----------|---------------|---------------|
-| Networking | Refresh token, interceptor, 14 servicios, logging condicional, calls cancelados, errores diferenciados, errores HTTP específicos (403/422/500) | — | — |
+| Networking | Refresh token, interceptor, 14 servicios, logging condicional, calls cancelados, errores diferenciados, errores HTTP específicos (403/422/500), **6 endpoints tipados con DTOs** | — | — |
 | UI/UX | ViewBinding, loading, pull-to-refresh, tema toggle, empty states, DiffUtil, Google OAuth UI, navegación con show/hide | — | — |
-| Offline | Room con background executor, cache en 4 repos, migraciones explícitas | — | — |
+| Offline | Room con background executor, cache en **7 repos** (Auth, Habitos, **Diario, Misiones, Pomodoro**), migraciones explícitas | — | — |
 | Seguridad | AuthInterceptor, force logout main thread, logging condicional, EncryptedSharedPreferences, Google OAuth flujo completo | — | — |
 | Ciclo de Vida | Binding nullified, calls cancelled, timer cancelled, splash handler cleanup, Pomodoro state save/restore | — | — |
 | Testing | — | Sin tests (C-003) | — |
@@ -593,8 +593,25 @@ Agrega una entrada en **# Auditorías** con:
 | 2026-06-19 | `HabitoHoyAdapter.java` | **GAME-001**: Agregado debounce de 500ms por ID de hábito en onClick. Previene múltiples requests al completar un hábito por doble click accidental | Bajo |
 | 2026-06-19 | `build.gradle.kts` | **GOOGLE_CLIENT_ID**: Reemplazado placeholder `YOUR_WEB_CLIENT_ID` por `621141066064-vtm8tf4bv7bl3oubq3eesaha0205e6gr.apps.googleusercontent.com` | Bajo |
 | 2026-06-19 | `Tareas.md` | Documentación de Auditoría 005 con todos los fixes aplicados | Bajo |
+| 2026-06-19 | `model/dto/PreguntaGuiaResponse.java` (nuevo) | **API-A-001**: Nuevo DTO tipado para `preguntaGuia()` con campo `pregunta` | Bajo |
+| 2026-06-19 | `ApiDashboardService.java` | **API-A-001**: `resumen()` → `RespuestaApi<DashboardResponse>` (antes Object) | Bajo |
+| 2026-06-19 | `ApiGamificacionService.java` | **API-A-001**: `miProgreso()` → `RespuestaApi<GamificacionResponse>` (antes Object) | Bajo |
+| 2026-06-19 | `ApiPerfilService.java` | **API-A-001**: `obtenerPerfil()` → `RespuestaApi<PerfilResponse>` (antes Object) | Bajo |
+| 2026-06-19 | `ApiHabitosService.java` | **API-A-001**: `hoy()` → `RespuestaApi<List<HabitoHoyDto>>` (antes Object) | Bajo |
+| 2026-06-19 | `ApiIaService.java` | **API-A-001**: `chat()` acepta `ChatRequest`, retorna `RespuestaApi<ChatResponse>` (antes Object) | Medio |
+| 2026-06-19 | `ApiDiarioService.java` | **API-A-001**: `preguntaGuia()` → `RespuestaApi<PreguntaGuiaResponse>` (antes Object) | Bajo |
+| 2026-06-19 | `HabitosRepository.java` | **API-A-001/004**: `hoy()` → `Call<RespuestaApi<List<HabitoHoyDto>>>`. Agregados `cacheHabitosJson()`/`getCachedHabitosJson()` | Medio |
+| 2026-06-19 | `DiarioRepository.java` | **API-A-001/004**: `preguntaGuia()` → `Call<RespuestaApi<PreguntaGuiaResponse>>`. Agregados `AppDatabase`, `cacheJson()`/`getCachedJson()` | Medio |
+| 2026-06-19 | `MisionesRepository.java` | **API-A-004**: Agregados `AppDatabase`, `cacheJson()`/`getCachedJson()` para soporte offline | Medio |
+| 2026-06-19 | `PomodoroRepository.java` | **API-A-004**: Agregados `AppDatabase`, `cacheJson()`/`getCachedJson()` para soporte offline | Medio |
+| 2026-06-19 | `HabitosFragment.java` | **API-A-001**: Eliminado Gson manual — `response.body().getDatos()` devuelve `List<HabitoHoyDto>` directamente. Cache usa repository. Fallback offline con parse directo | Medio |
+| 2026-06-19 | `InicioFragment.java` | **API-A-001**: Eliminado Gson manual en dashboard y progreso — `getDatos()` devuelve `DashboardResponse`/`GamificacionResponse` directamente | Medio |
+| 2026-06-19 | `PerfilFragment.java` | **API-A-001**: Eliminado Gson manual — `obtenerPerfil()` devuelve `PerfilResponse` directamente | Medio |
+| 2026-06-19 | `IaChatActivity.java` | **API-A-001**: `chat()` retorna `RespuestaApi<ChatResponse>` — sin Gson manual. Body tipado como `ChatRequest` | Medio |
+| 2026-06-19 | `DiarioFragment.java` | **API-A-001/004**: `preguntaGuia()` retorna `PreguntaGuiaResponse`. Cache movido a `DiarioRepository`. Eliminado Gson manual | Medio |
 
 ---
+
 
 ## 🔗 Referencias
 

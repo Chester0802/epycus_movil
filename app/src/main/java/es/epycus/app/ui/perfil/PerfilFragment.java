@@ -30,6 +30,7 @@ import es.epycus.app.ui.auth.LoginActivity;
 import es.epycus.app.util.NetworkUtils;
 import es.epycus.app.util.SessionManager;
 import retrofit2.Call;
+import retrofit2.Callback;
 
 public class PerfilFragment extends Fragment {
 
@@ -72,13 +73,13 @@ public class PerfilFragment extends Fragment {
     private void cargarPerfil() {
         binding.loadingView.setVisibility(View.VISIBLE);
 
-        retrofit2.Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiPerfilService()
+        Call<RespuestaApi<PerfilResponse>> call = RetrofitClient.getInstance(requireContext()).getApiPerfilService()
                 .obtenerPerfil();
         activeCalls.add(call);
-        call.enqueue(new retrofit2.Callback<>() {
+        call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull retrofit2.Call<RespuestaApi<Object>> call,
-                                   @NonNull retrofit2.Response<RespuestaApi<Object>> response) {
+            public void onResponse(@NonNull Call<RespuestaApi<PerfilResponse>> call,
+                                   @NonNull retrofit2.Response<RespuestaApi<PerfilResponse>> response) {
                 activeCalls.remove(call);
                 binding.loadingView.setVisibility(View.GONE);
                 binding.swipeRefresh.setRefreshing(false);
@@ -86,12 +87,12 @@ public class PerfilFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null
                         && response.body().isExito() && response.body().getDatos() != null) {
                     try {
+                        PerfilResponse perfilResp = response.body().getDatos();
                         Gson gson = new Gson();
-                        String json = gson.toJson(response.body().getDatos());
+                        String json = gson.toJson(perfilResp);
                         AppDatabase.getWriteExecutor().execute(() ->
                                 database.cacheDao().insert(
                                         new CacheEntity("perfil", json)));
-                        PerfilResponse perfilResp = gson.fromJson(json, PerfilResponse.class);
 
                         PerfilResponse.Perfil perfil = perfilResp.getPerfil();
                         binding.tvNombre.setText(perfil.getNombre());
@@ -130,7 +131,7 @@ public class PerfilFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull retrofit2.Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<RespuestaApi<PerfilResponse>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
                 binding.loadingView.setVisibility(View.GONE);
                 binding.swipeRefresh.setRefreshing(false);
@@ -183,18 +184,18 @@ public class PerfilFragment extends Fragment {
     }
 
     private void cerrarSesion() {
-        retrofit2.Call<RespuestaApi<Void>> call = authRepository.logout();
+        Call<RespuestaApi<Void>> call = authRepository.logout();
         activeCalls.add(call);
-        call.enqueue(new retrofit2.Callback<RespuestaApi<Void>>() {
+        call.enqueue(new Callback<RespuestaApi<Void>>() {
             @Override
-            public void onResponse(@NonNull retrofit2.Call<RespuestaApi<Void>> call,
+            public void onResponse(@NonNull Call<RespuestaApi<Void>> call,
                                    @NonNull retrofit2.Response<RespuestaApi<Void>> response) {
                 activeCalls.remove(call);
                 logoutAndRedirect();
             }
 
             @Override
-            public void onFailure(@NonNull retrofit2.Call<RespuestaApi<Void>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<RespuestaApi<Void>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
                 logoutAndRedirect();
             }

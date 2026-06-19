@@ -1,6 +1,8 @@
 package es.epycus.app.api;
 
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.ChatRequest;
+import es.epycus.app.model.dto.ChatResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -10,7 +12,7 @@ import retrofit2.http.Query;
 
 public interface ApiIaService {
     @POST("api/ia/chat")
-    Call<RespuestaApi<Object>> chat(@Body Object body);
+    Call<RespuestaApi<ChatResponse>> chat(@Body ChatRequest body);
 
     @GET("api/ia/historial")
     Call<RespuestaApi<Object>> historial(@Query("conversacionId") String conversacionId);

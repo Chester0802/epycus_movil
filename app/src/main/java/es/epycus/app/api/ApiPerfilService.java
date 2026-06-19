@@ -1,6 +1,7 @@
 package es.epycus.app.api;
 
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.PerfilResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -9,7 +10,7 @@ import retrofit2.http.PUT;
 
 public interface ApiPerfilService {
     @GET("api/perfil")
-    Call<RespuestaApi<Object>> obtenerPerfil();
+    Call<RespuestaApi<PerfilResponse>> obtenerPerfil();
 
     @PUT("api/perfil")
     Call<RespuestaApi<Object>> actualizar(@Body Object body);

@@ -18,6 +18,9 @@ import es.epycus.app.model.dto.ChatResponse;
 import es.epycus.app.ui.adapters.MensajeChatAdapter;
 import es.epycus.app.util.NetworkUtils;
 import es.epycus.app.util.ThemeManager;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class IaChatActivity extends AppCompatActivity {
 
@@ -25,7 +28,7 @@ public class IaChatActivity extends AppCompatActivity {
     private ActivityIaChatBinding binding;
     private MensajeChatAdapter adapter;
     private String conversacionId;
-    private retrofit2.Call<RespuestaApi<Object>> activeCall;
+    private Call<RespuestaApi<ChatResponse>> activeCall;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,30 +67,22 @@ public class IaChatActivity extends AppCompatActivity {
 
         activeCall = RetrofitClient.getInstance(this).getApiIaService()
                 .chat(request);
-        activeCall.enqueue(new retrofit2.Callback<>() {
+        activeCall.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull retrofit2.Call<RespuestaApi<Object>> call,
-                                   @NonNull retrofit2.Response<RespuestaApi<Object>> response) {
+            public void onResponse(@NonNull Call<RespuestaApi<ChatResponse>> call,
+                                   @NonNull Response<RespuestaApi<ChatResponse>> response) {
                 activeCall = null;
                 binding.loadingView.setVisibility(View.GONE);
 
                 if (response.isSuccessful() && response.body() != null
                         && response.body().isExito() && response.body().getDatos() != null) {
-                    try {
-                        com.google.gson.Gson gson = new com.google.gson.Gson();
-                        String json = gson.toJson(response.body().getDatos());
-                        ChatResponse chatResp = gson.fromJson(json, ChatResponse.class);
+                    ChatResponse chatResp = response.body().getDatos();
 
-                        conversacionId = chatResp.getConversacionId();
-                        adapter.addMensaje(new MensajeChatAdapter.Mensaje(
-                                chatResp.getRespuesta(), false));
-                        binding.rvMensajes.smoothScrollToPosition(
-                                adapter.getItemCount() - 1);
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error parsing chat response", e);
-                        adapter.addMensaje(new MensajeChatAdapter.Mensaje(
-                                getString(R.string.error_procesar_mensaje), false));
-                    }
+                    conversacionId = chatResp.getConversacionId();
+                    adapter.addMensaje(new MensajeChatAdapter.Mensaje(
+                            chatResp.getRespuesta(), false));
+                    binding.rvMensajes.smoothScrollToPosition(
+                            adapter.getItemCount() - 1);
                 } else {
                     adapter.addMensaje(new MensajeChatAdapter.Mensaje(
                             getString(R.string.error_intentar), false));
@@ -95,7 +90,7 @@ public class IaChatActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull retrofit2.Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<RespuestaApi<ChatResponse>> call, @NonNull Throwable t) {
                 activeCall = null;
                 binding.loadingView.setVisibility(View.GONE);
                 int msgRes = NetworkUtils.getNetworkErrorResId(t);

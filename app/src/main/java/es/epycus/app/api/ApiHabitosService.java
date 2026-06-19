@@ -1,6 +1,9 @@
 package es.epycus.app.api;
 
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.HabitoHoyDto;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -15,7 +18,7 @@ public interface ApiHabitosService {
     Call<RespuestaApi<Object>> listar();
 
     @GET("api/habitos/hoy")
-    Call<RespuestaApi<Object>> hoy();
+    Call<RespuestaApi<List<HabitoHoyDto>>> hoy();
 
     @POST("api/habitos/{id}/completar")
     Call<RespuestaApi<Object>> completar(@Path("id") int id);
