@@ -261,24 +261,86 @@ Agrega una entrada en **# Auditorías** con:
 | Compila | ✅ Sí |
 | Autenticación | ✅ Login/Registro implementados |
 | API conectada | ✅ 14 servicios API vía Retrofit |
-| Dashboard | ✅ Parcial — fragmentos creados, datos desde API |
-| Hábitos | ✅ Fragmento + adaptador |
-| Pomodoro | ✅ Fragmento funcional |
+| Dashboard | ✅ Fragmento con caching offline |
+| Hábitos | ✅ Fragmento + adaptador + pull-to-refresh |
+| Pomodoro | ✅ Fragmento funcional (timer local) |
 | IA Chat | ✅ Activity de chat implementada |
-| Perfil | ✅ Fragmento funcional |
-| Diario | ✅ Fragmento implementado |
+| Perfil | ✅ Fragmento con caching offline |
+| Diario | ✅ Fragmento con caching offline |
 | Misiones | ✅ Adaptador + repositorio |
 | Testing | ❌ Sin tests implementados |
-| Offline | ❌ No implementado |
+| Offline | ✅ Room implementado (4 entidades, cache JSON) |
+| Pull-to-refresh | ✅ 4 fragments con SwipeRefreshLayout |
+| Loading spinners | ✅ Todas las pantallas con ProgressBar |
+| Tema claro/oscuro | ✅ Toggle manual + persistencia |
+| Refresh token | ✅ Automático con retry y force logout |
+| Manejo errores red | ✅ Snackbar consistente en todos los onFailure |
 | Push notifications | ❌ No implementado |
+| Google OAuth | ⚠️ Endpoints definidos, UI no implementada |
 
 ---
 
-## 📋 Pendientes
+### Auditoría 002 — 2026-06-19 (Extrema - Post-implementación)
 
-### Android App
+**Alcance**: Auditoría completa del código Android tras implementar los 6 pendientes (red, refresh, splash, Room, pull-to-refresh, loading). También se creó `AUDITORIA_PROMPTS.md` con 8 especialidades y prompt unificado para futuras auditorías.
 
-- [x] **P-001**: Implementar `cargarCarreras()` en `RegistroActivity.java`
+#### ✅ Implementado durante esta sesión
+1. **Manejo errores red** — Todos los `onFailure` → Snackbar con `R.string.error_conexion` (7 archivos)
+2. **Refresh token** — AuthInterceptor intercepta 401, llama refresh sin bucle (X-Retry), actualiza token, force logout si falla
+3. **Splash** — SplashActivity con logo + delay 1.5s, redirección según sesión, LAUNCHER en manifest
+4. **Room offline** — AppDatabase con 4 entidades, DAOs, cache en repositorios y fragments, fallback en onFailure
+5. **Pull-to-refresh** — 4 fragments envueltos en SwipeRefreshLayout con listener
+6. **Loading spinners** — ProgressBar en todas las pantallas (incluye DiarioFragment, LoginActivity, RegistroActivity)
+7. **Theme toggle** — ThemeManager persistente, botón "Modo oscuro/claro" en LoginActivity, applyTheme en SplashActivity
+8. **AUDITORIA_PROMPTS.md** — Documento de prompts por especialidad (8 áreas + prompt unificado extremo)
+
+#### 🟡 Hallazgos de Seguridad
+
+| ID | Prioridad | Archivo | Problema |
+|----|-----------|---------|----------|
+| S-001 | **Alta** | `RetrofitClient.java:35` | `HttpLoggingInterceptor.Level.BODY` expone tokens JWT en logs. Debe desactivarse o usar `HEADERS` en release |
+| S-002 | **Media** | `util/SessionManager.java` | Tokens almacenados en SharedPreferences planas. Usar `EncryptedSharedPreferences` |
+| S-003 | **Media** | `ui/auth/LoginActivity.java` | Sin Google OAuth UI aunque los endpoints están definidos |
+
+#### 🟡 Hallazgos de Arquitectura
+
+| ID | Prioridad | Archivo | Problema |
+|----|-----------|---------|----------|
+| A-001 | **Media** | `data/local/AppDatabase.java` | `allowMainThreadQueries()` es rápido para cache pequeña pero debería migrarse a background executor |
+| A-002 | **Media** | `ui/MainContainerActivity.java` | FragmentTransaction manual sin Navigation Component — difícil de mantener |
+| A-003 | **Baja** | `ui/MainContainerActivity.java` | Fragmentos se recrean en cada click del bottom nav (sin `FragmentManager` reuse) |
+| A-004 | **Baja** | `AndroidManifest.xml:40` | `MainActivity.java` es código muerto pero sigue declarada en manifest |
+| A-005 | **Baja** | `data/local/AppDatabase.java` | `fallbackToDestructiveMigration()` puede borrar cache local al actualizar DB |
+
+#### 🟡 Hallazgos de Rendimiento
+
+| ID | Prioridad | Archivo | Problema |
+|----|-----------|---------|----------|
+| P-001 | **Media** | Todos los Fragments | Callbacks de Retrofit no se cancelan al destruir la View (pueden ejecutarse después de onDestroyView) |
+| P-002 | **Media** | `ui/pomodoro/PomodoroFragment.java` | Timer no persiste al rotar (se pierde el estado) |
+| P-003 | **Baja** | `ui/splash/SplashActivity.java` | `Handler.postDelayed` podría ejecutarse después de `finish()` si la Activity se destruye antes |
+
+#### 🟡 Hallazgos de Calidad de Código
+
+| ID | Prioridad | Archivo | Problema |
+|----|-----------|---------|----------|
+| C-001 | **Media** | `gradle/libs.versions.toml` | Sin reglas ProGuard para Room/Retrofit/Gson |
+| C-002 | **Baja** | Todos los Fragments | Sin DiffUtil en los 3 adapters |
+| C-003 | **Baja** | Todos los Fragments | Sin tests unitarios ni instrumentados |
+| C-004 | **Baja** | `data/local/entity/CacheEntity.java` | Cache key-value con String es typedébil; propenso a errores tipográficos |
+| C-005 | **Baja** | `app/build.gradle.kts` | `lintOptions` no configurado; no hay `abortOnError` |
+
+#### 📊 Resumen Final
+
+| Categoría | ✅ Buenos | 🟡 Mejorables | ❌ Críticos |
+|-----------|----------|---------------|-------------|
+| Networking | Refresh token, interceptor, 14 servicios | Logging expone tokens (S-001) | — |
+| UI/UX | ViewBinding, loading, pull-to-refresh, tema toggle | Sin DiffUtil (C-002) | — |
+| Offline | Room implementado, cache en repos | Main-thread queries (A-001), destructive migration (A-005) | — |
+| Seguridad | AuthInterceptor, force logout | SharedPreferences planas (S-002), logging BODY (S-001) | — |
+| Testing | — | Sin tests (C-003) | — |
+
+---: Implementar `cargarCarreras()` en `RegistroActivity.java`
 - [x] **P-002 a P-007**: Agregar feedback al usuario en callbacks `onFailure` y catch blocks
 - [x] **P-008**: Strings hardcodeadas movidas a `strings.xml`
 - [x] **P-009**: Migración a ViewBinding completada

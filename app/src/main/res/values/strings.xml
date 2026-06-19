@@ -65,6 +65,10 @@
     <string name="error_conexion_ia">Error de conexi\u00f3n. Verifica tu internet.</string>
     <string name="autor_formato">- %s</string>
 
+    <!-- Theme -->
+    <string name="modo_oscuro">Modo oscuro</string>
+    <string name="modo_claro">Modo claro</string>
+
     <string-array name="generos">
         <item>Masculino</item>
         <item>Femenino</item>

@@ -12,11 +12,13 @@ import es.epycus.app.R;
 import es.epycus.app.repository.AuthRepository;
 import es.epycus.app.ui.MainContainerActivity;
 import es.epycus.app.ui.auth.LoginActivity;
+import es.epycus.app.util.ThemeManager;
 
 public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        ThemeManager.getInstance(this).applyTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 

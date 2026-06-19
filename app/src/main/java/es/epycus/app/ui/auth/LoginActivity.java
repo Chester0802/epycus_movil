@@ -15,6 +15,7 @@ import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.entidades.AuthResponse;
 import es.epycus.app.repository.AuthRepository;
 import es.epycus.app.ui.MainContainerActivity;
+import es.epycus.app.util.ThemeManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -26,6 +27,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        ThemeManager.getInstance(this).applyTheme();
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -37,9 +39,20 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        binding.btnToggleTheme.setOnClickListener(v -> {
+            ThemeManager.getInstance(this).toggle();
+            recreate();
+        });
+        actualizarIconoTema();
+
         binding.btnLogin.setOnClickListener(v -> iniciarSesion());
         binding.btnRegistro.setOnClickListener(v ->
                 startActivity(new Intent(LoginActivity.this, RegistroActivity.class)));
+    }
+
+    private void actualizarIconoTema() {
+        boolean isLight = ThemeManager.getInstance(this).isLightTheme();
+        binding.btnToggleTheme.setText(isLight ? R.string.modo_oscuro : R.string.modo_claro);
     }
 
     private void iniciarSesion() {
