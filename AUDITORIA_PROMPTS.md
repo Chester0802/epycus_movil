@@ -72,6 +72,39 @@ App Android con Material 3 (tema claro/oscuro). Actualmente usa `Theme.Material3
 
 ---
 
+### Resultados de Auditoría UX — 2026-06-19
+
+**Estado**: 11/13 checklist items cumplidos
+
+#### ✅ Implementado correctamente
+- Toggle de tema en LoginActivity con `ThemeManager.toggle()` + `recreate()`
+- Persistencia en SharedPreferences (`epycus_theme`, key `is_light_theme`)
+- `applyTheme()` en SplashActivity, LoginActivity y MainContainerActivity
+- `values-night/themes.xml` con `Theme.Material3.Dark.NoActionBar`
+- Todos los 16 layouts usan `?attr/ep*` — 0 colores hardcodeados
+- Drawables funcionales (`bg_card_rounded`, `bg_accent_circle`, `bg_chat_message_*`, `bg_accent_gradient`) usan `?attr/`
+- Iconos de navegación tienen `android:tint="?attr/epTextPrimary"`
+- Loading states en Login, Inicio, Hábitos, Diario, Perfil, Chat IA
+- Empty states en InicioFragment y HabitosFragment
+- Mood selectors con `bg_card_rounded` + `selectableItemBackground`
+- BottomNavigationView con `Widget.Epycus.BottomNavigation` usando `?attr/ep*`
+
+#### 🔴 Issues corregidos
+| # | Archivo | Problema | Fix |
+|---|---------|----------|-----|
+| 1 | `activity_dashboard.xml` | Sin `android:background` ni `textColor` — invisible en dark mode | Agregado `epBgPrimary` y `?attr/epTextPrimary` |
+| 2 | `styles_epycus.xml:23` | `@color/white` hardcodeado en `Widget.Epycus.Button` | Reemplazado por `?attr/epTextOnPrimary` |
+| 3 | `fragment_diario.xml` | Mood selectors sin indicador de color | Agregados dots de colores (`shape_dot` + `backgroundTint` con `mood_*`) |
+| 4 | `fragment_pomodoro.xml` | Sin loading state | Agregado `loadingView` (ProgressBar) |
+| 5 | `PomodoroFragment.java` | Sin manejo de estado de carga | Agregado show/hide de `loadingView` en `onCreateView` |
+
+#### 🟢 Pendientes (baja prioridad)
+- Launcher icons (`ic_launcher_foreground.xml`, `ic_launcher_background.xml`) — colores estáticos por diseño (adaptive icons)
+- Verificación formal de contraste WCAG
+- Migración de PomodoroTimer a ViewModel para sobrevivir rotación
+
+---
+
 ## 2. API — Networking & API Integration
 
 ### Contexto

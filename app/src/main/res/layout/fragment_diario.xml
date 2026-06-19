@@ -68,6 +68,13 @@
                     android:orientation="vertical"
                     android:background="@drawable/bg_card_rounded">
 
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:layout_marginBottom="4dp"
+                        android:background="@drawable/shape_dot"
+                        android:backgroundTint="@color/mood_genial" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -86,6 +93,13 @@
                     android:gravity="center"
                     android:orientation="vertical"
                     android:background="@drawable/bg_card_rounded">
+
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:layout_marginBottom="4dp"
+                        android:background="@drawable/shape_dot"
+                        android:backgroundTint="@color/mood_bien" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -106,6 +120,13 @@
                     android:orientation="vertical"
                     android:background="@drawable/bg_card_rounded">
 
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:layout_marginBottom="4dp"
+                        android:background="@drawable/shape_dot"
+                        android:backgroundTint="@color/mood_normal" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -125,6 +146,13 @@
                     android:orientation="vertical"
                     android:background="@drawable/bg_card_rounded">
 
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:layout_marginBottom="4dp"
+                        android:background="@drawable/shape_dot"
+                        android:backgroundTint="@color/mood_cansado" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -143,6 +171,13 @@
                     android:gravity="center"
                     android:orientation="vertical"
                     android:background="@drawable/bg_card_rounded">
+
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:layout_marginBottom="4dp"
+                        android:background="@drawable/shape_dot"
+                        android:backgroundTint="@color/mood_estresado" />
 
                     <TextView
                         android:layout_width="wrap_content"

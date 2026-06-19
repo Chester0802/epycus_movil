@@ -34,6 +34,8 @@ public class PomodoroFragment extends Fragment {
         binding = FragmentPomodoroBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        binding.loadingView.setVisibility(View.VISIBLE);
+
         actualizarDisplay();
         binding.tvCiclos.setText(getString(R.string.ciclos_formato, 0));
         binding.tvTotalHoy.setText(getString(R.string.hoy_completados_formato, 0));
@@ -45,6 +47,8 @@ public class PomodoroFragment extends Fragment {
                 iniciar();
             }
         });
+
+        binding.loadingView.setVisibility(View.GONE);
 
         return view;
     }

@@ -330,6 +330,17 @@ Agrega una entrada en **# Auditorías** con:
 | C-004 | **Baja** | `data/local/entity/CacheEntity.java` | Cache key-value con String es typedébil; propenso a errores tipográficos |
 | C-005 | **Baja** | `app/build.gradle.kts` | `lintOptions` no configurado; no hay `abortOnError` |
 
+#### 🟢 Auditoría UX (Especialidad 1) — Hallazgos y Fixes
+
+| ID | Prioridad | Archivo | Problema | Estado |
+|----|-----------|---------|----------|--------|
+| UX-001 | **Alta** | `res/layout/activity_dashboard.xml` | Sin `android:background` ni `textColor` — invisible en dark mode | ✅ Corregido |
+| UX-002 | **Media** | `res/values/styles_epycus.xml:23` | `@color/white` hardcodeado en `Widget.Epycus.Button` | ✅ Corregido |
+| UX-003 | **Baja** | `res/layout/fragment_diario.xml` | Mood selectors sin indicador de color | ✅ Corregido |
+| UX-004 | **Baja** | `res/layout/fragment_pomodoro.xml` | Sin loading state | ✅ Corregido |
+| UX-005 | **Baja** | `res/drawable/ic_launcher_foreground.xml` | Colores hardcodeados (launcher icon — no aplica tema) | ⏸️ No aplica |
+| UX-006 | **Baja** | `res/drawable/ic_launcher_background.xml` | `#3DDC84` hardcodeado (launcher icon — estático por diseño) | ⏸️ No aplica |
+
 #### 📊 Resumen Final
 
 | Categoría | ✅ Buenos | 🟡 Mejorables | ❌ Críticos |
@@ -352,6 +363,10 @@ Agrega una entrada en **# Auditorías** con:
 - [x] Agregar soporte offline (Room database local)
 - [x] Agregar pull-to-refresh en fragments
 - [x] Implementar estado de carga (loading spinners) en todas las pantallas
+- [x] **UX-001**: Corregir `activity_dashboard.xml` — agregar `background` y `textColor` temáticos
+- [x] **UX-002**: Reemplazar `@color/white` hardcodeado por `?attr/epTextOnPrimary` en `styles_epycus.xml`
+- [x] **UX-003**: Agregar indicadores de color a mood selectors en DiarioFragment
+- [x] **UX-004**: Agregar loading state a PomodoroFragment
 
 ### Backend (EpycusApp)
 
@@ -394,6 +409,11 @@ Agrega una entrada en **# Auditorías** con:
 | 2026-06-19 | `InicioFragment.java`, `HabitosFragment.java`, `DiarioFragment.java`, `PerfilFragment.java` | **5 - Pull-to-refresh**: `setOnRefreshListener` conectado a `cargarXxx()`. `setRefreshing(false)` en éxito y error | Bajo |
 | 2026-06-19 | `fragment_diario.xml`, `activity_login.xml`, `activity_registro.xml` | **6 - Loading spinners**: Agregado `loadingView` (ProgressBar) a layouts que no lo tenían | Bajo |
 | 2026-06-19 | `DiarioFragment.java`, `LoginActivity.java`, `RegistroActivity.java` | **6 - Loading spinners**: `loadingView` se muestra/oculta durante llamadas API. Login/Registro usan ProgressBar en vez de cambiar texto del botón | Bajo |
+| 2026-06-19 | `activity_dashboard.xml` | **UX-001**: Agregado `android:background="?attr/epBgPrimary"` y `android:textColor="?attr/epTextPrimary"` para visibilidad en ambos temas | Bajo |
+| 2026-06-19 | `styles_epycus.xml` | **UX-002**: Reemplazado `@color/white` por `?attr/epTextOnPrimary` en `Widget.Epycus.Button` | Bajo |
+| 2026-06-19 | `fragment_diario.xml`, `shape_dot.xml` (nuevo) | **UX-003**: Agregados indicadores de color (dots circulares) a cada mood selector usando `mood_*` colors | Bajo |
+| 2026-06-19 | `fragment_pomodoro.xml`, `PomodoroFragment.java` | **UX-004**: Agregado `loadingView` (ProgressBar) con show/hide durante inicialización | Bajo |
+| 2026-06-19 | `AUDITORIA_PROMPTS.md` | **UX Audit docs**: Agregada sección de resultados de auditoría UX con checklist, issues y fixes | Bajo |
 
 ---
 
