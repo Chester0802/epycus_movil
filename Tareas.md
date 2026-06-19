@@ -351,7 +351,7 @@ Agrega una entrada en **# Auditorías** con:
 | Seguridad | AuthInterceptor, force logout on main thread | SharedPreferences planas (S-002) | — |
 | Testing | — | Sin tests (C-003) | — |
 
----: Implementar `cargarCarreras()` en `RegistroActivity.java`
+- [x] **P-001**: Implementar `cargarCarreras()` en `RegistroActivity.java`
 - [x] **P-002 a P-007**: Agregar feedback al usuario en callbacks `onFailure` y catch blocks
 - [x] **P-008**: Strings hardcodeadas movidas a `strings.xml`
 - [x] **P-009**: Migración a ViewBinding completada

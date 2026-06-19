@@ -4,7 +4,7 @@
 > Propósito: App de gamificación de hábitos profesionales con IA integrada (Edy)
 > Repositorio: https://github.com/Chester0802/EpycusApp
 > API: https://app.epycus.es/ | Swagger: https://app.epycus.es/swagger
-> Última actualización: 2026-06-19
+> Archivo de prompts únicamente. Los resultados de auditoría se documentan en `Tareas.md`.
 
 ---
 
@@ -16,6 +16,8 @@ Cada prompt está diseñado para un **auditor especializado Android**. Copia el 
 2. **Alcance de la auditoría** (archivos/directorios a revisar)
 3. **Checklist de revisión** (qué buscar)
 4. **Entregables esperados**
+
+> **Nota**: Los resultados y hallazgos de auditorías realizadas están en `Tareas.md` (sección Auditorías). Este archivo contiene solo los prompts para futuras revisiones.
 
 ---
 
@@ -69,40 +71,6 @@ App Android con Material 3 (tema claro/oscuro). Actualmente usa `Theme.Material3
 - Mapa de todos los colores hardcodeados en layouts
 - Recomendaciones de accesibilidad (contraste, tamaños de fuente)
 - Screenshots antes/después del fix de temas
-
----
-
-### Resultados de Auditoría UX — 2026-06-19
-
-**Estado**: 11/13 checklist items cumplidos
-
-#### ✅ Implementado correctamente
-- Toggle de tema en LoginActivity con `ThemeManager.toggle()` + `recreate()`
-- Persistencia en SharedPreferences (`epycus_theme`, key `is_light_theme`)
-- `applyTheme()` en SplashActivity, LoginActivity y MainContainerActivity
-- `values-night/themes.xml` con `Theme.Material3.Dark.NoActionBar`
-- Todos los 16 layouts usan `?attr/ep*` — 0 colores hardcodeados
-- Drawables funcionales (`bg_card_rounded`, `bg_accent_circle`, `bg_chat_message_*`, `bg_accent_gradient`) usan `?attr/`
-- Iconos de navegación tienen `android:tint="?attr/epTextPrimary"`
-- Loading states en Login, Inicio, Hábitos, Diario, Perfil, Chat IA
-- Empty states en InicioFragment y HabitosFragment
-- Mood selectors con `bg_card_rounded` + `selectableItemBackground`
-- BottomNavigationView con `Widget.Epycus.BottomNavigation` usando `?attr/ep*`
-
-#### 🔴 Issues corregidos
-| # | Archivo | Problema | Fix |
-|---|---------|----------|-----|
-| 1 | `activity_dashboard.xml` | Sin `android:background` ni `textColor` — invisible en dark mode | Agregado `epBgPrimary` y `?attr/epTextPrimary` |
-| 2 | `styles_epycus.xml:23` | `@color/white` hardcodeado en `Widget.Epycus.Button` | Reemplazado por `?attr/epTextOnPrimary` |
-| 3 | `fragment_diario.xml` | Mood selectors sin indicador de color | Agregados dots de colores (`shape_dot` + `backgroundTint` con `mood_*`) |
-| 4 | `fragment_pomodoro.xml` | Sin loading state | Agregado `loadingView` (ProgressBar) |
-| 5 | `PomodoroFragment.java` | Sin manejo de estado de carga | Agregado show/hide de `loadingView` en `onCreateView` |
-
-#### 🟢 Pendientes (baja prioridad)
-- Launcher icons (`ic_launcher_foreground.xml`, `ic_launcher_background.xml`) — colores estáticos por diseño (adaptive icons)
-- Verificación formal de contraste WCAG
-- Migración de PomodoroTimer a ViewModel para sobrevivir rotación
-
 ---
 
 ## 2. API — Networking & API Integration
@@ -138,49 +106,6 @@ Retrofit 2 + OkHttp 4 + Gson. 14 servicios API. AuthInterceptor para JWT. Refres
 - Mapa de errores HTTP no manejados
 - Recomendaciones de timeouts y retry policy
 - Análisis de posibles race conditions
-
----
-
-### Resultados de Auditoría API — 2026-06-19
-
-**Estado**: 7/12 checklist items cumplidos (5 corregidos durante auditoría)
-
-#### Checklist final
-
-| # | Item | Estado |
-|---|------|--------|
-| 1 | ¿Todos los endpoints usan `RespuestaApi<T>` como envoltorio? | ✅ Sí |
-| 2 | ¿El AuthInterceptor maneja correctamente 401? | ✅ Sí |
-| 3 | ¿El refresh token se llama con client sin auth interceptor? | ✅ Sí (authlessRetrofit) |
-| 4 | ¿El header X-Retry previene reintentos infinitos? | ✅ Sí |
-| 5 | ¿Los timeouts son adecuados? (30s) | ✅ Aceptable |
-| 6 | ¿El logging interceptor muestra credenciales en logs? | ✅ Corregido — ahora `HEADERS` en debug, `NONE` en release |
-| 7 | ¿Hay manejo de errores HTTP específicos? | ❌ Pendiente — solo 401 manejado |
-| 8 | ¿Race conditions por llamadas paralelas? | ✅ No (callbacks van al main thread) |
-| 9 | ¿El `onFailure` distingue entre timeout, DNS, otros? | ✅ Corregido — `SocketTimeoutException`, `UnknownHostException`, `ConnectException` |
-| 10 | ¿Llamadas en onCreate vs onResume? | ✅ Correcto (carga inicial en onCreateView) |
-| 11 | ¿Base URL cambia entre debug/release? | ⚠️ No cambia, definida en defaultConfig |
-| 12 | ¿Uso consistente de enqueue/execute? | ✅ `enqueue` en UI, `execute` solo en interceptor |
-
-#### 🔴 Issues corregidos
-
-| # | Archivo | Problema | Fix |
-|---|---------|----------|-----|
-| 1 | `RetrofitClient.java:36` | `Level.BODY` exponía tokens JWT en logs sin importar build type | Cambiado a `HEADERS` en debug, `NONE` en release (vía `BuildConfig.DEBUG`) |
-| 2 | `AuthInterceptor.java:96` | `forceLogout()` llamaba `startActivity()` desde background thread | Envuelto en `Handler(Looper.getMainLooper()).post()` |
-| 3 | `InicioFragment.java`, `HabitosFragment.java`, `DiarioFragment.java`, `PerfilFragment.java`, `IaChatActivity.java`, `LoginActivity.java`, `RegistroActivity.java` | Los Retrofit `Call` no se cancelaban al destruir la vista — riesgo de NullPointerException | Añadido `activeCalls` list/field y cancelación en `onDestroyView()`/`onDestroy()` |
-| 4 | `InicioFragment.java`, `HabitosFragment.java`, `DiarioFragment.java`, `PerfilFragment.java`, `LoginActivity.java`, `RegistroActivity.java`, `IaChatActivity.java` | Todos los errores de red mostraban mensaje genérico | Añadida diferenciación: timeout → `error_timeout`, DNS/conexión → `error_sin_conexion`, otros → `error_conexion` |
-| 5 | `LoginActivity.java:77` | `saveSession(authData, 0, correo, correo)` pasaba `userId=0` | Cambiado a `userId=-1` como centinela |
-| 6 | `PerfilFragment.java:96` | Perfil no cacheaba usuario en Room al cargar | Añadido `database.usuarioDao().insert()` con datos reales del perfil |
-| 7 | `strings.xml` | Faltaban strings específicos para errores de red | Añadidos `error_timeout` y `error_sin_conexion` |
-| 8 | `HabitosFragment.java` | No cacheaba hábitos en Room para fallback offline | Añadido `cacheDao().insert("habitos_hoy", json)` en éxito y carga desde cache en fallo |
-
-#### 🟢 Pendientes (requieren cambios en backend o refactor mayor)
-
-- **API-A-001**: 12 de 14 servicios API usan `RespuestaApi<Object>` — forzan parsing manual con Gson. Requiere crear DTOs tipados por endpoint.
-- **API-UX-002**: Sin manejo de errores HTTP específicos (403, 422, 500). Solo se evalúa `response.isSuccessful()`.
-- **API-A-004**: 3 de 5 repositorios sin métodos de cache Room (Diario, Misiones, Pomodoro). Inconsistencia arquitectónica.
-
 ---
 
 ## 3. ARQ — Arquitectura & Patrones
@@ -453,37 +378,4 @@ res/
 - [ ] **11. NAVEGACIÓN**: Bottom nav sin show/hide — cada click crea nuevo Fragment. Pendiente de migrar.
 - [x] **12. RENDIMIENTO**: Calls cancelados en onDestroyView. Room writes en background Executor. DiffUtil en adapters.
 
-### Resultados de Auditoría Extrema — 2026-06-19
 
-**Estado**: 11/12 checklist items cumplidos
-
-#### Nuevos archivos creados
-| Archivo | Propósito |
-|---------|-----------|
-| `util/NetworkUtils.java` | Utilidad centralizada para códigos HTTP error + errores de red |
-| `util/ThemeManager.java` | Singleton de persistencia de tema claro/oscuro |
-
-#### Correcciones realizadas
-| ID | Archivo | Problema | Fix |
-|----|---------|----------|-----|
-| POM-001 | `PomodoroFragment.java` | Estado del timer se pierde al rotar | onSaveInstanceState guarda/restaura 5 campos + timer se reanuda |
-| ADAPTER-001 | `MisionAdapter.java` | Colores hardcodeados (0xFFEF4444) | Reemplazados por `R.color.priority_alta/media/baja` |
-| UX-007 | `DiarioFragment.java` | Sin mensaje offline en pregunta guía | Muestra `R.string.sin_conexion_datos` si no hay cache |
-| PERF-003 | `SplashActivity.java` | Handler leak potencial | removeCallbacks en onDestroy |
-| API-UX-002 | 7 archivos .java | Sin manejo HTTP 403/422/500 | NetworkUtils.getHttpErrorResId() + getErrorMessage() |
-| S-002 | `SessionManager.java` | SharedPreferences planas para tokens | Migrado a EncryptedSharedPreferences con MasterKey AES256_GCM |
-| A-001 | `AppDatabase.java` + 5 archivos | Escrituras Room en main thread | ExecutorService + todas las writes en execute() |
-| S-003 | `LoginActivity.java`, `AuthRepository.java`, `activity_login.xml` | Google OAuth sin UI | Botón + flujo GoogleSignInClient → idToken → googleAuth() API |
-| C-002 | `HabitoHoyAdapter.java`, `MisionAdapter.java` | notifyDataSetChanged sin DiffUtil | DiffUtil.Callback con areItemsTheSame/areContentsTheSame |
-
-#### Pendientes
-- Configurar `GOOGLE_CLIENT_ID` real en `build.gradle.kts` (placeholder actual)
-- Migrar bottom nav a show/hide en lugar de recrear fragments (NAV-001)
-- Agregar tests unitarios e instrumentados (C-003)
-- Migrar a Navigation Component (A-002)
-
-### Entregables Finales
-1. **Reporte de Hallazgos** en `Tareas.md` > Auditoría 004 con tabla de severidad
-2. **Issues críticos** priorizados (Alta/Media/Baja) — todos corregidos
-3. **Código corregido** para todos los issues resueltos durante la auditoría
-4. **Compilación**: ✅ BUILD SUCCESSFUL
