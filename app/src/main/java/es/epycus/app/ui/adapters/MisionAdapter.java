@@ -1,11 +1,14 @@
 package es.epycus.app.ui.adapters;
 
+import android.content.res.TypedArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -28,8 +31,39 @@ public class MisionAdapter extends RecyclerView.Adapter<MisionAdapter.ViewHolder
     }
 
     public void setMisiones(List<MisionDto> misiones) {
+        DiffUtil.DiffResult result = DiffUtil.calculateDiff(new MisionDiffCallback(this.misiones, misiones));
         this.misiones = misiones;
-        notifyDataSetChanged();
+        result.dispatchUpdatesTo(this);
+    }
+
+    private static class MisionDiffCallback extends DiffUtil.Callback {
+        private final List<MisionDto> oldList;
+        private final List<MisionDto> newList;
+
+        MisionDiffCallback(List<MisionDto> oldList, List<MisionDto> newList) {
+            this.oldList = oldList;
+            this.newList = newList;
+        }
+
+        @Override
+        public int getOldListSize() { return oldList.size(); }
+
+        @Override
+        public int getNewListSize() { return newList.size(); }
+
+        @Override
+        public boolean areItemsTheSame(int oldPos, int newPos) {
+            return oldList.get(oldPos).getId() == newList.get(newPos).getId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldPos, int newPos) {
+            MisionDto oldItem = oldList.get(oldPos);
+            MisionDto newItem = newList.get(newPos);
+            return oldItem.isCompletada() == newItem.isCompletada()
+                    && oldItem.getPrioridad().equals(newItem.getPrioridad())
+                    && oldItem.getNombre().equals(newItem.getNombre());
+        }
     }
 
     @NonNull
@@ -53,9 +87,14 @@ public class MisionAdapter extends RecyclerView.Adapter<MisionAdapter.ViewHolder
 
         int color;
         switch (mision.getPrioridad()) {
-            case "Alta": color = 0xFFEF4444; break;
-            case "Media": color = 0xFFF59E0B; break;
-            default: color = 0xFF22C55E;
+            case "Alta":
+                color = ContextCompat.getColor(holder.itemView.getContext(), R.color.priority_alta);
+                break;
+            case "Media":
+                color = ContextCompat.getColor(holder.itemView.getContext(), R.color.priority_media);
+                break;
+            default:
+                color = ContextCompat.getColor(holder.itemView.getContext(), R.color.priority_baja);
         }
         holder.tvPrioridad.setTextColor(color);
     }

@@ -3,8 +3,14 @@ package es.epycus.app.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.security.crypto.EncryptedSharedPreferences;
+import androidx.security.crypto.MasterKey;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 public class SessionManager {
-    private static final String PREF_NAME = "epycus_session";
+    private static final String PREF_NAME = "epycus_session_encrypted";
     private static final String KEY_TOKEN = "jwt_token";
     private static final String KEY_REFRESH_TOKEN = "refresh_token";
     private static final String KEY_USER_ID = "user_id";
@@ -15,8 +21,23 @@ public class SessionManager {
     private static SessionManager instance;
 
     private SessionManager(Context context) {
-        prefs = context.getApplicationContext()
-                .getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        Context appContext = context.getApplicationContext();
+        SharedPreferences sharedPrefs;
+        try {
+            MasterKey masterKey = new MasterKey.Builder(appContext)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build();
+            sharedPrefs = EncryptedSharedPreferences.create(
+                    appContext,
+                    PREF_NAME,
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            );
+        } catch (GeneralSecurityException | IOException e) {
+            sharedPrefs = appContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        }
+        prefs = sharedPrefs;
     }
 
     public static synchronized SessionManager getInstance(Context context) {

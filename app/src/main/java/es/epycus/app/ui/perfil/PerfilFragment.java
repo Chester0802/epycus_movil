@@ -14,9 +14,6 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +27,9 @@ import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.PerfilResponse;
 import es.epycus.app.repository.AuthRepository;
 import es.epycus.app.ui.auth.LoginActivity;
+import es.epycus.app.util.NetworkUtils;
 import es.epycus.app.util.SessionManager;
+import retrofit2.Call;
 
 public class PerfilFragment extends Fragment {
 
@@ -89,8 +88,9 @@ public class PerfilFragment extends Fragment {
                     try {
                         Gson gson = new Gson();
                         String json = gson.toJson(response.body().getDatos());
-                        database.cacheDao().insert(
-                                new CacheEntity("perfil", json));
+                        AppDatabase.getWriteExecutor().execute(() ->
+                                database.cacheDao().insert(
+                                        new CacheEntity("perfil", json)));
                         PerfilResponse perfilResp = gson.fromJson(json, PerfilResponse.class);
 
                         PerfilResponse.Perfil perfil = perfilResp.getPerfil();
@@ -111,14 +111,15 @@ public class PerfilFragment extends Fragment {
                                 perfil.getNombre(),
                                 perfil.getCorreoElectronico()
                         );
-                        database.usuarioDao().insert(new UsuarioEntity(
-                                sessionManager.getUserId(),
-                                perfil.getNombre(),
-                                perfil.getCorreoElectronico(),
-                                sessionManager.getToken(),
-                                sessionManager.getRefreshToken(),
-                                perfil.getFechaRegistro()
-                        ));
+                        AppDatabase.getWriteExecutor().execute(() ->
+                                database.usuarioDao().insert(new UsuarioEntity(
+                                        sessionManager.getUserId(),
+                                        perfil.getNombre(),
+                                        perfil.getCorreoElectronico(),
+                                        sessionManager.getToken(),
+                                        sessionManager.getRefreshToken(),
+                                        perfil.getFechaRegistro()
+                                )));
                     } catch (Exception e) {
                         Log.e(TAG, "Error parsing perfil", e);
                         cargarDatosLocales();
@@ -209,15 +210,8 @@ public class PerfilFragment extends Fragment {
     }
 
     private void mostrarErrorRed(Throwable t) {
-        int msgRes;
-        if (t instanceof SocketTimeoutException) {
-            msgRes = R.string.error_timeout;
-        } else if (t instanceof UnknownHostException || t instanceof ConnectException) {
-            msgRes = R.string.error_sin_conexion;
-        } else {
-            msgRes = R.string.error_conexion;
-        }
-        Snackbar.make(requireView(), getString(msgRes), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(requireView(),
+                getString(NetworkUtils.getNetworkErrorResId(t)), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

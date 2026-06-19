@@ -16,6 +16,8 @@ import es.epycus.app.util.ThemeManager;
 
 public class SplashActivity extends AppCompatActivity {
 
+    private Handler splashHandler;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         ThemeManager.getInstance(this).applyTheme();
@@ -24,7 +26,8 @@ public class SplashActivity extends AppCompatActivity {
 
         AuthRepository authRepository = new AuthRepository(this);
 
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        splashHandler = new Handler(Looper.getMainLooper());
+        splashHandler.postDelayed(() -> {
             Intent intent;
             if (authRepository.isLoggedIn()) {
                 intent = new Intent(SplashActivity.this, MainContainerActivity.class);
@@ -35,5 +38,13 @@ public class SplashActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }, 1500);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (splashHandler != null) {
+            splashHandler.removeCallbacksAndMessages(null);
+        }
+        super.onDestroy();
     }
 }

@@ -6,6 +6,7 @@ import es.epycus.app.api.RetrofitClient;
 import es.epycus.app.data.local.AppDatabase;
 import es.epycus.app.data.local.entity.UsuarioEntity;
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.GoogleAuthDto;
 import es.epycus.app.model.dto.LoginDto;
 import es.epycus.app.model.dto.RefreshDto;
 import es.epycus.app.model.dto.RegistroRequestDto;
@@ -30,6 +31,10 @@ public class AuthRepository {
 
     public Call<RespuestaApi<AuthResponse>> login(String correo, String contrasena) {
         return api.getApiAuthService().login(new LoginDto(correo, contrasena));
+    }
+
+    public Call<RespuestaApi<AuthResponse>> loginGoogle(GoogleAuthDto dto) {
+        return api.getApiAuthService().googleAuth(dto);
     }
 
     public Call<RespuestaApi<AuthResponse>> registro(RegistroRequestDto dto) {
@@ -67,11 +72,11 @@ public class AuthRepository {
 
     public void clearSession() {
         sessionManager.logout();
-        database.usuarioDao().deleteAll();
+        AppDatabase.getWriteExecutor().execute(() -> database.usuarioDao().deleteAll());
     }
 
     public void cacheUsuario(UsuarioEntity usuario) {
-        database.usuarioDao().insert(usuario);
+        AppDatabase.getWriteExecutor().execute(() -> database.usuarioDao().insert(usuario));
     }
 
     public UsuarioEntity getCachedUsuario() {

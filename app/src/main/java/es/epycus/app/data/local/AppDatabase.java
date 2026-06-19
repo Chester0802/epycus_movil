@@ -6,6 +6,9 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import es.epycus.app.data.local.dao.CacheDao;
 import es.epycus.app.data.local.dao.HabitoDao;
 import es.epycus.app.data.local.dao.ProgresoDao;
@@ -20,11 +23,16 @@ import es.epycus.app.data.local.entity.UsuarioEntity;
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase instance;
+    private static final ExecutorService writeExecutor = Executors.newSingleThreadExecutor();
 
     public abstract UsuarioDao usuarioDao();
     public abstract HabitoDao habitoDao();
     public abstract ProgresoDao progresoDao();
     public abstract CacheDao cacheDao();
+
+    public static ExecutorService getWriteExecutor() {
+        return writeExecutor;
+    }
 
     public static synchronized AppDatabase getInstance(Context context) {
         if (instance == null) {

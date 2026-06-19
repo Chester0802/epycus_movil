@@ -15,9 +15,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +25,7 @@ import es.epycus.app.data.local.entity.CacheEntity;
 import es.epycus.app.databinding.FragmentDiarioBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.ui.ia.IaChatActivity;
+import es.epycus.app.util.NetworkUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -137,8 +135,9 @@ public class DiarioFragment extends Fragment {
                     try {
                         Gson gson = new Gson();
                         String json = gson.toJson(response.body().getDatos());
-                        database.cacheDao().insert(
-                                new CacheEntity("pregunta_guia", json));
+                        AppDatabase.getWriteExecutor().execute(() ->
+                                database.cacheDao().insert(
+                                        new CacheEntity("pregunta_guia", json)));
                         JsonObject obj = gson.fromJson(json, JsonObject.class);
                         if (obj.has("pregunta")) {
                             binding.tvPreguntaGuia.setText(obj.get("pregunta").getAsString());
@@ -168,23 +167,18 @@ public class DiarioFragment extends Fragment {
                 JsonObject obj = gson.fromJson(json, JsonObject.class);
                 if (obj.has("pregunta")) {
                     binding.tvPreguntaGuia.setText(obj.get("pregunta").getAsString());
+                    return;
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error loading cached pregunta guia", e);
             }
         }
+        binding.tvPreguntaGuia.setText(R.string.sin_conexion_datos);
     }
 
     private void mostrarErrorRed(Throwable t) {
-        int msgRes;
-        if (t instanceof SocketTimeoutException) {
-            msgRes = R.string.error_timeout;
-        } else if (t instanceof UnknownHostException || t instanceof ConnectException) {
-            msgRes = R.string.error_sin_conexion;
-        } else {
-            msgRes = R.string.error_conexion;
-        }
-        Snackbar.make(requireView(), getString(msgRes), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(requireView(),
+                getString(NetworkUtils.getNetworkErrorResId(t)), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

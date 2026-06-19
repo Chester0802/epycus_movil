@@ -68,6 +68,11 @@
     <!-- Network errors -->
     <string name="error_timeout">El servidor no responde (tiempo de espera agotado)</string>
     <string name="error_sin_conexion">Sin conexión a internet. Verifica tu red.</string>
+    <string name="sin_conexion_datos">Sin conexión. No hay datos disponibles.</string>
+    <string name="error_http_403">Acceso denegado. No tienes permiso para esta acción.</string>
+    <string name="error_http_422">Error de validación. Revisa los datos ingresados.</string>
+    <string name="error_http_500">Error interno del servidor. Intenta más tarde.</string>
+    <string name="error_http_desconocido">Error inesperado (código %d). Intenta de nuevo.</string>
 
     <!-- Theme -->
     <string name="modo_oscuro">Modo oscuro</string>

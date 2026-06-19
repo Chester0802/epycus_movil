@@ -9,10 +9,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-
 import es.epycus.app.R;
 import es.epycus.app.api.RetrofitClient;
 import es.epycus.app.databinding.ActivityIaChatBinding;
@@ -20,6 +16,7 @@ import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.ChatRequest;
 import es.epycus.app.model.dto.ChatResponse;
 import es.epycus.app.ui.adapters.MensajeChatAdapter;
+import es.epycus.app.util.NetworkUtils;
 import es.epycus.app.util.ThemeManager;
 
 public class IaChatActivity extends AppCompatActivity {
@@ -101,14 +98,7 @@ public class IaChatActivity extends AppCompatActivity {
             public void onFailure(@NonNull retrofit2.Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                 activeCall = null;
                 binding.loadingView.setVisibility(View.GONE);
-                int msgRes;
-                if (t instanceof SocketTimeoutException) {
-                    msgRes = R.string.error_timeout;
-                } else if (t instanceof UnknownHostException || t instanceof ConnectException) {
-                    msgRes = R.string.error_sin_conexion;
-                } else {
-                    msgRes = R.string.error_conexion_ia;
-                }
+                int msgRes = NetworkUtils.getNetworkErrorResId(t);
                 adapter.addMensaje(new MensajeChatAdapter.Mensaje(
                         getString(msgRes), false));
             }

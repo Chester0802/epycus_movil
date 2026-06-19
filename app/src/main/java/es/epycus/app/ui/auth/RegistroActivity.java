@@ -10,9 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +20,7 @@ import es.epycus.app.model.dto.RegistroRequestDto;
 import es.epycus.app.model.entidades.AuthResponse;
 import es.epycus.app.model.entidades.Carrera;
 import es.epycus.app.repository.AuthRepository;
+import es.epycus.app.util.NetworkUtils;
 import es.epycus.app.util.ThemeManager;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,7 +31,7 @@ public class RegistroActivity extends AppCompatActivity {
     private ActivityRegistroBinding binding;
     private AuthRepository authRepository;
     private List<Carrera> carreras;
-    private Call<?> activeCall;
+    private Call activeCall;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,14 +65,15 @@ public class RegistroActivity extends AppCompatActivity {
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     binding.spCarrera.setAdapter(adapter);
                 } else {
-                    Toast.makeText(RegistroActivity.this,
-                            getString(R.string.error_carreras), Toast.LENGTH_SHORT).show();
+                    String msg = NetworkUtils.getErrorMessage(RegistroActivity.this, response);
+                    Toast.makeText(RegistroActivity.this, msg, Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<RespuestaApi<List<Carrera>>> call, Throwable t) {
-                mostrarErrorRed(t);
+                Snackbar.make(binding.btnRegistrar,
+                        getString(NetworkUtils.getNetworkErrorResId(t)), Snackbar.LENGTH_LONG).show();
             }
         });
     }
@@ -118,10 +117,7 @@ public class RegistroActivity extends AppCompatActivity {
                             Toast.LENGTH_LONG).show();
                     finish();
                 } else {
-                    String msg = getString(R.string.error_registro);
-                    if (response.body() != null && response.body().getMensaje() != null) {
-                        msg = response.body().getMensaje();
-                    }
+                    String msg = NetworkUtils.getErrorMessage(RegistroActivity.this, response);
                     Toast.makeText(RegistroActivity.this, msg, Toast.LENGTH_LONG).show();
                 }
             }
@@ -130,21 +126,10 @@ public class RegistroActivity extends AppCompatActivity {
             public void onFailure(Call<RespuestaApi<AuthResponse>> call, Throwable t) {
                 binding.btnRegistrar.setVisibility(View.VISIBLE);
                 binding.loadingView.setVisibility(View.GONE);
-                mostrarErrorRed(t);
+                Snackbar.make(binding.btnRegistrar,
+                        getString(NetworkUtils.getNetworkErrorResId(t)), Snackbar.LENGTH_LONG).show();
             }
         });
-    }
-
-    private void mostrarErrorRed(Throwable t) {
-        int msgRes;
-        if (t instanceof SocketTimeoutException) {
-            msgRes = R.string.error_timeout;
-        } else if (t instanceof UnknownHostException || t instanceof ConnectException) {
-            msgRes = R.string.error_sin_conexion;
-        } else {
-            msgRes = R.string.error_conexion;
-        }
-        Snackbar.make(binding.btnRegistrar, getString(msgRes), Snackbar.LENGTH_LONG).show();
     }
 
     @Override

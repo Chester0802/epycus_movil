@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -29,8 +30,39 @@ public class HabitoHoyAdapter extends RecyclerView.Adapter<HabitoHoyAdapter.View
     }
 
     public void setHabitos(List<HabitoHoyDto> habitos) {
+        DiffUtil.DiffResult result = DiffUtil.calculateDiff(new HabitoDiffCallback(this.habitos, habitos));
         this.habitos = habitos;
-        notifyDataSetChanged();
+        result.dispatchUpdatesTo(this);
+    }
+
+    private static class HabitoDiffCallback extends DiffUtil.Callback {
+        private final List<HabitoHoyDto> oldList;
+        private final List<HabitoHoyDto> newList;
+
+        HabitoDiffCallback(List<HabitoHoyDto> oldList, List<HabitoHoyDto> newList) {
+            this.oldList = oldList;
+            this.newList = newList;
+        }
+
+        @Override
+        public int getOldListSize() { return oldList.size(); }
+
+        @Override
+        public int getNewListSize() { return newList.size(); }
+
+        @Override
+        public boolean areItemsTheSame(int oldPos, int newPos) {
+            return oldList.get(oldPos).getId() == newList.get(newPos).getId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldPos, int newPos) {
+            HabitoHoyDto oldItem = oldList.get(oldPos);
+            HabitoHoyDto newItem = newList.get(newPos);
+            return oldItem.isCompletado() == newItem.isCompletado()
+                    && oldItem.isPendiente() == newItem.isPendiente()
+                    && oldItem.getNombre().equals(newItem.getNombre());
+        }
     }
 
     @NonNull

@@ -13,9 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +24,7 @@ import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.HabitoHoyDto;
 import es.epycus.app.repository.HabitosRepository;
 import es.epycus.app.ui.adapters.HabitoHoyAdapter;
+import es.epycus.app.util.NetworkUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -96,8 +94,9 @@ public class HabitosFragment extends Fragment {
                     try {
                         com.google.gson.Gson gson = new com.google.gson.Gson();
                         String json = gson.toJson(response.body().getDatos());
-                        database.cacheDao().insert(
-                                new es.epycus.app.data.local.entity.CacheEntity("habitos_hoy", json));
+                        AppDatabase.getWriteExecutor().execute(() ->
+                                database.cacheDao().insert(
+                                        new es.epycus.app.data.local.entity.CacheEntity("habitos_hoy", json)));
                         HabitoHoyDto[] habitosArray = gson.fromJson(json, HabitoHoyDto[].class);
                         List<HabitoHoyDto> habitos = Arrays.asList(habitosArray);
 
@@ -177,15 +176,8 @@ public class HabitosFragment extends Fragment {
     }
 
     private void mostrarErrorRed(Throwable t) {
-        int msgRes;
-        if (t instanceof SocketTimeoutException) {
-            msgRes = R.string.error_timeout;
-        } else if (t instanceof UnknownHostException || t instanceof ConnectException) {
-            msgRes = R.string.error_sin_conexion;
-        } else {
-            msgRes = R.string.error_conexion;
-        }
-        Snackbar.make(binding.rvHabitos, getString(msgRes), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(binding.rvHabitos,
+                getString(NetworkUtils.getNetworkErrorResId(t)), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
