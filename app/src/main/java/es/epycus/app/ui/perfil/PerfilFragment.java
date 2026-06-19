@@ -29,6 +29,7 @@ import es.epycus.app.repository.AuthRepository;
 import es.epycus.app.ui.auth.LoginActivity;
 import es.epycus.app.util.NetworkUtils;
 import es.epycus.app.util.SessionManager;
+import es.epycus.app.util.ThemeManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -66,6 +67,11 @@ public class PerfilFragment extends Fragment {
                 Snackbar.make(v, getString(R.string.proximamente), Snackbar.LENGTH_SHORT).show());
         binding.btnConfiguracion.setOnClickListener(v ->
                 Snackbar.make(v, getString(R.string.proximamente), Snackbar.LENGTH_SHORT).show());
+        binding.btnToggleTheme.setOnClickListener(v -> {
+            ThemeManager.getInstance(requireContext()).toggle();
+            requireActivity().recreate();
+        });
+        actualizarTextoTema();
 
         return view;
     }
@@ -165,6 +171,11 @@ public class PerfilFragment extends Fragment {
             Log.e(TAG, "Error loading cached perfil", e);
             return false;
         }
+    }
+
+    private void actualizarTextoTema() {
+        boolean isLight = ThemeManager.getInstance(requireContext()).isLightTheme();
+        binding.tvToggleTheme.setText(isLight ? R.string.modo_oscuro : R.string.modo_claro);
     }
 
     private void cargarDatosLocales() {

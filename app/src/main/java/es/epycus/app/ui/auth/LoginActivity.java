@@ -24,6 +24,7 @@ import es.epycus.app.model.entidades.AuthResponse;
 import es.epycus.app.repository.AuthRepository;
 import es.epycus.app.ui.MainContainerActivity;
 import es.epycus.app.util.NetworkUtils;
+import es.epycus.app.util.SessionManager;
 import es.epycus.app.util.ThemeManager;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -156,7 +157,9 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (response.isSuccessful() && response.body() != null && response.body().isExito()) {
                     AuthResponse authData = response.body().getDatos();
-                    authRepository.saveSession(authData, -1, correo, correo);
+                    String nombre = SessionManager.extractNameFromToken(authData.getToken());
+                    if (nombre == null) nombre = correo;
+                    authRepository.saveSession(authData, -1, nombre, correo);
                     navegarAlHome();
                 } else {
                     String msg = NetworkUtils.getErrorMessage(LoginActivity.this, response);

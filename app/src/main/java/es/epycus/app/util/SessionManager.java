@@ -77,4 +77,25 @@ public class SessionManager {
     public void logout() {
         prefs.edit().clear().apply();
     }
+
+    public static String extractNameFromToken(String token) {
+        if (token == null) return null;
+        try {
+            String[] parts = token.split("\\.");
+            if (parts.length < 2) return null;
+            byte[] decoded = android.util.Base64.decode(parts[1], android.util.Base64.URL_SAFE);
+            String json = new String(decoded, java.nio.charset.StandardCharsets.UTF_8);
+            com.google.gson.JsonObject obj = com.google.gson.JsonParser.parseString(json).getAsJsonObject();
+            if (obj.has("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")) {
+                return obj.get("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").getAsString();
+            }
+            if (obj.has("name")) {
+                return obj.get("name").getAsString();
+            }
+            if (obj.has("unique_name")) {
+                return obj.get("unique_name").getAsString();
+            }
+        } catch (Exception ignored) { }
+        return null;
+    }
 }

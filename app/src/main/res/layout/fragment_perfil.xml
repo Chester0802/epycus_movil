@@ -244,6 +244,27 @@
                     android:textColor="?attr/epTextPrimary" />
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/btnToggleTheme"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_card_rounded"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                android:foreground="?attr/selectableItemBackground">
+
+                <TextView
+                    android:id="@+id/tvToggleTheme"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/modo_oscuro"
+                    android:textSize="14sp"
+                    android:textColor="?attr/epTextPrimary" />
+            </LinearLayout>
+
             <Button
                 android:id="@+id/btnCerrarSesion"
                 android:layout_width="match_parent"
