@@ -42,7 +42,7 @@
                         android:id="@+id/tvNivelTitulo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nivel 1"
+                        android:text="@string/nivel_1"
                         android:textSize="13sp"
                         android:textColor="?attr/epAccentSecondary"
                         android:layout_marginTop="2dp" />
@@ -122,10 +122,10 @@
                         android:id="@+id/tvHabitosPendientes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textSize="24sp"
-                        android:textColor="?attr/epTextPrimary"
-                        android:textStyle="bold" />
+                    android:text="@string/cero"
+                    android:textSize="24sp"
+                    android:textColor="?attr/epTextPrimary"
+                    android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -158,10 +158,10 @@
                         android:id="@+id/tvRacha"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textSize="24sp"
-                        android:textColor="?attr/epTextPrimary"
-                        android:textStyle="bold" />
+                    android:text="@string/cero"
+                    android:textSize="24sp"
+                    android:textColor="?attr/epTextPrimary"
+                    android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -194,10 +194,10 @@
                         android:id="@+id/tvNivel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nv.1"
-                        android:textSize="24sp"
-                        android:textColor="?attr/epTextPrimary"
-                        android:textStyle="bold" />
+                    android:text="@string/nv_1"
+                    android:textSize="24sp"
+                    android:textColor="?attr/epTextPrimary"
+                    android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -236,10 +236,10 @@
                         android:id="@+id/tvXpText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0 XP"
-                        android:textSize="13sp"
-                        android:textColor="?attr/epAccent"
-                        android:textStyle="bold" />
+                    android:text="@string/cero_xp_text"
+                    android:textSize="13sp"
+                    android:textColor="?attr/epAccent"
+                    android:textStyle="bold" />
                 </LinearLayout>
 
                 <ProgressBar
@@ -256,7 +256,7 @@
                     android:id="@+id/tvXpPorcentaje"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0% para siguiente nivel"
+                    android:text="@string/porcentaje_siguiente_nivel_text"
                     android:textSize="11sp"
                     android:textColor="?attr/epTextSecondary"
                     android:layout_marginTop="4dp" />

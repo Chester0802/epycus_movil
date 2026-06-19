@@ -195,7 +195,7 @@ public class LoginActivity extends AppCompatActivity {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.recuperar_contrasena));
-        builder.setMessage("Ingresa tu correo para recibir un enlace de recuperaci\u00f3n.");
+        builder.setMessage(getString(R.string.recuperar_contrasena_mensaje));
         builder.setView(input);
         builder.setPositiveButton(getString(R.string.enviar), (dialog, which) -> {
             String correo = input.getText().toString().trim();

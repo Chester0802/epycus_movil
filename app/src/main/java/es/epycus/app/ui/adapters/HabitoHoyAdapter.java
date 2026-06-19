@@ -121,7 +121,12 @@ public class HabitoHoyAdapter extends RecyclerView.Adapter<HabitoHoyAdapter.View
         });
 
         holder.itemView.setOnLongClickListener(v -> {
-            String[] opciones = {"Completar", "Fallar", "Editar", "Eliminar"};
+            String[] opciones = {
+                    v.getContext().getString(R.string.completar),
+                    v.getContext().getString(R.string.fallar),
+                    v.getContext().getString(R.string.editar),
+                    v.getContext().getString(R.string.eliminar)
+            };
             androidx.appcompat.app.AlertDialog.Builder builder =
                     new androidx.appcompat.app.AlertDialog.Builder(v.getContext());
             builder.setItems(opciones, (dialog, which) -> {

@@ -125,6 +125,7 @@
     <string name="emoji_estadisticas">📊</string>
     <string name="emoji_config">⚙️</string>
     <string name="emoji_luna">🌙</string>
+    <string name="emoji_sol">☀️</string>
     <string name="chevron_right">›</string>
 
     <!-- Pomodoro -->
@@ -182,6 +183,55 @@
     <string name="error_carreras_conexion">No se pudieron cargar las carreras</string>
     <string name="error_procesar_mensaje">Lo siento, no pude procesar tu mensaje.</string>
     <string name="error_conexion_ia">Error de conexión. Verifica tu internet.</string>
+
+    <!-- Habito actions -->
+    <string name="completar">Completar</string>
+    <string name="fallar">Fallar</string>
+    <string name="editar">Editar</string>
+    <string name="eliminar">Eliminar</string>
+
+    <!-- Frecuencias -->
+    <string name="frecuencia_diaria">Diaria</string>
+    <string name="frecuencia_semanal">Semanal</string>
+    <string name="frecuencia_personalizada">Personalizada</string>
+
+    <!-- Categorías por defecto -->
+    <string name="categoria_general">General</string>
+    <string name="categoria_salud">Salud</string>
+    <string name="categoria_estudio">Estudio</string>
+    <string name="categoria_trabajo">Trabajo</string>
+    <string name="categoria_personal">Personal</string>
+
+    <!-- Login extra -->
+    <string name="recuperar_contrasena_mensaje">Ingresa tu correo para recibir un enlace de recuperación.</string>
+
+    <!-- Registro extra -->
+    <string name="acepta_terminos_error">Acepta los términos y condiciones</string>
+
+    <!-- Perfil extra -->
+    <string name="notificaciones_preferencias">Preferencias de notificaciones</string>
+    <string name="carga_perfil_estadisticas">Carga tu perfil para ver estadísticas.</string>
+    <string name="xp_total_label">• XP Total: %s</string>
+    <string name="nivel_label">• Nivel: %s</string>
+    <string name="racha_dias_label">• Racha: %s días</string>
+    <string name="mejor_racha_dias_label">• Mejor racha: %s días</string>
+    <string name="habitos_completados_label">• Hábitos completados: %s</string>
+
+    <!-- Inicio placeholders -->
+    <string name="nivel_1">Nivel 1</string>
+    <string name="nv_1">Nv.1</string>
+    <string name="cero">0</string>
+    <string name="cero_xp_text">0 XP</string>
+    <string name="porcentaje_siguiente_nivel_text">0% para siguiente nivel</string>
+
+    <!-- Dashboard activity -->
+    <string name="bienvenido">Bienvenido</string>
+
+    <!-- Habitos empty state btn -->
+    <string name="crear_primer_habito_btn">¡Crear mi primer hábito!</string>
+
+    <!-- Diario empty state -->
+    <string name="sin_contenido_diario">Aún no hay contenido en tu diario.</string>
 
     <string-array name="generos">
         <item>Masculino</item>

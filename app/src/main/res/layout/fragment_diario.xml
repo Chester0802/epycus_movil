@@ -277,6 +277,33 @@
                     android:textColor="?attr/epTextSecondary" />
             </LinearLayout>
 
+            <!-- Empty State -->
+            <LinearLayout
+                android:id="@+id/layoutEmptyDiario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_mood_normal"
+                    app:tint="?attr/epTextTertiary"
+                    android:contentDescription="@null"
+                    android:layout_marginBottom="16dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sin_contenido_diario"
+                    android:textSize="15sp"
+                    android:textColor="?attr/epTextSecondary"
+                    android:gravity="center" />
+            </LinearLayout>
+
             <!-- Chat with Edy -->
             <LinearLayout
                 android:id="@+id/btnChatEdy"

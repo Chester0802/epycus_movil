@@ -92,6 +92,7 @@ public class HabitosFragment extends Fragment {
         cargarCategorias();
 
         binding.btnNuevoHabito.setOnClickListener(v -> mostrarDialogoNuevoHabito());
+        binding.btnEmptyCrearHabito.setOnClickListener(v -> mostrarDialogoNuevoHabito());
 
         return view;
     }
@@ -226,11 +227,11 @@ public class HabitosFragment extends Fragment {
 
     private void actualizarChips() {
         if (categorias.isEmpty()) {
-            categorias.add("General");
-            categorias.add("Salud");
-            categorias.add("Estudio");
-            categorias.add("Trabajo");
-            categorias.add("Personal");
+            categorias.add(getString(R.string.categoria_general));
+            categorias.add(getString(R.string.categoria_salud));
+            categorias.add(getString(R.string.categoria_estudio));
+            categorias.add(getString(R.string.categoria_trabajo));
+            categorias.add(getString(R.string.categoria_personal));
         }
 
         binding.chipGroupCategorias.removeAllViews();
@@ -285,7 +286,11 @@ public class HabitosFragment extends Fragment {
         catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCategoria.setAdapter(catAdapter);
 
-        String[] frecuencias = {"Diaria", "Semanal", "Personalizada"};
+        String[] frecuencias = {
+                getString(R.string.frecuencia_diaria),
+                getString(R.string.frecuencia_semanal),
+                getString(R.string.frecuencia_personalizada)
+        };
         ArrayAdapter<String> freqAdapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_spinner_item, frecuencias);
         freqAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

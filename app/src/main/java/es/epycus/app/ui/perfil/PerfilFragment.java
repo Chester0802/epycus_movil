@@ -188,7 +188,7 @@ public class PerfilFragment extends Fragment {
     private void actualizarTextoTema() {
         boolean isLight = ThemeManager.getInstance(requireContext()).isLightTheme();
         binding.tvToggleTheme.setText(isLight ? R.string.modo_oscuro : R.string.modo_claro);
-        binding.tvThemeIcon.setText(isLight ? "\uD83C\uDF19" : "\u2600\uFE0F");
+        binding.tvThemeIcon.setText(isLight ? getString(R.string.emoji_luna) : getString(R.string.emoji_sol));
     }
 
     private void cargarDatosLocales() {
@@ -341,9 +341,9 @@ public class PerfilFragment extends Fragment {
 
             if (cachedProgreso != null) {
                 JsonObject obj = com.google.gson.JsonParser.parseString(cachedProgreso).getAsJsonObject();
-                stats.append("\u2022 XP Total: ").append(obj.has("xpTotal") ? obj.get("xpTotal").getAsString() : "0").append("\n");
-                stats.append("\u2022 Nivel: ").append(obj.has("nivel") ? obj.get("nivel").getAsString() : "1").append("\n");
-                stats.append("\u2022 Racha: ").append(obj.has("rachaActual") ? obj.get("rachaActual").getAsString() : "0").append(" d\u00edas\n");
+                stats.append(getString(R.string.xp_total_label, obj.has("xpTotal") ? obj.get("xpTotal").getAsString() : "0")).append("\n");
+                stats.append(getString(R.string.nivel_label, obj.has("nivel") ? obj.get("nivel").getAsString() : "1")).append("\n");
+                stats.append(getString(R.string.racha_dias_label, obj.has("rachaActual") ? obj.get("rachaActual").getAsString() : "0")).append("\n");
             }
 
             if (cachedPerfil != null) {
@@ -351,16 +351,16 @@ public class PerfilFragment extends Fragment {
                 if (obj.has("perfil")) {
                     JsonObject perfil = obj.get("perfil").getAsJsonObject();
                     if (perfil.has("rachaMaxima")) {
-                        stats.append("\u2022 Mejor racha: ").append(perfil.get("rachaMaxima").getAsString()).append(" d\u00edas\n");
+                        stats.append(getString(R.string.mejor_racha_dias_label, perfil.get("rachaMaxima").getAsString())).append("\n");
                     }
                     if (perfil.has("totalHabitosCompletados")) {
-                        stats.append("\u2022 H\u00e1bitos completados: ").append(perfil.get("totalHabitosCompletados").getAsString()).append("\n");
+                        stats.append(getString(R.string.habitos_completados_label, perfil.get("totalHabitosCompletados").getAsString())).append("\n");
                     }
                 }
             }
 
             if (stats.length() == 0) {
-                stats.append("Carga tu perfil para ver estad\u00edsticas.");
+                stats.append(getString(R.string.carga_perfil_estadisticas));
             }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -376,7 +376,7 @@ public class PerfilFragment extends Fragment {
     private void mostrarDialogoConfiguracion() {
         String[] opciones = {
                 getString(R.string.cambiar_contrasena),
-                "Preferencias de notificaciones",
+                getString(R.string.notificaciones_preferencias),
                 getString(R.string.acerca_de)
         };
 

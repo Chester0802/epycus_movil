@@ -100,6 +100,18 @@
                 android:textSize="15sp"
                 android:textColor="?attr/epTextSecondary"
                 android:gravity="center" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEmptyCrearHabito"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="@string/crear_primer_habito_btn"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                android:backgroundTint="?attr/epAccent"
+                android:textColor="?attr/epTextOnPrimary"
+                app:cornerRadius="24dp"
+                android:layout_marginTop="16dp" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView

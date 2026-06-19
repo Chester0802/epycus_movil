@@ -141,7 +141,7 @@ public class RegistroActivity extends AppCompatActivity {
         }
 
         if (!aceptaTerminos) {
-            Toast.makeText(this, "Acepta los t\u00e9rminos y condiciones", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.acepta_terminos_error), Toast.LENGTH_SHORT).show();
             return;
         }
 
