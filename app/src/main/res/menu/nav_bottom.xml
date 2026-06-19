@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_inicio"
+        android:icon="@drawable/ic_home"
+        android:title="Inicio" />
+    <item
+        android:id="@+id/nav_habitos"
+        android:icon="@drawable/ic_habits"
+        android:title="Habitos" />
+    <item
+        android:id="@+id/nav_pomodoro"
+        android:icon="@drawable/ic_pomodoro"
+        android:title="Pomodoro" />
+    <item
+        android:id="@+id/nav_diario"
+        android:icon="@drawable/ic_journal"
+        android:title="Diario" />
+    <item
+        android:id="@+id/nav_perfil"
+        android:icon="@drawable/ic_profile"
+        android:title="Perfil" />
+</menu>

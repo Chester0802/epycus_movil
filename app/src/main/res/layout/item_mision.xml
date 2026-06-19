@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:background="@drawable/bg_card_rounded"
+    android:layout_marginBottom="8dp"
+    android:foreground="?attr/selectableItemBackground">
+
+    <TextView
+        android:id="@+id/tvMisionNombre"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Nombre de la mision"
+        android:textSize="15sp"
+        android:textColor="?attr/epTextPrimary"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp" />
+
+    <TextView
+        android:id="@+id/tvMisionPrioridad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Media"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvMisionNombre"
+        android:layout_marginStart="16dp" />
+
+    <TextView
+        android:id="@+id/tvMisionFecha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2026-06-19"
+        android:textSize="11sp"
+        android:textColor="?attr/epTextTertiary"
+        app:layout_constraintStart_toEndOf="@id/tvMisionPrioridad"
+        app:layout_constraintTop_toBottomOf="@id/tvMisionNombre"
+        android:layout_marginStart="12dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Epycus</string>
+
+    <string-array name="generos">
+        <item>Masculino</item>
+        <item>Femenino</item>
+        <item>No binario</item>
+        <item>Prefiero no decirlo</item>
+    </string-array>
+</resources>

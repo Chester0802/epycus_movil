@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/epBgPrimary">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Diario de animo"
+            android:textSize="22sp"
+            android:textColor="?attr/epTextPrimary"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tvPreguntaGuia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Como te sientes hoy?"
+            android:textSize="16sp"
+            android:textColor="?attr/epTextPrimary"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Mood Selector -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="24dp">
+
+            <LinearLayout
+                android:id="@+id/moodGenial"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                android:layout_margin="4dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_rounded">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Genial"
+                    android:textSize="11sp"
+                    android:textColor="?attr/epTextPrimary"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/moodBien"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                android:layout_margin="4dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_rounded">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bien"
+                    android:textSize="11sp"
+                    android:textColor="?attr/epTextPrimary"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/moodNormal"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                android:layout_margin="4dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_rounded">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Normal"
+                    android:textSize="11sp"
+                    android:textColor="?attr/epTextPrimary"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/moodCansado"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                android:layout_margin="4dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_rounded">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cansado"
+                    android:textSize="11sp"
+                    android:textColor="?attr/epTextPrimary"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/moodEstresado"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                android:layout_margin="4dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card_rounded">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Estresado"
+                    android:textSize="11sp"
+                    android:textColor="?attr/epTextPrimary"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnGuardarAnimo"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Guardar estado de animo"
+            android:textAllCaps="false"
+            android:backgroundTint="?attr/epAccent"
+            android:textColor="@color/white"
+            app:cornerRadius="12dp" />
+
+        <!-- Chat with Edy -->
+        <LinearLayout
+            android:id="@+id/btnChatEdy"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_card_rounded"
+            android:padding="16dp"
+            android:layout_marginTop="24dp"
+            android:foreground="?attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Habla con Edy IA"
+                android:textSize="15sp"
+                android:textColor="?attr/epAccent"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Prompt history -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card_rounded"
+            android:padding="16dp"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tu entrada de hoy"
+                android:textSize="14sp"
+                android:textColor="?attr/epTextPrimary"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aun no has registrado tu estado de animo hoy."
+                android:textSize="13sp"
+                android:textColor="?attr/epTextSecondary" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

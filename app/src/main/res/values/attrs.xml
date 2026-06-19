@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="EpycusTheme">
+        <attr name="epBgPrimary" format="color" />
+        <attr name="epBgSecondary" format="color" />
+        <attr name="epBgElevated" format="color" />
+        <attr name="epSurface" format="color" />
+        <attr name="epSurfaceBorder" format="color" />
+        <attr name="epTextPrimary" format="color" />
+        <attr name="epTextSecondary" format="color" />
+        <attr name="epTextTertiary" format="color" />
+        <attr name="epAccent" format="color" />
+        <attr name="epAccentLight" format="color" />
+        <attr name="epAccentSecondary" format="color" />
+        <attr name="epSuccess" format="color" />
+        <attr name="epWarning" format="color" />
+        <attr name="epError" format="color" />
+        <attr name="epInfo" format="color" />
+        <attr name="epRoundedSm" format="dimension" />
+        <attr name="epRoundedMd" format="dimension" />
+        <attr name="epRoundedLg" format="dimension" />
+        <attr name="epRoundedXl" format="dimension" />
+    </declare-styleable>
+</resources>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Light Theme (Kawaii) -->
+    <color name="light_bg_primary">#fef5ff</color>
+    <color name="light_bg_secondary">#fff0f9</color>
+    <color name="light_bg_elevated">#ffe8f5</color>
+    <color name="light_bg_hover">#ffd9f0</color>
+    <color name="light_bg_active">#ffc7ea</color>
+    <color name="light_surface">#ffffff</color>
+    <color name="light_surface_border">#ffd9f0</color>
+    <color name="light_text_primary">#4a2545</color>
+    <color name="light_text_secondary">#7d5f7a</color>
+    <color name="light_text_tertiary">#b094ad</color>
+    <color name="light_text_inverse">#ffffff</color>
+    <color name="light_accent">#ff6b9d</color>
+    <color name="light_accent_hover">#ff4d85</color>
+    <color name="light_accent_light">#ffe5f0</color>
+    <color name="light_accent_secondary">#c77dff</color>
+    <color name="light_sidebar_bg_start">#fff5f8</color>
+    <color name="light_sidebar_bg_end">#fcd5e5</color>
+
+    <!-- Dark Theme (Solo Leveling) -->
+    <color name="dark_bg_primary">#0a0e1a</color>
+    <color name="dark_bg_secondary">#0f1419</color>
+    <color name="dark_bg_elevated">#161b26</color>
+    <color name="dark_bg_hover">#1d2433</color>
+    <color name="dark_bg_active">#242d40</color>
+    <color name="dark_surface">#0f1419</color>
+    <color name="dark_surface_border">#2d1b4e</color>
+    <color name="dark_text_primary">#e8eaed</color>
+    <color name="dark_text_secondary">#a8b3cf</color>
+    <color name="dark_text_tertiary">#6b7a99</color>
+    <color name="dark_text_inverse">#0a0e1a</color>
+    <color name="dark_accent">#8b5cf6</color>
+    <color name="dark_accent_hover">#a78bfa</color>
+    <color name="dark_accent_light">#2d1b4e</color>
+    <color name="dark_accent_secondary">#6366f1</color>
+    <color name="dark_sidebar_bg_start">#0a0e1a</color>
+    <color name="dark_sidebar_bg_end">#312e81</color>
+
+    <!-- Semantic Colors (Light) -->
+    <color name="light_success">#7ed957</color>
+    <color name="light_warning">#ffa94d</color>
+    <color name="light_error">#ff6b9d</color>
+    <color name="light_info">#70a5ff</color>
+
+    <!-- Semantic Colors (Dark) -->
+    <color name="dark_success">#22c55e</color>
+    <color name="dark_warning">#f59e0b</color>
+    <color name="dark_error">#ef4444</color>
+    <color name="dark_info">#3b82f6</color>
+
+    <!-- Mood Colors -->
+    <color name="mood_genial">#22c55e</color>
+    <color name="mood_bien">#3b82f6</color>
+    <color name="mood_normal">#eab308</color>
+    <color name="mood_cansado">#f97316</color>
+    <color name="mood_estresado">#ef4444</color>
+
+    <!-- Chart Colors -->
+    <color name="chart_1">#3b82f6</color>
+    <color name="chart_2">#a78bfa</color>
+    <color name="chart_3">#f59e0b</color>
+    <color name="chart_4">#10b981</color>
+
+    <!-- Priority Colors -->
+    <color name="priority_baja">#22c55e</color>
+    <color name="priority_media">#f59e0b</color>
+    <color name="priority_alta">#ef4444</color>
+
+    <!-- Neutral -->
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+</resources>
