@@ -61,19 +61,19 @@
                 <LinearLayout
                     android:id="@+id/moodGenial"
                     android:layout_width="0dp"
-                    android:layout_height="80dp"
+                    android:layout_height="96dp"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
                     android:gravity="center"
                     android:orientation="vertical"
                     android:background="@drawable/bg_card_rounded">
 
-                    <View
-                        android:layout_width="8dp"
-                        android:layout_height="8dp"
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_mood_genial"
                         android:layout_marginBottom="4dp"
-                        android:background="@drawable/shape_dot"
-                        android:backgroundTint="@color/mood_genial" />
+                        android:contentDescription="@null" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -87,19 +87,19 @@
                 <LinearLayout
                     android:id="@+id/moodBien"
                     android:layout_width="0dp"
-                    android:layout_height="80dp"
+                    android:layout_height="96dp"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
                     android:gravity="center"
                     android:orientation="vertical"
                     android:background="@drawable/bg_card_rounded">
 
-                    <View
-                        android:layout_width="8dp"
-                        android:layout_height="8dp"
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_mood_bien"
                         android:layout_marginBottom="4dp"
-                        android:background="@drawable/shape_dot"
-                        android:backgroundTint="@color/mood_bien" />
+                        android:contentDescription="@null" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -113,19 +113,19 @@
                 <LinearLayout
                     android:id="@+id/moodNormal"
                     android:layout_width="0dp"
-                    android:layout_height="80dp"
+                    android:layout_height="96dp"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
                     android:gravity="center"
                     android:orientation="vertical"
                     android:background="@drawable/bg_card_rounded">
 
-                    <View
-                        android:layout_width="8dp"
-                        android:layout_height="8dp"
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_mood_normal"
                         android:layout_marginBottom="4dp"
-                        android:background="@drawable/shape_dot"
-                        android:backgroundTint="@color/mood_normal" />
+                        android:contentDescription="@null" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -139,19 +139,19 @@
                 <LinearLayout
                     android:id="@+id/moodCansado"
                     android:layout_width="0dp"
-                    android:layout_height="80dp"
+                    android:layout_height="96dp"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
                     android:gravity="center"
                     android:orientation="vertical"
                     android:background="@drawable/bg_card_rounded">
 
-                    <View
-                        android:layout_width="8dp"
-                        android:layout_height="8dp"
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_mood_cansado"
                         android:layout_marginBottom="4dp"
-                        android:background="@drawable/shape_dot"
-                        android:backgroundTint="@color/mood_cansado" />
+                        android:contentDescription="@null" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -165,19 +165,19 @@
                 <LinearLayout
                     android:id="@+id/moodEstresado"
                     android:layout_width="0dp"
-                    android:layout_height="80dp"
+                    android:layout_height="96dp"
                     android:layout_weight="1"
                     android:layout_margin="4dp"
                     android:gravity="center"
                     android:orientation="vertical"
                     android:background="@drawable/bg_card_rounded">
 
-                    <View
-                        android:layout_width="8dp"
-                        android:layout_height="8dp"
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_mood_estresado"
                         android:layout_marginBottom="4dp"
-                        android:background="@drawable/shape_dot"
-                        android:backgroundTint="@color/mood_estresado" />
+                        android:contentDescription="@null" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -188,6 +188,22 @@
                         android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.Epycus.Input">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etNotas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Notas (opcional)"
+                    android:inputType="textMultiLine"
+                    android:maxLines="3"
+                    android:minLines="2" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/btnGuardarAnimo"
@@ -211,17 +227,47 @@
                 android:layout_marginTop="24dp"
                 android:foreground="?attr/selectableItemBackground">
 
-                <TextView
+                <LinearLayout
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:gravity="center"
+                    android:background="?attr/epAccentLight"
+                    app:cornerRadius="18dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="E"
+                        android:textColor="?attr/epAccent"
+                        android:textStyle="bold"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Habla con Edy IA"
-                    android:textSize="15sp"
-                    android:textColor="?attr/epAccent"
-                    android:textStyle="bold" />
+                    android:orientation="vertical"
+                    android:layout_marginStart="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Habla con Edy IA"
+                        android:textSize="15sp"
+                        android:textColor="?attr/epAccent"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tu asistente personal de bienestar"
+                        android:textSize="11sp"
+                        android:textColor="?attr/epTextTertiary" />
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- Prompt history -->
+            <!-- Today's entry -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -240,6 +286,7 @@
                     android:layout_marginBottom="8dp" />
 
                 <TextView
+                    android:id="@+id/tvEntradaHoy"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Aun no has registrado tu estado de animo hoy."

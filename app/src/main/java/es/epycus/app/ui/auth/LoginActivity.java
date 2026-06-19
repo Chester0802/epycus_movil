@@ -15,11 +15,15 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 
+import android.app.AlertDialog;
+import android.widget.EditText;
+
 import es.epycus.app.BuildConfig;
 import es.epycus.app.R;
 import es.epycus.app.databinding.ActivityLoginBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.GoogleAuthDto;
+import es.epycus.app.model.dto.RecuperarContrasenaDto;
 import es.epycus.app.model.entidades.AuthResponse;
 import es.epycus.app.repository.AuthRepository;
 import es.epycus.app.ui.MainContainerActivity;
@@ -68,6 +72,7 @@ public class LoginActivity extends AppCompatActivity {
         binding.btnGoogleAuth.setOnClickListener(v -> iniciarGoogleSignIn());
         binding.btnRegistro.setOnClickListener(v ->
                 startActivity(new Intent(LoginActivity.this, RegistroActivity.class)));
+        binding.tvRecuperarContrasena.setOnClickListener(v -> mostrarDialogoRecuperarContrasena());
     }
 
     private void iniciarGoogleSignIn() {
@@ -181,6 +186,52 @@ public class LoginActivity extends AppCompatActivity {
         binding.btnLogin.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
         binding.loadingView.setVisibility(loading ? View.VISIBLE : View.GONE);
     }
+
+    private void mostrarDialogoRecuperarContrasena() {
+        EditText input = new EditText(this);
+        input.setHint("Correo electrónico");
+        input.setInputType(android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        input.setPadding(48, 16, 48, 16);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Recuperar contraseña");
+        builder.setMessage("Ingresa tu correo para recibir un enlace de recuperación.");
+        builder.setView(input);
+        builder.setPositiveButton("Enviar", (dialog, which) -> {
+            String correo = input.getText().toString().trim();
+            if (correo.isEmpty()) {
+                Snackbar.make(binding.getRoot(), "Ingresa un correo", Snackbar.LENGTH_SHORT).show();
+                return;
+            }
+            recuperarContrasena(correo);
+        });
+        builder.setNegativeButton("Cancelar", null);
+        builder.show();
+    }
+
+    private void recuperarContrasena(String correo) {
+        RecuperarContrasenaDto dto = new RecuperarContrasenaDto(correo);
+        activeCall = authRepository.recuperarContrasena(dto);
+        activeCall.enqueue(new Callback<RespuestaApi<Object>>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<Object>> call, Response<RespuestaApi<Object>> response) {
+                activeCall = null;
+                if (response.isSuccessful() && response.body() != null && response.body().isExito()) {
+                    Snackbar.make(binding.getRoot(), "Revisa tu correo para recuperar tu contraseña", Snackbar.LENGTH_LONG).show();
+                } else {
+                    String msg = NetworkUtils.getErrorMessage(LoginActivity.this, response);
+                    Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+                activeCall = null;
+                Snackbar.make(binding.getRoot(), getString(NetworkUtils.getNetworkErrorResId(t)), Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
 
     private void navegarAlHome() {
         Intent intent = new Intent(LoginActivity.this, MainContainerActivity.class);

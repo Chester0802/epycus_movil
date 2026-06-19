@@ -9,6 +9,7 @@ import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.GoogleAuthDto;
 import es.epycus.app.model.dto.LoginDto;
 import es.epycus.app.model.dto.RefreshDto;
+import es.epycus.app.model.dto.RecuperarContrasenaDto;
 import es.epycus.app.model.dto.RegistroRequestDto;
 import es.epycus.app.model.entidades.AuthResponse;
 import es.epycus.app.model.entidades.Carrera;
@@ -52,6 +53,10 @@ public class AuthRepository {
 
     public Call<RespuestaApi<Void>> logout() {
         return api.getApiAuthService().logout();
+    }
+
+    public Call<RespuestaApi<Object>> recuperarContrasena(RecuperarContrasenaDto dto) {
+        return api.getApiAuthService().recuperarContrasena(dto);
     }
 
     public void saveSession(AuthResponse authResponse, int userId, String nombre, String email) {

@@ -95,13 +95,16 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
+            android:id="@+id/tvRecuperarContrasena"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Recuperar contrasena"
             android:textSize="13sp"
             android:textColor="?attr/epAccent"
             android:layout_marginBottom="24dp"
-            android:layout_gravity="end" />
+            android:layout_gravity="end"
+            android:foreground="?attr/selectableItemBackground"
+            android:padding="4dp" />
 
         <FrameLayout
             android:layout_width="match_parent"

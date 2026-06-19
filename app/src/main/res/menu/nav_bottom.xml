@@ -7,11 +7,14 @@
     <item
         android:id="@+id/nav_habitos"
         android:icon="@drawable/ic_habits"
-        android:title="Habitos" />
+        android:title="Hábitos" />
+    <!-- Espacio para el FAB -->
     <item
-        android:id="@+id/nav_pomodoro"
-        android:icon="@drawable/ic_pomodoro"
-        android:title="Pomodoro" />
+        android:id="@+id/nav_placeholder"
+        android:icon="@drawable/ic_launcher_foreground"
+        android:title=""
+        android:enabled="false"
+        android:visible="false" />
     <item
         android:id="@+id/nav_diario"
         android:icon="@drawable/ic_journal"
@@ -21,3 +24,4 @@
         android:icon="@drawable/ic_profile"
         android:title="Perfil" />
 </menu>
+

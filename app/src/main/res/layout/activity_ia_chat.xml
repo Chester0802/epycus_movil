@@ -20,7 +20,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_home"
+            android:src="@drawable/ic_back"
             app:tint="?attr/epTextPrimary" />
 
         <LinearLayout
@@ -115,7 +115,7 @@
             android:backgroundTint="?attr/epAccent"
             app:cornerRadius="24dp"
             android:padding="12dp"
-            android:src="@drawable/ic_home"
+            android:src="@drawable/ic_send"
             app:tint="?attr/epTextOnPrimary" />
     </LinearLayout>
 </LinearLayout>

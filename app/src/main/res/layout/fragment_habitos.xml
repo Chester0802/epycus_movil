@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Habitos de hoy"
+            android:text="H\u00e1bitos de hoy"
             android:textSize="22sp"
             android:textColor="?attr/epTextPrimary"
             android:textStyle="bold"

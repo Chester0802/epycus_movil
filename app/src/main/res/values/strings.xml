@@ -21,6 +21,8 @@
     <!-- Diario -->
     <string name="selecciona_como_te_sientes">Selecciona c\u00f3mo te sientes</string>
     <string name="estado_animo_guardado">Estado de \u00e1nimo guardado</string>
+    <string name="entrada_hoy_formato">Hoy te sientes: %s</string>
+    <string name="sin_entrada_hoy">A\u00fan no has registrado tu estado de \u00e1nimo hoy.</string>
 
     <!-- General -->
     <string name="error_conexion">No se pudo conectar al servidor</string>
@@ -31,9 +33,25 @@
     <string name="funcionalidad_pronto">Funcionalidad pronto disponible</string>
     <string name="habitos_hoy_formato">%d h\u00e1bitos hoy</string>
     <string name="error_conexion_habitos">Error de conexi\u00f3n</string>
+    <string name="habito_creado">\u00a1H\u00e1bito creado!</string>
+    <string name="crear">Crear</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="guardar">Guardar</string>
 
     <!-- Inicio / Dashboard -->
-    <string name="hola_formato">Hola, %s</string>
+    <string name="hola_formato">¡Hola, %s!</string>
+    <string name="frase_motivacional_defecto">Un pequeño paso hoy, un gran cambio mañana.</string>
+    <string name="tu_progreso">Tu Progreso</string>
+    <string name="xp_detalle_formato">%d / %d XP</string>
+    <string name="acciones_rapidas">Acciones Rápidas</string>
+    <string name="nuevo_habito">Nuevo Hábito</string>
+    <string name="mision_diaria">Misión Diaria</string>
+    <string name="modo_enfoque">Modo Enfoque</string>
+    <string name="habitos">Hábitos</string>
+    <string name="racha">Racha</string>
+    <string name="nivel">Nivel</string>
+    <string name="chat_edy_ia">Chat con Edy IA</string>
+
     <string name="bienvenido_formato">Bienvenido, %s</string>
     <string name="nv_formato">Nv.%d</string>
     <string name="xp_formato">%d XP</string>
@@ -44,6 +62,10 @@
     <string name="sin_carrera">Sin carrera</string>
     <string name="miembro_desde_formato">Miembro desde %s</string>
     <string name="proximamente">Pr\u00f3ximamente</string>
+    <string name="mis_personajes">Mis personajes</string>
+    <string name="logros">Logros</string>
+    <string name="estadisticas">Estad\u00edsticas</string>
+    <string name="configuracion">Configuraci\u00f3n</string>
 
     <!-- Pomodoro -->
     <string name="pausa">Pausa</string>
@@ -58,12 +80,21 @@
     <string name="ciclos_formato">Ciclos: %d</string>
     <string name="hoy_completados_formato">Hoy: %d completados</string>
 
+    <!-- Pomodoro -->
+    <string name="pomodoro_tip_default">Toma respiros cortos entre cada bloque de enfoque para mantener tu productividad.</string>
+
     <!-- IA Chat -->
     <string name="edy_presentacion">\u00a1Hola! Soy Edy, tu asistente de bienestar. \u00bfC\u00f3mo te sientes hoy?</string>
     <string name="error_procesar_mensaje">Lo siento, no pude procesar tu mensaje.</string>
     <string name="error_intentar">Lo siento, hubo un error. Intenta de nuevo.</string>
     <string name="error_conexion_ia">Error de conexi\u00f3n. Verifica tu internet.</string>
     <string name="autor_formato">- %s</string>
+
+    <!-- Login -->
+    <string name="recuperar_contrasena">Recuperar contrase\u00f1a</string>
+    <string name="enviar">Enviar</string>
+    <string name="correo_recuperacion_enviado">Revisa tu correo para recuperar tu contrase\u00f1a</string>
+    <string name="ingresa_correo">Ingresa un correo</string>
 
     <!-- Network errors -->
     <string name="error_timeout">El servidor no responde (tiempo de espera agotado)</string>

@@ -2,6 +2,7 @@ package es.epycus.app.ui.diario;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,14 +14,14 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import es.epycus.app.R;
 import es.epycus.app.api.RetrofitClient;
-import es.epycus.app.data.local.AppDatabase;
-import es.epycus.app.data.local.entity.CacheEntity;
 import es.epycus.app.databinding.FragmentDiarioBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.PreguntaGuiaResponse;
@@ -40,6 +41,8 @@ public class DiarioFragment extends Fragment {
     private String selectedMoodText = "";
     private DiarioRepository repository;
     private final List<Call<?>> activeCalls = new ArrayList<>();
+    private String entradaHoyTexto = "";
+    private String entradaHoyEstado = "";
 
     @Nullable
     @Override
@@ -81,17 +84,26 @@ public class DiarioFragment extends Fragment {
         binding.btnChatEdy.setOnClickListener(v ->
                 startActivity(new Intent(getActivity(), IaChatActivity.class)));
 
-        binding.swipeRefresh.setOnRefreshListener(this::cargarPreguntaGuia);
+        binding.swipeRefresh.setOnRefreshListener(this::recargarTodo);
         binding.swipeRefresh.setColorSchemeResources(R.color.light_accent, R.color.light_accent_secondary);
 
-        cargarPreguntaGuia();
+        recargarTodo();
 
         return view;
     }
 
+    private void recargarTodo() {
+        cargarPreguntaGuia();
+        cargarEntradaHoy();
+    }
+
     private void guardarAnimo(String estado) {
-        com.google.gson.JsonObject body = new com.google.gson.JsonObject();
+        JsonObject body = new JsonObject();
         body.addProperty("estado", estado);
+        String notas = binding.etNotas.getText().toString().trim();
+        if (!notas.isEmpty()) {
+            body.addProperty("notas", notas);
+        }
 
         Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiEstadoAnimoService()
                 .registrar(body);
@@ -109,6 +121,11 @@ public class DiarioFragment extends Fragment {
                         selectedMood = null;
                         selectedMoodText = "";
                     }
+                    binding.etNotas.setText("");
+                    cargarEntradaHoy();
+                } else {
+                    String msg = NetworkUtils.getErrorMessage(requireContext(), response);
+                    Snackbar.make(requireView(), msg, Snackbar.LENGTH_SHORT).show();
                 }
             }
 
@@ -116,6 +133,54 @@ public class DiarioFragment extends Fragment {
             public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
                 mostrarErrorRed(t);
+            }
+        });
+    }
+
+    private void cargarEntradaHoy() {
+        Call<RespuestaApi<Object>> call = repository.hoy();
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
+                                   @NonNull Response<RespuestaApi<Object>> response) {
+                activeCalls.remove(call);
+                if (response.isSuccessful() && response.body() != null && response.body().isExito()
+                        && response.body().getDatos() != null) {
+                    try {
+                        Gson gson = new Gson();
+                        String json = gson.toJson(response.body().getDatos());
+                        JsonObject obj = com.google.gson.JsonParser.parseString(json).getAsJsonObject();
+                        if (obj.has("estado")) {
+                            entradaHoyEstado = obj.get("estado").getAsString();
+                        }
+                        if (obj.has("notas")) {
+                            entradaHoyTexto = obj.get("notas").getAsString();
+                        }
+
+                        String resumen;
+                        if (!entradaHoyEstado.isEmpty()) {
+                            resumen = getString(R.string.entrada_hoy_formato, entradaHoyEstado);
+                            if (!entradaHoyTexto.isEmpty()) {
+                                resumen += "\n\"" + entradaHoyTexto + "\"";
+                            }
+                        } else {
+                            resumen = getString(R.string.sin_entrada_hoy);
+                        }
+                        binding.tvEntradaHoy.setText(resumen);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error parsing entrada hoy", e);
+                        binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
+                    }
+                } else {
+                    binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+                activeCalls.remove(call);
+                binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
             }
         });
     }

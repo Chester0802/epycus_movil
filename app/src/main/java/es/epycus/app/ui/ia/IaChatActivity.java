@@ -2,7 +2,10 @@ package es.epycus.app.ui.ia;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,6 +48,16 @@ public class IaChatActivity extends AppCompatActivity {
                 getString(R.string.edy_presentacion), false));
 
         binding.btnEnviar.setOnClickListener(v -> enviarMensaje());
+
+        binding.etMensaje.setOnEditorActionListener((TextView v, int actionId, KeyEvent event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEND
+                    || (event != null && event.getAction() == KeyEvent.ACTION_DOWN
+                    && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                enviarMensaje();
+                return true;
+            }
+            return false;
+        });
 
         binding.btnBack.setOnClickListener(v -> finish());
     }

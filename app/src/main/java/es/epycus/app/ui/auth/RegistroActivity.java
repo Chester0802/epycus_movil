@@ -1,5 +1,6 @@
 package es.epycus.app.ui.auth;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import es.epycus.app.R;
@@ -44,7 +46,27 @@ public class RegistroActivity extends AppCompatActivity {
 
         cargarCarreras();
 
+        binding.etFechaNacimiento.setFocusable(false);
+        binding.etFechaNacimiento.setClickable(true);
+        binding.etFechaNacimiento.setOnClickListener(v -> mostrarDatePicker());
+        binding.etFechaNacimiento.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) mostrarDatePicker();
+        });
+
         binding.btnRegistrar.setOnClickListener(v -> registrar());
+    }
+
+    private void mostrarDatePicker() {
+        Calendar cal = Calendar.getInstance();
+        int anio = cal.get(Calendar.YEAR) - 18;
+        int mes = cal.get(Calendar.MONTH);
+        int dia = cal.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog picker = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+            String fecha = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth);
+            binding.etFechaNacimiento.setText(fecha);
+        }, anio, mes, dia);
+        picker.show();
     }
 
     private void cargarCarreras() {
@@ -94,6 +116,11 @@ public class RegistroActivity extends AppCompatActivity {
 
         if (!contrasena.equals(confirmar)) {
             Toast.makeText(this, getString(R.string.contrasenas_no_coinciden), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (fechaNac.isEmpty()) {
+            Toast.makeText(this, "Selecciona tu fecha de nacimiento", Toast.LENGTH_SHORT).show();
             return;
         }
 

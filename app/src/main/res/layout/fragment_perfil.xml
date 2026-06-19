@@ -44,8 +44,7 @@
                     android:layout_width="72dp"
                     android:layout_height="72dp"
                     android:gravity="center"
-                    android:background="?attr/epAccentLight"
-                    app:cornerRadius="36dp"
+                    android:background="@drawable/bg_accent_circle"
                     android:layout_marginBottom="12dp">
 
                     <TextView
@@ -175,11 +174,19 @@
                 android:layout_marginBottom="8dp"
                 android:foreground="?attr/selectableItemBackground">
 
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_launcher_foreground"
+                    app:tint="?attr/epAccent"
+                    android:layout_marginEnd="12dp"
+                    android:contentDescription="@null" />
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Mis personajes"
+                    android:text="@string/mis_personajes"
                     android:textSize="14sp"
                     android:textColor="?attr/epTextPrimary" />
             </LinearLayout>
@@ -195,11 +202,19 @@
                 android:layout_marginBottom="8dp"
                 android:foreground="?attr/selectableItemBackground">
 
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/shape_dot"
+                    app:tint="?attr/epWarning"
+                    android:layout_marginEnd="12dp"
+                    android:contentDescription="@null" />
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Logros"
+                    android:text="@string/logros"
                     android:textSize="14sp"
                     android:textColor="?attr/epTextPrimary" />
             </LinearLayout>
@@ -215,11 +230,19 @@
                 android:layout_marginBottom="8dp"
                 android:foreground="?attr/selectableItemBackground">
 
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_pomodoro"
+                    app:tint="?attr/epAccentSecondary"
+                    android:layout_marginEnd="12dp"
+                    android:contentDescription="@null" />
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Estadisticas"
+                    android:text="@string/estadisticas"
                     android:textSize="14sp"
                     android:textColor="?attr/epTextPrimary" />
             </LinearLayout>
@@ -235,11 +258,19 @@
                 android:layout_marginBottom="24dp"
                 android:foreground="?attr/selectableItemBackground">
 
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_lock"
+                    app:tint="?attr/epTextPrimary"
+                    android:layout_marginEnd="12dp"
+                    android:contentDescription="@null" />
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Configuracion"
+                    android:text="@string/configuracion"
                     android:textSize="14sp"
                     android:textColor="?attr/epTextPrimary" />
             </LinearLayout>
@@ -254,6 +285,14 @@
                 android:paddingHorizontal="16dp"
                 android:layout_marginBottom="8dp"
                 android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_mood_normal"
+                    app:tint="?attr/epAccent"
+                    android:layout_marginEnd="12dp"
+                    android:contentDescription="@null" />
 
                 <TextView
                     android:id="@+id/tvToggleTheme"

@@ -14,161 +14,200 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="20dp">
 
-            <!-- Loading -->
-            <LinearLayout
-                android:id="@+id/loadingView"
+            <!-- Header -->
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="visible">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="24dp">
 
-                <ProgressBar
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:indeterminateTint="?attr/epAccent" />
-            </LinearLayout>
-
-            <!-- Empty state -->
-            <LinearLayout
-                android:id="@+id/emptyView"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No hay datos disponibles"
-                    android:textSize="16sp"
-                    android:textColor="?attr/epTextSecondary"
-                    android:gravity="center" />
+                    android:orientation="vertical"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tira hacia abajo para refrescar"
-                    android:textSize="13sp"
-                    android:textColor="?attr/epTextTertiary"
+                    <TextView
+                        android:id="@+id/tvBienvenida"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/hola_formato"
+                        android:textSize="26sp"
+                        android:textColor="?attr/epTextPrimary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvFrase"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/frase_motivacional_defecto"
+                        android:textSize="14sp"
+                        android:textColor="?attr/epTextSecondary"
+                        android:layout_marginTop="2dp" />
+
+                    <TextView
+                        android:id="@+id/tvFraseAutor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="12sp"
+                        android:textColor="?attr/epTextTertiary" />
+                </LinearLayout>
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/ivPerfil"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:padding="2dp"
+                    app:strokeWidth="2dp"
+                    app:strokeColor="?attr/epAccent"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
+                    android:src="@drawable/ic_profile"
+                    app:tint="?attr/epAccent" />
+            </RelativeLayout>
+
+            <!-- Loading/Empty -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:id="@+id/loadingView"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
                     android:gravity="center"
-                    android:layout_marginTop="8dp" />
-            </LinearLayout>
-
-            <!-- Hero greeting -->
-            <TextView
-                android:id="@+id/tvBienvenida"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hola, Epycus"
-                android:textSize="24sp"
-                android:textColor="?attr/epTextPrimary"
-                android:textStyle="bold"
-                android:layout_marginTop="16dp" />
-
-            <TextView
-                android:id="@+id/tvFrase"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Cargando..."
-                android:textSize="14sp"
-                android:textColor="?attr/epTextSecondary"
-                android:layout_marginTop="4dp" />
-
-            <TextView
-                android:id="@+id/tvFraseAutor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="12sp"
-                android:textColor="?attr/epTextTertiary"
-                android:layout_marginBottom="24dp" />
+                    android:visibility="gone">
+                    <ProgressBar
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:indeterminateTint="?attr/epAccent" />
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/emptyView"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No hay datos disponibles"
+                        android:textSize="14sp"
+                        android:textColor="?attr/epTextSecondary" />
+                </LinearLayout>
+            </FrameLayout>
 
             <!-- Stats cards row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="24dp">
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="90dp"
+                    android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
+                    android:layout_marginEnd="8dp"
                     android:background="@drawable/bg_card_rounded"
                     android:gravity="center"
                     android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_habits"
+                        app:tint="?attr/epAccent"
+                        android:layout_marginBottom="4dp"
+                        android:contentDescription="@null" />
 
                     <TextView
                         android:id="@+id/tvHabitosPendientes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
-                        android:textSize="26sp"
-                        android:textColor="?attr/epAccent"
+                        android:textSize="22sp"
+                        android:textColor="?attr/epTextPrimary"
                         android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Pendientes"
-                        android:textSize="11sp"
+                        android:text="@string/habitos"
+                        android:textSize="12sp"
                         android:textColor="?attr/epTextSecondary" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="90dp"
+                    android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:layout_marginHorizontal="6dp"
+                    android:layout_marginHorizontal="4dp"
                     android:background="@drawable/bg_card_rounded"
                     android:gravity="center"
                     android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/shape_dot"
+                        app:tint="?attr/epWarning"
+                        android:layout_marginBottom="4dp"
+                        android:contentDescription="@null" />
 
                     <TextView
                         android:id="@+id/tvRacha"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
-                        android:textSize="26sp"
-                        android:textColor="?attr/epWarning"
+                        android:textSize="22sp"
+                        android:textColor="?attr/epTextPrimary"
                         android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Racha"
-                        android:textSize="11sp"
+                        android:text="@string/racha"
+                        android:textSize="12sp"
                         android:textColor="?attr/epTextSecondary" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="90dp"
+                    android:layout_height="100dp"
                     android:layout_weight="1"
-                    android:layout_marginStart="6dp"
+                    android:layout_marginStart="8dp"
                     android:background="@drawable/bg_card_rounded"
                     android:gravity="center"
                     android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_launcher_foreground"
+                        app:tint="?attr/epAccentSecondary"
+                        android:layout_marginBottom="4dp"
+                        android:contentDescription="@null" />
 
                     <TextView
                         android:id="@+id/tvNivel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nv.1"
-                        android:textSize="26sp"
-                        android:textColor="?attr/epAccentSecondary"
+                        android:text="1"
+                        android:textSize="22sp"
+                        android:textColor="?attr/epTextPrimary"
                         android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nivel"
-                        android:textSize="11sp"
+                        android:text="@string/nivel"
+                        android:textSize="12sp"
                         android:textColor="?attr/epTextSecondary" />
                 </LinearLayout>
             </LinearLayout>
@@ -179,20 +218,21 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/bg_card_rounded"
-                android:padding="16dp"
-                android:layout_marginBottom="16dp">
+                android:padding="20dp"
+                android:layout_marginBottom="24dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Progreso"
-                        android:textSize="15sp"
+                        android:text="@string/tu_progreso"
+                        android:textSize="16sp"
                         android:textColor="?attr/epTextPrimary"
                         android:textStyle="bold" />
 
@@ -200,8 +240,8 @@
                         android:id="@+id/tvXpText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0 XP"
-                        android:textSize="12sp"
+                        android:text="0 / 0 XP"
+                        android:textSize="13sp"
                         android:textColor="?attr/epAccent"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -209,36 +249,38 @@
                 <ProgressBar
                     android:id="@+id/pbXp"
                     android:layout_width="match_parent"
-                    android:layout_height="8dp"
+                    android:layout_height="10dp"
                     android:progress="0"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:progressTint="?attr/epAccent"
-                    android:layout_marginTop="8dp" />
+                    android:progressBackgroundTint="?attr/epSurfaceBorder"
+                    android:layout_marginTop="12dp" />
             </LinearLayout>
 
             <!-- Quick actions -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Acceso rapido"
-                android:textSize="15sp"
+                android:text="@string/acciones_rapidas"
+                android:textSize="18sp"
                 android:textColor="?attr/epTextPrimary"
                 android:textStyle="bold"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="16dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardAddHabit"
                     android:layout_width="0dp"
-                    android:layout_height="80dp"
+                    android:layout_height="120dp"
                     android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    app:cardCornerRadius="12dp"
+                    android:layout_marginEnd="8dp"
+                    app:cardCornerRadius="16dp"
                     app:cardBackgroundColor="?attr/epSurface"
-                    app:cardElevation="0dp"
+                    app:cardElevation="2dp"
                     app:strokeWidth="1dp"
                     app:strokeColor="?attr/epSurfaceBorder">
 
@@ -246,25 +288,37 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:padding="8dp">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_habits"
+                            app:tint="?attr/epAccent"
+                            android:layout_marginBottom="8dp"
+                            android:contentDescription="@null" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="+ Habito"
-                            android:textColor="?attr/epAccent"
+                            android:text="@string/nuevo_habito"
+                            android:textColor="?attr/epTextPrimary"
                             android:textStyle="bold"
-                            android:textSize="13sp" />
+                            android:textSize="12sp"
+                            android:gravity="center" />
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardAddMision"
                     android:layout_width="0dp"
-                    android:layout_height="80dp"
+                    android:layout_height="120dp"
                     android:layout_weight="1"
-                    android:layout_marginHorizontal="6dp"
-                    app:cardCornerRadius="12dp"
+                    android:layout_marginHorizontal="4dp"
+                    app:cardCornerRadius="16dp"
                     app:cardBackgroundColor="?attr/epSurface"
-                    app:cardElevation="0dp"
+                    app:cardElevation="2dp"
                     app:strokeWidth="1dp"
                     app:strokeColor="?attr/epSurfaceBorder">
 
@@ -272,25 +326,37 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:padding="8dp">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/shape_dot"
+                            app:tint="?attr/epAccentSecondary"
+                            android:layout_marginBottom="8dp"
+                            android:contentDescription="@null" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="+ Mision"
-                            android:textColor="?attr/epAccentSecondary"
+                            android:text="@string/mision_diaria"
+                            android:textColor="?attr/epTextPrimary"
                             android:textStyle="bold"
-                            android:textSize="13sp" />
+                            android:textSize="12sp"
+                            android:gravity="center" />
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardFocus"
                     android:layout_width="0dp"
-                    android:layout_height="80dp"
+                    android:layout_height="120dp"
                     android:layout_weight="1"
-                    android:layout_marginStart="6dp"
-                    app:cardCornerRadius="12dp"
+                    android:layout_marginStart="8dp"
+                    app:cardCornerRadius="16dp"
                     app:cardBackgroundColor="?attr/epSurface"
-                    app:cardElevation="0dp"
+                    app:cardElevation="2dp"
                     app:strokeWidth="1dp"
                     app:strokeColor="?attr/epSurfaceBorder">
 
@@ -298,16 +364,27 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:padding="8dp">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_pomodoro"
+                            app:tint="?attr/epAccent"
+                            android:layout_marginBottom="8dp"
+                            android:contentDescription="@null" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Edy IA"
-                            android:textColor="?attr/epAccent"
+                            android:text="@string/modo_enfoque"
+                            android:textColor="?attr/epTextPrimary"
                             android:textStyle="bold"
-                            android:textSize="13sp" />
+                            android:textSize="12sp"
+                            android:gravity="center" />
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

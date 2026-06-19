@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.epycus.app.R;
+import es.epycus.app.ui.MainContainerActivity;
 import es.epycus.app.api.RetrofitClient;
 import es.epycus.app.data.local.AppDatabase;
 import es.epycus.app.data.local.entity.CacheEntity;
@@ -61,8 +62,45 @@ public class InicioFragment extends Fragment {
 
         cargarDashboard();
         cargarProgreso();
+        setupClickListeners();
 
         return view;
+    }
+
+    private void setupClickListeners() {
+        binding.cardAddHabit.setOnClickListener(v -> {
+            if (getActivity() instanceof MainContainerActivity) {
+                ((MainContainerActivity) getActivity()).seleccionarTab(R.id.nav_habitos);
+            }
+        });
+
+        binding.cardAddMision.setOnClickListener(v -> {
+            // Podría abrir una pantalla de misiones o el diario
+            if (getActivity() instanceof MainContainerActivity) {
+                ((MainContainerActivity) getActivity()).seleccionarTab(R.id.nav_diario);
+            }
+        });
+
+        binding.cardFocus.setOnClickListener(v -> {
+            // El Pomodoro ya no está en el nav principal, pero podemos navegar a él manualmente
+            // o si decidimos mantenerlo oculto en el nav.
+            // Por ahora, si no está en el nav, podemos hacer swap manual del fragment.
+            // Pero como queremos mejorar UX, lo ideal es que esté accesible.
+            // Si el user quiere "Modo Enfoque", le llevamos al fragment de Pomodoro.
+            navegarAPomodoro();
+        });
+        
+        binding.ivPerfil.setOnClickListener(v -> {
+            if (getActivity() instanceof MainContainerActivity) {
+                ((MainContainerActivity) getActivity()).seleccionarTab(R.id.nav_perfil);
+            }
+        });
+    }
+
+    private void navegarAPomodoro() {
+        if (getActivity() instanceof MainContainerActivity) {
+            ((MainContainerActivity) getActivity()).navegarAPomodoro();
+        }
     }
 
     private void cargarDashboard() {
@@ -203,7 +241,13 @@ public class InicioFragment extends Fragment {
 
     private void verificarCargaCompleta() {
         if (!dashboardDataLoaded && !progresoDataLoaded) {
-            binding.emptyView.setVisibility(View.VISIBLE);
+            String cachedDashboard = database.cacheDao().getValue("dashboard");
+            String cachedProgreso = database.cacheDao().getValue("progreso");
+            if (cachedDashboard == null && cachedProgreso == null) {
+                binding.emptyView.setVisibility(View.VISIBLE);
+            }
+        } else {
+            binding.emptyView.setVisibility(View.GONE);
         }
     }
 

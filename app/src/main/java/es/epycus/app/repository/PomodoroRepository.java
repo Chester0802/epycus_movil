@@ -41,6 +41,10 @@ public class PomodoroRepository {
         return api.getApiPomodoroService().actualizarConfiguracion(body);
     }
 
+    public Call<RespuestaApi<Object>> tipAleatorio() {
+        return api.getApiPomodoroService().tipAleatorio();
+    }
+
     public void cacheJson(String key, String json) {
         AppDatabase.getWriteExecutor().execute(() ->
                 database.cacheDao().insert(new CacheEntity(key, json)));

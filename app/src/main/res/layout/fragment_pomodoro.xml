@@ -72,12 +72,23 @@
         app:cornerRadius="32dp"
         android:layout_marginTop="32dp" />
 
+    <!-- Tip -->
+    <TextView
+        android:id="@+id/tvTip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:textColor="?attr/epTextSecondary"
+        android:gravity="center"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp" />
+
     <!-- Stats -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="32dp">
+        android:layout_marginTop="16dp">
 
         <LinearLayout
             android:layout_width="0dp"
