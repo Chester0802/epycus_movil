@@ -1,5 +1,6 @@
 package es.epycus.app.ui.habitos;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+@SuppressLint("SetTextI18n")
 public class HabitosFragment extends Fragment {
 
     private RecyclerView rvHabitos;
@@ -64,9 +66,8 @@ public class HabitosFragment extends Fragment {
 
         cargarHabitos();
 
-        view.findViewById(R.id.btnNuevoHabito).setOnClickListener(v -> {
-            Snackbar.make(v, "Funcionalidad pronto disponible", Snackbar.LENGTH_SHORT).show();
-        });
+        view.findViewById(R.id.btnNuevoHabito).setOnClickListener(v ->
+                Snackbar.make(v, "Funcionalidad pronto disponible", Snackbar.LENGTH_SHORT).show());
 
         return view;
     }
@@ -76,10 +77,10 @@ public class HabitosFragment extends Fragment {
         tvEmpty.setVisibility(View.GONE);
         rvHabitos.setVisibility(View.GONE);
 
-        repository.hoy().enqueue(new Callback<RespuestaApi<Object>>() {
+        repository.hoy().enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<RespuestaApi<Object>> call,
-                                   Response<RespuestaApi<Object>> response) {
+                    public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
+                                           @NonNull Response<RespuestaApi<Object>> response) {
                 loadingView.setVisibility(View.GONE);
 
                 if (response.isSuccessful() && response.body() != null && response.body().isExito()
@@ -106,7 +107,7 @@ public class HabitosFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                 loadingView.setVisibility(View.GONE);
                 tvEmpty.setVisibility(View.VISIBLE);
                 tvEmpty.setText("Error de conexion");
@@ -115,10 +116,10 @@ public class HabitosFragment extends Fragment {
     }
 
     private void completarHabito(int id) {
-        repository.completar(id).enqueue(new Callback<RespuestaApi<Object>>() {
+        repository.completar(id).enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<RespuestaApi<Object>> call,
-                                   Response<RespuestaApi<Object>> response) {
+                    public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
+                                           @NonNull Response<RespuestaApi<Object>> response) {
                 if (response.isSuccessful()) {
                     Snackbar.make(rvHabitos, "Habito completado! +XP",
                             Snackbar.LENGTH_SHORT).show();
@@ -127,22 +128,22 @@ public class HabitosFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                 Toast.makeText(getContext(), "Error al completar", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void fallarHabito(int id) {
-        repository.fallar(id).enqueue(new Callback<RespuestaApi<Object>>() {
+        repository.fallar(id).enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<RespuestaApi<Object>> call,
-                                   Response<RespuestaApi<Object>> response) {
+                    public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
+                                           @NonNull Response<RespuestaApi<Object>> response) {
                 cargarHabitos();
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {}
+                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {}
         });
     }
 }

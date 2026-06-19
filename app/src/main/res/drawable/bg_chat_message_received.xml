@@ -3,8 +3,8 @@
     android:shape="rectangle">
     <solid android:color="?attr/epBgElevated" />
     <corners
-        android:topLeft="16dp"
-        android:topRight="16dp"
-        android:bottomLeft="4dp"
-        android:bottomRight="16dp" />
+        android:topLeftRadius="16dp"
+        android:topRightRadius="16dp"
+        android:bottomLeftRadius="4dp"
+        android:bottomRightRadius="16dp" />
 </shape>

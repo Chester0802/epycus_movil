@@ -3,8 +3,8 @@
     android:shape="rectangle">
     <solid android:color="?attr/epAccent" />
     <corners
-        android:topLeft="16dp"
-        android:topRight="16dp"
-        android:bottomLeft="16dp"
-        android:bottomRight="4dp" />
+        android:topLeftRadius="16dp"
+        android:topRightRadius="16dp"
+        android:bottomLeftRadius="16dp"
+        android:bottomRightRadius="4dp" />
 </shape>

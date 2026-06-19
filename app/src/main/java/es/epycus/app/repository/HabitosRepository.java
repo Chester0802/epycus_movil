@@ -25,6 +25,10 @@ public class HabitosRepository {
         return api.getApiHabitosService().completar(id);
     }
 
+    public Call<RespuestaApi<Object>> fallar(int id) {
+        return api.getApiHabitosService().fallar(id);
+    }
+
     public Call<RespuestaApi<Object>> crear(Object body) {
         return api.getApiHabitosService().crear(body);
     }

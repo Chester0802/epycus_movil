@@ -2,6 +2,8 @@ package es.epycus.app.api;
 
 import java.io.IOException;
 
+import androidx.annotation.NonNull;
+
 import es.epycus.app.util.SessionManager;
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -15,7 +17,7 @@ public class AuthInterceptor implements Interceptor {
     }
 
     @Override
-    public Response intercept(Chain chain) throws IOException {
+    public Response intercept(@NonNull Chain chain) throws IOException {
         String token = sessionManager.getToken();
         Request original = chain.request();
 

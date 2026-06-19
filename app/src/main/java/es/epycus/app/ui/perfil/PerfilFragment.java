@@ -1,6 +1,7 @@
 package es.epycus.app.ui.perfil;
 
 import android.content.Intent;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import es.epycus.app.repository.AuthRepository;
 import es.epycus.app.ui.auth.LoginActivity;
 import es.epycus.app.util.SessionManager;
 
+@SuppressLint("SetTextI18n")
 public class PerfilFragment extends Fragment {
 
     private TextView tvNombre, tvCorreo, tvNivel, tvRacha, tvXp, tvCarrera, tvMiembroDesde;
@@ -66,10 +68,10 @@ public class PerfilFragment extends Fragment {
         loadingView.setVisibility(View.VISIBLE);
 
         RetrofitClient.getInstance(requireContext()).getApiPerfilService()
-                .obtenerPerfil().enqueue(new retrofit2.Callback<RespuestaApi<Object>>() {
+                .obtenerPerfil().enqueue(new retrofit2.Callback<>() {
                     @Override
-                    public void onResponse(retrofit2.Call<RespuestaApi<Object>> call,
-                                           retrofit2.Response<RespuestaApi<Object>> response) {
+                    public void onResponse(@NonNull retrofit2.Call<RespuestaApi<Object>> call,
+                                           @NonNull retrofit2.Response<RespuestaApi<Object>> response) {
                         loadingView.setVisibility(View.GONE);
 
                         if (response.isSuccessful() && response.body() != null
@@ -106,7 +108,7 @@ public class PerfilFragment extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(retrofit2.Call<RespuestaApi<Object>> call, Throwable t) {
+                    public void onFailure(@NonNull retrofit2.Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                         loadingView.setVisibility(View.GONE);
                         cargarDatosLocales();
                     }
@@ -124,13 +126,13 @@ public class PerfilFragment extends Fragment {
     private void cerrarSesion() {
         authRepository.logout().enqueue(new retrofit2.Callback<RespuestaApi<Void>>() {
             @Override
-            public void onResponse(retrofit2.Call<RespuestaApi<Void>> call,
-                                   retrofit2.Response<RespuestaApi<Void>> response) {
+            public void onResponse(@NonNull retrofit2.Call<RespuestaApi<Void>> call,
+                                   @NonNull retrofit2.Response<RespuestaApi<Void>> response) {
                 logoutAndRedirect();
             }
 
             @Override
-            public void onFailure(retrofit2.Call<RespuestaApi<Void>> call, Throwable t) {
+            public void onFailure(@NonNull retrofit2.Call<RespuestaApi<Void>> call, @NonNull Throwable t) {
                 logoutAndRedirect();
             }
         });

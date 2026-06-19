@@ -1,11 +1,13 @@
 package es.epycus.app.ui.auth;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -19,6 +21,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+@SuppressLint("SetTextI18n")
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etCorreo, etContrasena;
@@ -26,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     private AuthRepository authRepository;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -43,9 +46,8 @@ public class LoginActivity extends AppCompatActivity {
         btnRegistro = findViewById(R.id.btnRegistro);
 
         btnLogin.setOnClickListener(v -> iniciarSesion());
-        btnRegistro.setOnClickListener(v -> {
-            startActivity(new Intent(LoginActivity.this, RegistroActivity.class));
-        });
+        btnRegistro.setOnClickListener(v ->
+                startActivity(new Intent(LoginActivity.this, RegistroActivity.class)));
     }
 
     private void iniciarSesion() {

@@ -1,5 +1,6 @@
 package es.epycus.app.ui.home;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+@SuppressLint("SetTextI18n")
 public class InicioFragment extends Fragment {
 
     private TextView tvBienvenida, tvFrase, tvFraseAutor;
@@ -59,10 +61,10 @@ public class InicioFragment extends Fragment {
 
     private void cargarDashboard() {
         RetrofitClient.getInstance(requireContext()).getApiDashboardService()
-                .resumen().enqueue(new Callback<RespuestaApi<Object>>() {
+                .resumen().enqueue(new Callback<>() {
                     @Override
-                    public void onResponse(Call<RespuestaApi<Object>> call,
-                                           Response<RespuestaApi<Object>> response) {
+                    public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
+                                           @NonNull Response<RespuestaApi<Object>> response) {
                         loadingView.setVisibility(View.GONE);
                         if (response.isSuccessful() && response.body() != null
                                 && response.body().getDatos() != null) {
@@ -85,7 +87,7 @@ public class InicioFragment extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                         loadingView.setVisibility(View.GONE);
                     }
                 });
@@ -93,10 +95,10 @@ public class InicioFragment extends Fragment {
 
     private void cargarProgreso() {
         RetrofitClient.getInstance(requireContext()).getApiGamificacionService()
-                .miProgreso().enqueue(new Callback<RespuestaApi<Object>>() {
+                .miProgreso().enqueue(new Callback<>() {
                     @Override
-                    public void onResponse(Call<RespuestaApi<Object>> call,
-                                           Response<RespuestaApi<Object>> response) {
+                    public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
+                                           @NonNull Response<RespuestaApi<Object>> response) {
                         if (response.isSuccessful() && response.body() != null
                                 && response.body().getDatos() != null) {
                             try {
@@ -113,7 +115,7 @@ public class InicioFragment extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {}
+                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {}
                 });
     }
 }

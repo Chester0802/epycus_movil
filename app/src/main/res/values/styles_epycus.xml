@@ -45,32 +45,13 @@
     <style name="Widget.Epycus.Input" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">?attr/epSurfaceBorder</item>
         <item name="boxStrokeWidth">1dp</item>
-        <item name="boxCornerRadiusEnd">?attr/epRoundedLg</item>
-        <item name="boxCornerRadiusTop">?attr/epRoundedLg</item>
         <item name="hintTextColor">?attr/epTextTertiary</item>
-    </style>
-
-    <!-- Epycus Badge -->
-    <style name="Widget.Epycus.Badge" parent="Widget.Material3.MaterialShapeDrawable">
-        <item name="materialShapeAppearance">@style/ShapeAppearance.Epycus.SmallComponent</item>
-    </style>
-
-    <!-- Shape appearances -->
-    <style name="ShapeAppearance.Epycus.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">?attr/epRoundedSm</item>
     </style>
 
     <!-- Epycus Bottom Navigation -->
     <style name="Widget.Epycus.BottomNavigation" parent="Widget.Material3.BottomNavigationView">
         <item name="itemIconTint">?attr/epTextTertiary</item>
         <item name="itemTextColor">?attr/epTextTertiary</item>
-        <item name="itemActiveIndicatorStyle">@style/Widget.Epycus.BottomNavigation.ActiveIndicator</item>
         <item name="backgroundTint">?attr/epSurface</item>
-    </style>
-
-    <style name="Widget.Epycus.BottomNavigation.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">?attr/epAccentLight</item>
-        <item name="cornerSize">?attr/epRoundedMd</item>
     </style>
 </resources>

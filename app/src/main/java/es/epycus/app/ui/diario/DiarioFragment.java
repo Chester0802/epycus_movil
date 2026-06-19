@@ -66,9 +66,8 @@ public class DiarioFragment extends Fragment {
             guardarAnimo(selectedMoodText);
         });
 
-        view.findViewById(R.id.btnChatEdy).setOnClickListener(v -> {
-            startActivity(new Intent(getActivity(), IaChatActivity.class));
-        });
+        view.findViewById(R.id.btnChatEdy).setOnClickListener(v ->
+                startActivity(new Intent(getActivity(), IaChatActivity.class)));
 
         cargarPreguntaGuia(view);
 
@@ -80,10 +79,10 @@ public class DiarioFragment extends Fragment {
         body.addProperty("estado", estado);
 
         RetrofitClient.getInstance(requireContext()).getApiEstadoAnimoService()
-                .registrar(body).enqueue(new Callback<RespuestaApi<Object>>() {
+                .registrar(body).enqueue(new Callback<>() {
                     @Override
-                    public void onResponse(Call<RespuestaApi<Object>> call,
-                                           Response<RespuestaApi<Object>> response) {
+                    public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
+                                           @NonNull Response<RespuestaApi<Object>> response) {
                         if (response.isSuccessful()) {
                             Snackbar.make(requireView(), "Estado de animo guardado",
                                     Snackbar.LENGTH_SHORT).show();
@@ -96,7 +95,7 @@ public class DiarioFragment extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                         Snackbar.make(requireView(), "Error de conexion",
                                 Snackbar.LENGTH_SHORT).show();
                     }
@@ -107,10 +106,10 @@ public class DiarioFragment extends Fragment {
         TextView tvPregunta = view.findViewById(R.id.tvPreguntaGuia);
 
         RetrofitClient.getInstance(requireContext()).getApiDiarioService()
-                .preguntaGuia().enqueue(new Callback<RespuestaApi<Object>>() {
+                .preguntaGuia().enqueue(new Callback<>() {
                     @Override
-                    public void onResponse(Call<RespuestaApi<Object>> call,
-                                           Response<RespuestaApi<Object>> response) {
+                    public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
+                                           @NonNull Response<RespuestaApi<Object>> response) {
                         if (response.isSuccessful() && response.body() != null
                                 && response.body().getDatos() != null) {
                             try {
@@ -126,7 +125,7 @@ public class DiarioFragment extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {}
+                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {}
                 });
     }
 }

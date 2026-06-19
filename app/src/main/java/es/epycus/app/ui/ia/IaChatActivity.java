@@ -1,5 +1,6 @@
 package es.epycus.app.ui.ia;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -8,6 +9,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +22,7 @@ import es.epycus.app.model.dto.ChatRequest;
 import es.epycus.app.model.dto.ChatResponse;
 import es.epycus.app.ui.adapters.MensajeChatAdapter;
 
+@SuppressLint("SetTextI18n")
 public class IaChatActivity extends AppCompatActivity {
 
     private RecyclerView rvMensajes;
@@ -29,7 +33,7 @@ public class IaChatActivity extends AppCompatActivity {
     private String conversacionId;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ia_chat);
 
@@ -63,10 +67,10 @@ public class IaChatActivity extends AppCompatActivity {
         ChatRequest request = new ChatRequest(texto, conversacionId);
 
         RetrofitClient.getInstance(this).getApiIaService()
-                .chat(request).enqueue(new retrofit2.Callback<RespuestaApi<Object>>() {
+                .chat(request).enqueue(new retrofit2.Callback<>() {
                     @Override
-                    public void onResponse(retrofit2.Call<RespuestaApi<Object>> call,
-                                           retrofit2.Response<RespuestaApi<Object>> response) {
+                    public void onResponse(@NonNull retrofit2.Call<RespuestaApi<Object>> call,
+                                           @NonNull retrofit2.Response<RespuestaApi<Object>> response) {
                         loadingView.setVisibility(View.GONE);
 
                         if (response.isSuccessful() && response.body() != null
@@ -92,7 +96,7 @@ public class IaChatActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(retrofit2.Call<RespuestaApi<Object>> call, Throwable t) {
+                    public void onFailure(@NonNull retrofit2.Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                         loadingView.setVisibility(View.GONE);
                         adapter.addMensaje(new MensajeChatAdapter.Mensaje(
                                 "Error de conexion. Verifica tu internet.", false));

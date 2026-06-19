@@ -1,5 +1,6 @@
 package es.epycus.app.ui.pomodoro;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import es.epycus.app.R;
 
+@SuppressLint("SetTextI18n")
 public class PomodoroFragment extends Fragment {
 
     private TextView tvTiempo, tvEstado, tvCiclos, tvTotalHoy;
