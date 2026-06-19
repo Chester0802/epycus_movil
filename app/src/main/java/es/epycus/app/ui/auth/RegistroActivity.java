@@ -10,6 +10,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +33,7 @@ public class RegistroActivity extends AppCompatActivity {
     private ActivityRegistroBinding binding;
     private AuthRepository authRepository;
     private List<Carrera> carreras;
+    private Call<?> activeCall;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,7 +50,8 @@ public class RegistroActivity extends AppCompatActivity {
     }
 
     private void cargarCarreras() {
-        authRepository.obtenerCarreras().enqueue(new Callback<RespuestaApi<List<Carrera>>>() {
+        activeCall = authRepository.obtenerCarreras();
+        activeCall.enqueue(new Callback<RespuestaApi<List<Carrera>>>() {
             @Override
             public void onResponse(Call<RespuestaApi<List<Carrera>>> call,
                                    Response<RespuestaApi<List<Carrera>>> response) {
@@ -69,8 +74,7 @@ public class RegistroActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<RespuestaApi<List<Carrera>>> call, Throwable t) {
-                Snackbar.make(binding.btnRegistrar, getString(R.string.error_conexion),
-                        Snackbar.LENGTH_SHORT).show();
+                mostrarErrorRed(t);
             }
         });
     }
@@ -100,7 +104,8 @@ public class RegistroActivity extends AppCompatActivity {
         binding.btnRegistrar.setVisibility(View.INVISIBLE);
         binding.loadingView.setVisibility(View.VISIBLE);
 
-        authRepository.registro(dto).enqueue(new Callback<RespuestaApi<AuthResponse>>() {
+        activeCall = authRepository.registro(dto);
+        activeCall.enqueue(new Callback<RespuestaApi<AuthResponse>>() {
             @Override
             public void onResponse(Call<RespuestaApi<AuthResponse>> call,
                                    Response<RespuestaApi<AuthResponse>> response) {
@@ -125,9 +130,28 @@ public class RegistroActivity extends AppCompatActivity {
             public void onFailure(Call<RespuestaApi<AuthResponse>> call, Throwable t) {
                 binding.btnRegistrar.setVisibility(View.VISIBLE);
                 binding.loadingView.setVisibility(View.GONE);
-                Snackbar.make(binding.btnRegistrar, getString(R.string.error_conexion),
-                        Snackbar.LENGTH_LONG).show();
+                mostrarErrorRed(t);
             }
         });
+    }
+
+    private void mostrarErrorRed(Throwable t) {
+        int msgRes;
+        if (t instanceof SocketTimeoutException) {
+            msgRes = R.string.error_timeout;
+        } else if (t instanceof UnknownHostException || t instanceof ConnectException) {
+            msgRes = R.string.error_sin_conexion;
+        } else {
+            msgRes = R.string.error_conexion;
+        }
+        Snackbar.make(binding.btnRegistrar, getString(msgRes), Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (activeCall != null && !activeCall.isCanceled()) {
+            activeCall.cancel();
+        }
+        super.onDestroy();
     }
 }

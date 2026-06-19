@@ -14,10 +14,17 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+
 import es.epycus.app.R;
 import es.epycus.app.api.RetrofitClient;
 import es.epycus.app.data.local.AppDatabase;
 import es.epycus.app.data.local.entity.CacheEntity;
+import es.epycus.app.data.local.entity.UsuarioEntity;
 import es.epycus.app.databinding.FragmentPerfilBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.PerfilResponse;
@@ -32,6 +39,7 @@ public class PerfilFragment extends Fragment {
     private SessionManager sessionManager;
     private AuthRepository authRepository;
     private AppDatabase database;
+    private final List<Call<?>> activeCalls = new ArrayList<>();
 
     @Nullable
     @Override
@@ -65,61 +73,72 @@ public class PerfilFragment extends Fragment {
     private void cargarPerfil() {
         binding.loadingView.setVisibility(View.VISIBLE);
 
-        RetrofitClient.getInstance(requireContext()).getApiPerfilService()
-                .obtenerPerfil().enqueue(new retrofit2.Callback<>() {
-                    @Override
-                    public void onResponse(@NonNull retrofit2.Call<RespuestaApi<Object>> call,
-                                           @NonNull retrofit2.Response<RespuestaApi<Object>> response) {
-                        binding.loadingView.setVisibility(View.GONE);
-                        binding.swipeRefresh.setRefreshing(false);
+        retrofit2.Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiPerfilService()
+                .obtenerPerfil();
+        activeCalls.add(call);
+        call.enqueue(new retrofit2.Callback<>() {
+            @Override
+            public void onResponse(@NonNull retrofit2.Call<RespuestaApi<Object>> call,
+                                   @NonNull retrofit2.Response<RespuestaApi<Object>> response) {
+                activeCalls.remove(call);
+                binding.loadingView.setVisibility(View.GONE);
+                binding.swipeRefresh.setRefreshing(false);
 
-                        if (response.isSuccessful() && response.body() != null
-                                && response.body().isExito() && response.body().getDatos() != null) {
-                            try {
-                                Gson gson = new Gson();
-                                String json = gson.toJson(response.body().getDatos());
-                                database.cacheDao().insert(
-                                        new CacheEntity("perfil", json));
-                                PerfilResponse perfilResp = gson.fromJson(json, PerfilResponse.class);
+                if (response.isSuccessful() && response.body() != null
+                        && response.body().isExito() && response.body().getDatos() != null) {
+                    try {
+                        Gson gson = new Gson();
+                        String json = gson.toJson(response.body().getDatos());
+                        database.cacheDao().insert(
+                                new CacheEntity("perfil", json));
+                        PerfilResponse perfilResp = gson.fromJson(json, PerfilResponse.class);
 
-                                PerfilResponse.Perfil perfil = perfilResp.getPerfil();
-                                binding.tvNombre.setText(perfil.getNombre());
-                                binding.tvCorreo.setText(perfil.getCorreoElectronico());
-                                binding.tvNivel.setText(getString(R.string.nivel_formato, perfil.getNivelActual()));
-                                binding.tvRacha.setText(getString(R.string.dias_formato, perfil.getRachaActual()));
-                                binding.tvXp.setText(getString(R.string.xp_formato, perfil.getXpTotal()));
-                                binding.tvCarrera.setText(perfil.getCarreraNombre() != null ?
-                                        perfil.getCarreraNombre() : getString(R.string.sin_carrera));
-                                binding.tvMiembroDesde.setText(getString(R.string.miembro_desde_formato,
-                                        perfil.getFechaRegistro()));
+                        PerfilResponse.Perfil perfil = perfilResp.getPerfil();
+                        binding.tvNombre.setText(perfil.getNombre());
+                        binding.tvCorreo.setText(perfil.getCorreoElectronico());
+                        binding.tvNivel.setText(getString(R.string.nivel_formato, perfil.getNivelActual()));
+                        binding.tvRacha.setText(getString(R.string.dias_formato, perfil.getRachaActual()));
+                        binding.tvXp.setText(getString(R.string.xp_formato, perfil.getXpTotal()));
+                        binding.tvCarrera.setText(perfil.getCarreraNombre() != null ?
+                                perfil.getCarreraNombre() : getString(R.string.sin_carrera));
+                        binding.tvMiembroDesde.setText(getString(R.string.miembro_desde_formato,
+                                perfil.getFechaRegistro()));
 
-                                sessionManager.saveSession(
-                                        sessionManager.getToken(),
-                                        sessionManager.getRefreshToken(),
-                                        sessionManager.getUserId(),
-                                        perfil.getNombre(),
-                                        perfil.getCorreoElectronico()
-                                );
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error parsing perfil", e);
-                                cargarDatosLocales();
-                            }
-                        } else {
-                            cargarDatosLocales();
-                        }
+                        sessionManager.saveSession(
+                                sessionManager.getToken(),
+                                sessionManager.getRefreshToken(),
+                                sessionManager.getUserId(),
+                                perfil.getNombre(),
+                                perfil.getCorreoElectronico()
+                        );
+                        database.usuarioDao().insert(new UsuarioEntity(
+                                sessionManager.getUserId(),
+                                perfil.getNombre(),
+                                perfil.getCorreoElectronico(),
+                                sessionManager.getToken(),
+                                sessionManager.getRefreshToken(),
+                                perfil.getFechaRegistro()
+                        ));
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error parsing perfil", e);
+                        cargarDatosLocales();
                     }
+                } else {
+                    cargarDatosLocales();
+                }
+            }
 
-                    @Override
-                    public void onFailure(@NonNull retrofit2.Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
-                        binding.loadingView.setVisibility(View.GONE);
-                        binding.swipeRefresh.setRefreshing(false);
-                        if (!cargarPerfilDesdeCache()) {
-                            cargarDatosLocales();
-                        }
-                        Snackbar.make(requireView(), getString(R.string.error_conexion),
-                                Snackbar.LENGTH_SHORT).show();
-                    }
-                });
+            @Override
+            public void onFailure(@NonNull retrofit2.Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+                activeCalls.remove(call);
+                binding.loadingView.setVisibility(View.GONE);
+                binding.swipeRefresh.setRefreshing(false);
+                if (!cargarPerfilDesdeCache()) {
+                    cargarDatosLocales();
+                }
+                mostrarErrorRed(t);
+            }
+        });
     }
 
     private boolean cargarPerfilDesdeCache() {
@@ -147,6 +166,14 @@ public class PerfilFragment extends Fragment {
     }
 
     private void cargarDatosLocales() {
+        if (sessionManager.getUserId() > 0) {
+            UsuarioEntity cachedUser = database.usuarioDao().getById(sessionManager.getUserId());
+            if (cachedUser != null) {
+                binding.tvNombre.setText(cachedUser.getNombre());
+                binding.tvCorreo.setText(cachedUser.getCorreoElectronico());
+                return;
+            }
+        }
         binding.tvNombre.setText(sessionManager.getUserName());
         binding.tvCorreo.setText(sessionManager.getUserEmail());
         binding.tvNivel.setText(getString(R.string.nivel_formato, 1));
@@ -155,15 +182,19 @@ public class PerfilFragment extends Fragment {
     }
 
     private void cerrarSesion() {
-        authRepository.logout().enqueue(new retrofit2.Callback<RespuestaApi<Void>>() {
+        retrofit2.Call<RespuestaApi<Void>> call = authRepository.logout();
+        activeCalls.add(call);
+        call.enqueue(new retrofit2.Callback<RespuestaApi<Void>>() {
             @Override
             public void onResponse(@NonNull retrofit2.Call<RespuestaApi<Void>> call,
                                    @NonNull retrofit2.Response<RespuestaApi<Void>> response) {
+                activeCalls.remove(call);
                 logoutAndRedirect();
             }
 
             @Override
             public void onFailure(@NonNull retrofit2.Call<RespuestaApi<Void>> call, @NonNull Throwable t) {
+                activeCalls.remove(call);
                 logoutAndRedirect();
             }
         });
@@ -177,8 +208,24 @@ public class PerfilFragment extends Fragment {
         requireActivity().finish();
     }
 
+    private void mostrarErrorRed(Throwable t) {
+        int msgRes;
+        if (t instanceof SocketTimeoutException) {
+            msgRes = R.string.error_timeout;
+        } else if (t instanceof UnknownHostException || t instanceof ConnectException) {
+            msgRes = R.string.error_sin_conexion;
+        } else {
+            msgRes = R.string.error_conexion;
+        }
+        Snackbar.make(requireView(), getString(msgRes), Snackbar.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onDestroyView() {
+        for (Call<?> call : activeCalls) {
+            if (!call.isCanceled()) call.cancel();
+        }
+        activeCalls.clear();
         super.onDestroyView();
         binding = null;
     }

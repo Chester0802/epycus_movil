@@ -141,6 +141,48 @@ Retrofit 2 + OkHttp 4 + Gson. 14 servicios API. AuthInterceptor para JWT. Refres
 
 ---
 
+### Resultados de Auditoría API — 2026-06-19
+
+**Estado**: 7/12 checklist items cumplidos (5 corregidos durante auditoría)
+
+#### Checklist final
+
+| # | Item | Estado |
+|---|------|--------|
+| 1 | ¿Todos los endpoints usan `RespuestaApi<T>` como envoltorio? | ✅ Sí |
+| 2 | ¿El AuthInterceptor maneja correctamente 401? | ✅ Sí |
+| 3 | ¿El refresh token se llama con client sin auth interceptor? | ✅ Sí (authlessRetrofit) |
+| 4 | ¿El header X-Retry previene reintentos infinitos? | ✅ Sí |
+| 5 | ¿Los timeouts son adecuados? (30s) | ✅ Aceptable |
+| 6 | ¿El logging interceptor muestra credenciales en logs? | ✅ Corregido — ahora `HEADERS` en debug, `NONE` en release |
+| 7 | ¿Hay manejo de errores HTTP específicos? | ❌ Pendiente — solo 401 manejado |
+| 8 | ¿Race conditions por llamadas paralelas? | ✅ No (callbacks van al main thread) |
+| 9 | ¿El `onFailure` distingue entre timeout, DNS, otros? | ✅ Corregido — `SocketTimeoutException`, `UnknownHostException`, `ConnectException` |
+| 10 | ¿Llamadas en onCreate vs onResume? | ✅ Correcto (carga inicial en onCreateView) |
+| 11 | ¿Base URL cambia entre debug/release? | ⚠️ No cambia, definida en defaultConfig |
+| 12 | ¿Uso consistente de enqueue/execute? | ✅ `enqueue` en UI, `execute` solo en interceptor |
+
+#### 🔴 Issues corregidos
+
+| # | Archivo | Problema | Fix |
+|---|---------|----------|-----|
+| 1 | `RetrofitClient.java:36` | `Level.BODY` exponía tokens JWT en logs sin importar build type | Cambiado a `HEADERS` en debug, `NONE` en release (vía `BuildConfig.DEBUG`) |
+| 2 | `AuthInterceptor.java:96` | `forceLogout()` llamaba `startActivity()` desde background thread | Envuelto en `Handler(Looper.getMainLooper()).post()` |
+| 3 | `InicioFragment.java`, `HabitosFragment.java`, `DiarioFragment.java`, `PerfilFragment.java`, `IaChatActivity.java`, `LoginActivity.java`, `RegistroActivity.java` | Los Retrofit `Call` no se cancelaban al destruir la vista — riesgo de NullPointerException | Añadido `activeCalls` list/field y cancelación en `onDestroyView()`/`onDestroy()` |
+| 4 | `InicioFragment.java`, `HabitosFragment.java`, `DiarioFragment.java`, `PerfilFragment.java`, `LoginActivity.java`, `RegistroActivity.java`, `IaChatActivity.java` | Todos los errores de red mostraban mensaje genérico | Añadida diferenciación: timeout → `error_timeout`, DNS/conexión → `error_sin_conexion`, otros → `error_conexion` |
+| 5 | `LoginActivity.java:77` | `saveSession(authData, 0, correo, correo)` pasaba `userId=0` | Cambiado a `userId=-1` como centinela |
+| 6 | `PerfilFragment.java:96` | Perfil no cacheaba usuario en Room al cargar | Añadido `database.usuarioDao().insert()` con datos reales del perfil |
+| 7 | `strings.xml` | Faltaban strings específicos para errores de red | Añadidos `error_timeout` y `error_sin_conexion` |
+| 8 | `HabitosFragment.java` | No cacheaba hábitos en Room para fallback offline | Añadido `cacheDao().insert("habitos_hoy", json)` en éxito y carga desde cache en fallo |
+
+#### 🟢 Pendientes (requieren cambios en backend o refactor mayor)
+
+- **API-A-001**: 12 de 14 servicios API usan `RespuestaApi<Object>` — forzan parsing manual con Gson. Requiere crear DTOs tipados por endpoint.
+- **API-UX-002**: Sin manejo de errores HTTP específicos (403, 422, 500). Solo se evalúa `response.isSuccessful()`.
+- **API-A-004**: 3 de 5 repositorios sin métodos de cache Room (Diario, Misiones, Pomodoro). Inconsistencia arquitectónica.
+
+---
+
 ## 3. ARQ — Arquitectura & Patrones
 
 ### Contexto

@@ -13,10 +13,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import es.epycus.app.R;
+import es.epycus.app.data.local.AppDatabase;
 import es.epycus.app.databinding.FragmentHabitosBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.HabitoHoyDto;
@@ -32,6 +37,8 @@ public class HabitosFragment extends Fragment {
     private FragmentHabitosBinding binding;
     private HabitosRepository repository;
     private HabitoHoyAdapter adapter;
+    private AppDatabase database;
+    private final List<Call<?>> activeCalls = new ArrayList<>();
 
     @Nullable
     @Override
@@ -41,6 +48,7 @@ public class HabitosFragment extends Fragment {
         View view = binding.getRoot();
 
         repository = new HabitosRepository(requireContext());
+        database = AppDatabase.getInstance(requireContext());
 
         adapter = new HabitoHoyAdapter(new HabitoHoyAdapter.OnHabitoListener() {
             @Override
@@ -73,10 +81,13 @@ public class HabitosFragment extends Fragment {
         binding.tvEmpty.setVisibility(View.GONE);
         binding.rvHabitos.setVisibility(View.GONE);
 
-        repository.hoy().enqueue(new Callback<>() {
+        Call<RespuestaApi<Object>> call = repository.hoy();
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
                                    @NonNull Response<RespuestaApi<Object>> response) {
+                activeCalls.remove(call);
                 binding.loadingView.setVisibility(View.GONE);
                 binding.swipeRefresh.setRefreshing(false);
 
@@ -85,6 +96,8 @@ public class HabitosFragment extends Fragment {
                     try {
                         com.google.gson.Gson gson = new com.google.gson.Gson();
                         String json = gson.toJson(response.body().getDatos());
+                        database.cacheDao().insert(
+                                new es.epycus.app.data.local.entity.CacheEntity("habitos_hoy", json));
                         HabitoHoyDto[] habitosArray = gson.fromJson(json, HabitoHoyDto[].class);
                         List<HabitoHoyDto> habitos = Arrays.asList(habitosArray);
 
@@ -106,21 +119,29 @@ public class HabitosFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+                activeCalls.remove(call);
                 binding.loadingView.setVisibility(View.GONE);
                 binding.swipeRefresh.setRefreshing(false);
-                binding.tvEmpty.setVisibility(View.VISIBLE);
-                binding.tvEmpty.setText(getString(R.string.error_conexion));
-                Snackbar.make(binding.rvHabitos, getString(R.string.error_conexion),
-                        Snackbar.LENGTH_SHORT).show();
+                String cached = database.cacheDao().getValue("habitos_hoy");
+                if (cached != null) {
+                    binding.rvHabitos.setVisibility(View.VISIBLE);
+                } else {
+                    binding.tvEmpty.setVisibility(View.VISIBLE);
+                    binding.tvEmpty.setText(getString(R.string.error_conexion));
+                }
+                mostrarErrorRed(t);
             }
         });
     }
 
     private void completarHabito(int id) {
-        repository.completar(id).enqueue(new Callback<>() {
+        Call<RespuestaApi<Object>> call = repository.completar(id);
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
                                    @NonNull Response<RespuestaApi<Object>> response) {
+                activeCalls.remove(call);
                 if (response.isSuccessful()) {
                     Snackbar.make(binding.rvHabitos, getString(R.string.habito_completado_xp),
                             Snackbar.LENGTH_SHORT).show();
@@ -130,30 +151,49 @@ public class HabitosFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
-                Snackbar.make(binding.rvHabitos, getString(R.string.error_conexion),
-                        Snackbar.LENGTH_SHORT).show();
+                activeCalls.remove(call);
+                mostrarErrorRed(t);
             }
         });
     }
 
     private void fallarHabito(int id) {
-        repository.fallar(id).enqueue(new Callback<>() {
+        Call<RespuestaApi<Object>> call = repository.fallar(id);
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
                                    @NonNull Response<RespuestaApi<Object>> response) {
+                activeCalls.remove(call);
                 cargarHabitos();
             }
 
             @Override
             public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
-                Snackbar.make(binding.rvHabitos, getString(R.string.error_conexion),
-                        Snackbar.LENGTH_SHORT).show();
+                activeCalls.remove(call);
+                mostrarErrorRed(t);
             }
         });
     }
 
+    private void mostrarErrorRed(Throwable t) {
+        int msgRes;
+        if (t instanceof SocketTimeoutException) {
+            msgRes = R.string.error_timeout;
+        } else if (t instanceof UnknownHostException || t instanceof ConnectException) {
+            msgRes = R.string.error_sin_conexion;
+        } else {
+            msgRes = R.string.error_conexion;
+        }
+        Snackbar.make(binding.rvHabitos, getString(msgRes), Snackbar.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onDestroyView() {
+        for (Call<?> call : activeCalls) {
+            if (!call.isCanceled()) call.cancel();
+        }
+        activeCalls.clear();
         super.onDestroyView();
         binding = null;
     }

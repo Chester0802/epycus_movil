@@ -15,6 +15,12 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+
 import es.epycus.app.R;
 import es.epycus.app.api.RetrofitClient;
 import es.epycus.app.data.local.AppDatabase;
@@ -33,6 +39,7 @@ public class DiarioFragment extends Fragment {
     private View selectedMood;
     private String selectedMoodText = "";
     private AppDatabase database;
+    private final List<Call<?>> activeCalls = new ArrayList<>();
 
     @Nullable
     @Override
@@ -86,65 +93,71 @@ public class DiarioFragment extends Fragment {
         com.google.gson.JsonObject body = new com.google.gson.JsonObject();
         body.addProperty("estado", estado);
 
-        RetrofitClient.getInstance(requireContext()).getApiEstadoAnimoService()
-                .registrar(body).enqueue(new Callback<>() {
-                    @Override
-                    public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                           @NonNull Response<RespuestaApi<Object>> response) {
-                        if (response.isSuccessful()) {
-                            Snackbar.make(requireView(), getString(R.string.estado_animo_guardado),
-                                    Snackbar.LENGTH_SHORT).show();
-                            if (selectedMood != null) {
-                                selectedMood.setBackgroundResource(R.drawable.bg_card_rounded);
-                                selectedMood = null;
-                                selectedMoodText = "";
-                            }
-                        }
+        Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiEstadoAnimoService()
+                .registrar(body);
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
+                                   @NonNull Response<RespuestaApi<Object>> response) {
+                activeCalls.remove(call);
+                if (response.isSuccessful()) {
+                    Snackbar.make(requireView(), getString(R.string.estado_animo_guardado),
+                            Snackbar.LENGTH_SHORT).show();
+                    if (selectedMood != null) {
+                        selectedMood.setBackgroundResource(R.drawable.bg_card_rounded);
+                        selectedMood = null;
+                        selectedMoodText = "";
                     }
+                }
+            }
 
-                    @Override
-                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
-                        Snackbar.make(requireView(), getString(R.string.error_conexion),
-                                Snackbar.LENGTH_SHORT).show();
-                    }
-                });
+            @Override
+            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+                activeCalls.remove(call);
+                mostrarErrorRed(t);
+            }
+        });
     }
 
     private void cargarPreguntaGuia() {
         binding.loadingView.setVisibility(View.VISIBLE);
-        RetrofitClient.getInstance(requireContext()).getApiDiarioService()
-                .preguntaGuia().enqueue(new Callback<>() {
-                    @Override
-                    public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                           @NonNull Response<RespuestaApi<Object>> response) {
-                        binding.loadingView.setVisibility(View.GONE);
-                        binding.swipeRefresh.setRefreshing(false);
-                        if (response.isSuccessful() && response.body() != null
-                                && response.body().getDatos() != null) {
-                            try {
-                                Gson gson = new Gson();
-                                String json = gson.toJson(response.body().getDatos());
-                                database.cacheDao().insert(
-                                        new CacheEntity("pregunta_guia", json));
-                                JsonObject obj = gson.fromJson(json, JsonObject.class);
-                                if (obj.has("pregunta")) {
-                                    binding.tvPreguntaGuia.setText(obj.get("pregunta").getAsString());
-                                }
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error parsing pregunta guia", e);
-                            }
+        Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiDiarioService()
+                .preguntaGuia();
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
+                                   @NonNull Response<RespuestaApi<Object>> response) {
+                activeCalls.remove(call);
+                binding.loadingView.setVisibility(View.GONE);
+                binding.swipeRefresh.setRefreshing(false);
+                if (response.isSuccessful() && response.body() != null
+                        && response.body().getDatos() != null) {
+                    try {
+                        Gson gson = new Gson();
+                        String json = gson.toJson(response.body().getDatos());
+                        database.cacheDao().insert(
+                                new CacheEntity("pregunta_guia", json));
+                        JsonObject obj = gson.fromJson(json, JsonObject.class);
+                        if (obj.has("pregunta")) {
+                            binding.tvPreguntaGuia.setText(obj.get("pregunta").getAsString());
                         }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error parsing pregunta guia", e);
                     }
+                }
+            }
 
-                    @Override
-                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
-                        binding.loadingView.setVisibility(View.GONE);
-                        binding.swipeRefresh.setRefreshing(false);
-                        cargarPreguntaGuiaDesdeCache();
-                        Snackbar.make(requireView(), getString(R.string.error_conexion),
-                                Snackbar.LENGTH_SHORT).show();
-                    }
-                });
+            @Override
+            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+                activeCalls.remove(call);
+                binding.loadingView.setVisibility(View.GONE);
+                binding.swipeRefresh.setRefreshing(false);
+                cargarPreguntaGuiaDesdeCache();
+                mostrarErrorRed(t);
+            }
+        });
     }
 
     private void cargarPreguntaGuiaDesdeCache() {
@@ -162,8 +175,24 @@ public class DiarioFragment extends Fragment {
         }
     }
 
+    private void mostrarErrorRed(Throwable t) {
+        int msgRes;
+        if (t instanceof SocketTimeoutException) {
+            msgRes = R.string.error_timeout;
+        } else if (t instanceof UnknownHostException || t instanceof ConnectException) {
+            msgRes = R.string.error_sin_conexion;
+        } else {
+            msgRes = R.string.error_conexion;
+        }
+        Snackbar.make(requireView(), getString(msgRes), Snackbar.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onDestroyView() {
+        for (Call<?> call : activeCalls) {
+            if (!call.isCanceled()) call.cancel();
+        }
+        activeCalls.clear();
         super.onDestroyView();
         binding = null;
     }

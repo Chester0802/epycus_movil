@@ -65,6 +65,10 @@
     <string name="error_conexion_ia">Error de conexi\u00f3n. Verifica tu internet.</string>
     <string name="autor_formato">- %s</string>
 
+    <!-- Network errors -->
+    <string name="error_timeout">El servidor no responde (tiempo de espera agotado)</string>
+    <string name="error_sin_conexion">Sin conexión a internet. Verifica tu red.</string>
+
     <!-- Theme -->
     <string name="modo_oscuro">Modo oscuro</string>
     <string name="modo_claro">Modo claro</string>

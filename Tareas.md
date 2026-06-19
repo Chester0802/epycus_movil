@@ -345,10 +345,10 @@ Agrega una entrada en **# Auditorías** con:
 
 | Categoría | ✅ Buenos | 🟡 Mejorables | ❌ Críticos |
 |-----------|----------|---------------|-------------|
-| Networking | Refresh token, interceptor, 14 servicios | Logging expone tokens (S-001) | — |
+| Networking | Refresh token, interceptor, 14 servicios, logging condicional, calls cancelados, errores diferenciados | — | — |
 | UI/UX | ViewBinding, loading, pull-to-refresh, tema toggle | Sin DiffUtil (C-002) | — |
 | Offline | Room implementado, cache en repos | Main-thread queries (A-001), destructive migration (A-005) | — |
-| Seguridad | AuthInterceptor, force logout | SharedPreferences planas (S-002), logging BODY (S-001) | — |
+| Seguridad | AuthInterceptor, force logout on main thread | SharedPreferences planas (S-002) | — |
 | Testing | — | Sin tests (C-003) | — |
 
 ---: Implementar `cargarCarreras()` en `RegistroActivity.java`
@@ -414,6 +414,76 @@ Agrega una entrada en **# Auditorías** con:
 | 2026-06-19 | `fragment_diario.xml`, `shape_dot.xml` (nuevo) | **UX-003**: Agregados indicadores de color (dots circulares) a cada mood selector usando `mood_*` colors | Bajo |
 | 2026-06-19 | `fragment_pomodoro.xml`, `PomodoroFragment.java` | **UX-004**: Agregado `loadingView` (ProgressBar) con show/hide durante inicialización | Bajo |
 | 2026-06-19 | `AUDITORIA_PROMPTS.md` | **UX Audit docs**: Agregada sección de resultados de auditoría UX con checklist, issues y fixes | Bajo |
+| 2026-06-19 | `RetrofitClient.java` | **API-S-001**: Logging interceptor cambiado de `Level.BODY` a condicional `HEADERS`/`NONE` según `BuildConfig.DEBUG` | Alto |
+| 2026-06-19 | `AuthInterceptor.java` | **API-S-002**: `forceLogout()` envuelto en `Handler(Looper.getMainLooper()).post()` para ejecutar en main thread | Medio |
+| 2026-06-19 | `LoginActivity.java` | **API-A-002**: `saveSession` cambia `userId=0` a `-1`; añadido `activeCall` + cancelación en `onDestroy()`; errores de red diferenciados | Bajo |
+| 2026-06-19 | `PerfilFragment.java` | **API-A-002**: Añadido `database.usuarioDao().insert()` al cargar perfil exitosamente; `cargarDatosLocales()` prueba Room cache primero | Bajo |
+| 2026-06-19 | `InicioFragment.java` | **API-A-003 + UX-001**: Añadido `activeCalls` list + cancelación en `onDestroyView()`; errores de red diferenciados por tipo | Medio |
+| 2026-06-19 | `HabitosFragment.java` | **API-A-003 + UX-001 + A-004**: Añadido `activeCalls`, cancelación, errores diferenciados, cache Room de hábitos | Medio |
+| 2026-06-19 | `DiarioFragment.java` | **API-A-003 + UX-001**: Añadido `activeCalls`, cancelación, errores diferenciados | Medio |
+| 2026-06-19 | `IaChatActivity.java` | **API-A-003 + UX-001**: Añadido `activeCall`, cancelación en `onDestroy()`, errores diferenciados | Medio |
+| 2026-06-19 | `RegistroActivity.java` | **API-A-003 + UX-001**: Añadido `activeCall`, cancelación en `onDestroy()`, errores diferenciados | Medio |
+| 2026-06-19 | `strings.xml` | **UX-001**: Añadidos `error_timeout` y `error_sin_conexion` para errores de red diferenciados | Bajo |
+| 2026-06-19 | `AUDITORIA_PROMPTS.md` | **API Audit docs**: Agregada sección de resultados de auditoría API con checklist, issues y fixes | Bajo |
+
+### Auditoría 003 — 2026-06-19 (Networking & API)
+
+**Alcance**: Auditoría especializada de la capa de red: RetrofitClient, AuthInterceptor, 14 servicios API, RespuestaApi, 5 repositorios, llamadas API en fragments.
+
+| # | Checklist | Estado |
+|---|-----------|--------|
+| 1 | ¿Todos los endpoints usan `RespuestaApi<T>` como envoltorio? | ✅ Sí |
+| 2 | ¿El AuthInterceptor maneja correctamente 401? | ✅ Sí |
+| 3 | ¿El refresh token se llama con client sin auth interceptor? | ✅ Sí (authlessRetrofit) |
+| 4 | ¿El header X-Retry previene reintentos infinitos? | ✅ Sí |
+| 5 | ¿Los timeouts son adecuados? (30s) | ✅ Aceptable |
+| 6 | ¿El logging interceptor muestra credenciales en logs? | **❌ Sí — RIESGO** |
+| 7 | ¿Hay manejo de errores HTTP específicos (403, 404, 422, 500)? | **❌ No** |
+| 8 | ¿Las llamadas en paralelo podrían causar race conditions? | ✅ No (main thread) |
+| 9 | ¿El `onFailure` distingue entre timeout, DNS y otros errores? | **❌ No** |
+| 10 | ¿Hay llamadas en `onCreate` que deberían estar en `onResume`? | ✅ No |
+| 11 | ¿La base URL cambia entre debug/release? | ⚠️ No, pero aceptable |
+| 12 | ¿Se usa `enqueue` (async) consistentemente? | ✅ Sí |
+
+#### 🟠 Hallazgos de Seguridad
+
+| ID | Prioridad | Archivo | Problema |
+|----|-----------|---------|----------|
+| API-S-001 | **Crítica** | `RetrofitClient.java:36` | `HttpLoggingInterceptor.Level.BODY` expone tokens JWT + credenciales en logs | ✅ Corregido — `HEADERS` en debug, `NONE` en release |
+| API-S-002 | **Alta** | `AuthInterceptor.java:96-99` | `forceLogout()` llama `context.startActivity()` desde background thread | ✅ Corregido — `Handler(Looper.getMainLooper()).post()` |
+
+#### 🟡 Hallazgos de Arquitectura
+
+| ID | Prioridad | Archivo | Problema |
+|----|-----------|---------|----------|
+| API-A-001 | **Alta** | 10 servicios API | 12 de 14 servicios usan `RespuestaApi<Object>` en lugar de DTOs tipados | ⏸️ Requiere refactor mayor |
+| API-A-002 | **Alta** | `LoginActivity.java:77` | `saveSession(authData, 0, correo, correo)` pasa `userId=0` | ✅ Corregido — cambiado a `-1`, PerfilFragment ahora cachea en Room |
+| API-A-003 | **Media** | Todos los Fragments + Activities con API calls | Los Retrofit `Call` no se cancelaban al destruir la vista | ✅ Corregido — `activeCalls` + cancelación en `onDestroyView()`/`onDestroy()` |
+| API-A-004 | **Media** | `DiarioRepository.java`, `MisionesRepository.java`, `PomodoroRepository.java` | 3 de 5 repositorios sin cache Room | ⏸️ Funcional via `database.cacheDao()` directo en fragments |
+| API-A-005 | **Baja** | `app/build.gradle.kts:20` | `API_BASE_URL` en `defaultConfig` — no varía entre debug/release | ⏸️ Aceptable, no crítico |
+
+#### 🟢 Hallazgos de Experiencia de Usuario (API errors)
+
+| ID | Prioridad | Archivo | Problema |
+|----|-----------|---------|----------|
+| API-UX-001 | **Media** | Todos los onFailure | Todos los errores de red mostraban mensaje genérico | ✅ Corregido — `SocketTimeoutException`, `UnknownHostException`, `ConnectException` diferenciados |
+| API-UX-002 | **Baja** | Todos los onResponse | Sin manejo de errores HTTP específicos (403, 422, 500) | ⏸️ Pendiente — requiere refactor de `onResponse` en todos los fragments |
+
+#### ✅ Aspectos Correctos
+
+- AuthInterceptor: detección de 401, refresh con authless client, X-Retry anti-bucle, force logout en fallo
+- Timeouts de 30s configurados en 3 dimensiones (connect, read, write)
+- Todos los servicios envueltos en `RespuestaApi<T>` con exito/mensaje/datos/errores
+- Consistencia en uso de `enqueue()` async desde UI
+- Logging en catch blocks con TAG consistente
+- Singleton thread-safe en RetrofitClient
+- Manejo de nulos en `sessionManager.getToken()` antes de agregar header
+- Refresh token almacenado separadamente del access token
+- Logging condicional según BuildConfig.DEBUG (arreglado)
+- `forceLogout()` ahora en main thread (arreglado)
+- Todos los Retrofit `Call` se cancelan en `onDestroyView()`/`onDestroy()` (arreglado)
+- Errores de red diferenciados: timeout, DNS, conexión (arreglado)
+- HabitosFragment con cache Room para fallback offline (arreglado)
 
 ---
 

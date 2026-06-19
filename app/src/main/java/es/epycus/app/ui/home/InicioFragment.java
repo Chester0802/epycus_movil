@@ -13,6 +13,12 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+
 import es.epycus.app.R;
 import es.epycus.app.api.RetrofitClient;
 import es.epycus.app.data.local.AppDatabase;
@@ -33,6 +39,7 @@ public class InicioFragment extends Fragment {
     private AppDatabase database;
     private boolean dashboardDataLoaded = false;
     private boolean progresoDataLoaded = false;
+    private final List<Call<?>> activeCalls = new ArrayList<>();
 
     @Nullable
     @Override
@@ -62,50 +69,53 @@ public class InicioFragment extends Fragment {
     private void cargarDashboard() {
         binding.loadingView.setVisibility(View.VISIBLE);
 
-        RetrofitClient.getInstance(requireContext()).getApiDashboardService()
-                .resumen().enqueue(new Callback<>() {
-                    @Override
-                    public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                           @NonNull Response<RespuestaApi<Object>> response) {
-                        binding.loadingView.setVisibility(View.GONE);
-                        binding.swipeRefresh.setRefreshing(false);
-                        if (response.isSuccessful() && response.body() != null
-                                && response.body().getDatos() != null) {
-                            try {
-                                Gson gson = new Gson();
-                                String json = gson.toJson(response.body().getDatos());
-                                database.cacheDao().insert(
-                                        new es.epycus.app.data.local.entity.CacheEntity("dashboard", json));
-                                DashboardResponse data = gson.fromJson(json, DashboardResponse.class);
-                                dashboardDataLoaded = true;
+        Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiDashboardService()
+                .resumen();
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
+                                   @NonNull Response<RespuestaApi<Object>> response) {
+                activeCalls.remove(call);
+                binding.loadingView.setVisibility(View.GONE);
+                binding.swipeRefresh.setRefreshing(false);
+                if (response.isSuccessful() && response.body() != null
+                        && response.body().getDatos() != null) {
+                    try {
+                        Gson gson = new Gson();
+                        String json = gson.toJson(response.body().getDatos());
+                        database.cacheDao().insert(
+                                new es.epycus.app.data.local.entity.CacheEntity("dashboard", json));
+                        DashboardResponse data = gson.fromJson(json, DashboardResponse.class);
+                        dashboardDataLoaded = true;
 
-                                binding.tvHabitosPendientes.setText(
-                                        String.valueOf(data.getHabitosPendientes()));
+                        binding.tvHabitosPendientes.setText(
+                                String.valueOf(data.getHabitosPendientes()));
 
-                                if (data.getFrase() != null) {
-                                    binding.tvFrase.setText(data.getFrase().getFrase());
-                                    binding.tvFraseAutor.setText(getString(R.string.autor_formato, data.getFrase().getAutor()));
-                                }
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error parsing dashboard", e);
-                                binding.tvHabitosPendientes.setText(String.valueOf(0));
-                            }
+                        if (data.getFrase() != null) {
+                            binding.tvFrase.setText(data.getFrase().getFrase());
+                            binding.tvFraseAutor.setText(getString(R.string.autor_formato, data.getFrase().getAutor()));
                         }
-                        verificarCargaCompleta();
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error parsing dashboard", e);
+                        binding.tvHabitosPendientes.setText(String.valueOf(0));
                     }
+                }
+                verificarCargaCompleta();
+            }
 
-                    @Override
-                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
-                        binding.loadingView.setVisibility(View.GONE);
-                        binding.swipeRefresh.setRefreshing(false);
-                        if (cargarDashboardDesdeCache()) {
-                            dashboardDataLoaded = true;
-                        }
-                        verificarCargaCompleta();
-                        Snackbar.make(requireView(), getString(R.string.error_conexion),
-                                Snackbar.LENGTH_SHORT).show();
-                    }
-                });
+            @Override
+            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+                activeCalls.remove(call);
+                binding.loadingView.setVisibility(View.GONE);
+                binding.swipeRefresh.setRefreshing(false);
+                if (cargarDashboardDesdeCache()) {
+                    dashboardDataLoaded = true;
+                }
+                verificarCargaCompleta();
+                mostrarErrorRed(t);
+            }
+        });
     }
 
     private boolean cargarDashboardDesdeCache() {
@@ -129,44 +139,47 @@ public class InicioFragment extends Fragment {
     }
 
     private void cargarProgreso() {
-        RetrofitClient.getInstance(requireContext()).getApiGamificacionService()
-                .miProgreso().enqueue(new Callback<>() {
-                    @Override
-                    public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                           @NonNull Response<RespuestaApi<Object>> response) {
-                        binding.swipeRefresh.setRefreshing(false);
-                        if (response.isSuccessful() && response.body() != null
-                                && response.body().getDatos() != null) {
-                            try {
-                                Gson gson = new Gson();
-                                String json = gson.toJson(response.body().getDatos());
-                                database.cacheDao().insert(
-                                        new es.epycus.app.data.local.entity.CacheEntity("progreso", json));
-                                GamificacionResponse data = gson.fromJson(json, GamificacionResponse.class);
-                                progresoDataLoaded = true;
+        Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiGamificacionService()
+                .miProgreso();
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
+                                   @NonNull Response<RespuestaApi<Object>> response) {
+                activeCalls.remove(call);
+                binding.swipeRefresh.setRefreshing(false);
+                if (response.isSuccessful() && response.body() != null
+                        && response.body().getDatos() != null) {
+                    try {
+                        Gson gson = new Gson();
+                        String json = gson.toJson(response.body().getDatos());
+                        database.cacheDao().insert(
+                                new es.epycus.app.data.local.entity.CacheEntity("progreso", json));
+                        GamificacionResponse data = gson.fromJson(json, GamificacionResponse.class);
+                        progresoDataLoaded = true;
 
-                                binding.tvRacha.setText(String.valueOf(data.getRachaActual()));
-                                binding.tvNivel.setText(getString(R.string.nv_formato, data.getNivel()));
-                                binding.pbXp.setProgress((int) data.getPorcentajeProgreso());
-                                binding.tvXpText.setText(getString(R.string.xp_formato, data.getXpTotal()));
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error parsing progreso", e);
-                            }
-                        }
-                        verificarCargaCompleta();
+                        binding.tvRacha.setText(String.valueOf(data.getRachaActual()));
+                        binding.tvNivel.setText(getString(R.string.nv_formato, data.getNivel()));
+                        binding.pbXp.setProgress((int) data.getPorcentajeProgreso());
+                        binding.tvXpText.setText(getString(R.string.xp_formato, data.getXpTotal()));
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error parsing progreso", e);
                     }
+                }
+                verificarCargaCompleta();
+            }
 
-                    @Override
-                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
-                        binding.swipeRefresh.setRefreshing(false);
-                        if (cargarProgresoDesdeCache()) {
-                            progresoDataLoaded = true;
-                        }
-                        verificarCargaCompleta();
-                        Snackbar.make(requireView(), getString(R.string.error_conexion),
-                                Snackbar.LENGTH_SHORT).show();
-                    }
-                });
+            @Override
+            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+                activeCalls.remove(call);
+                binding.swipeRefresh.setRefreshing(false);
+                if (cargarProgresoDesdeCache()) {
+                    progresoDataLoaded = true;
+                }
+                verificarCargaCompleta();
+                mostrarErrorRed(t);
+            }
+        });
     }
 
     private boolean cargarProgresoDesdeCache() {
@@ -193,8 +206,24 @@ public class InicioFragment extends Fragment {
         }
     }
 
+    private void mostrarErrorRed(Throwable t) {
+        int msgRes;
+        if (t instanceof SocketTimeoutException) {
+            msgRes = R.string.error_timeout;
+        } else if (t instanceof UnknownHostException || t instanceof ConnectException) {
+            msgRes = R.string.error_sin_conexion;
+        } else {
+            msgRes = R.string.error_conexion;
+        }
+        Snackbar.make(requireView(), getString(msgRes), Snackbar.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onDestroyView() {
+        for (Call<?> call : activeCalls) {
+            if (!call.isCanceled()) call.cancel();
+        }
+        activeCalls.clear();
         super.onDestroyView();
         binding = null;
     }

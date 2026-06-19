@@ -9,6 +9,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+
 import es.epycus.app.R;
 import es.epycus.app.api.RetrofitClient;
 import es.epycus.app.databinding.ActivityIaChatBinding;
@@ -24,6 +28,7 @@ public class IaChatActivity extends AppCompatActivity {
     private ActivityIaChatBinding binding;
     private MensajeChatAdapter adapter;
     private String conversacionId;
+    private retrofit2.Call<RespuestaApi<Object>> activeCall;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +53,10 @@ public class IaChatActivity extends AppCompatActivity {
         String texto = binding.etMensaje.getText().toString().trim();
         if (texto.isEmpty()) return;
 
+        if (activeCall != null && !activeCall.isCanceled()) {
+            activeCall.cancel();
+        }
+
         binding.etMensaje.setText("");
         adapter.addMensaje(new MensajeChatAdapter.Mensaje(texto, true));
         binding.rvMensajes.smoothScrollToPosition(adapter.getItemCount() - 1);
@@ -56,42 +65,61 @@ public class IaChatActivity extends AppCompatActivity {
 
         ChatRequest request = new ChatRequest(texto, conversacionId);
 
-        RetrofitClient.getInstance(this).getApiIaService()
-                .chat(request).enqueue(new retrofit2.Callback<>() {
-                    @Override
-                    public void onResponse(@NonNull retrofit2.Call<RespuestaApi<Object>> call,
-                                           @NonNull retrofit2.Response<RespuestaApi<Object>> response) {
-                        binding.loadingView.setVisibility(View.GONE);
+        activeCall = RetrofitClient.getInstance(this).getApiIaService()
+                .chat(request);
+        activeCall.enqueue(new retrofit2.Callback<>() {
+            @Override
+            public void onResponse(@NonNull retrofit2.Call<RespuestaApi<Object>> call,
+                                   @NonNull retrofit2.Response<RespuestaApi<Object>> response) {
+                activeCall = null;
+                binding.loadingView.setVisibility(View.GONE);
 
-                        if (response.isSuccessful() && response.body() != null
-                                && response.body().isExito() && response.body().getDatos() != null) {
-                            try {
-                                com.google.gson.Gson gson = new com.google.gson.Gson();
-                                String json = gson.toJson(response.body().getDatos());
-                                ChatResponse chatResp = gson.fromJson(json, ChatResponse.class);
+                if (response.isSuccessful() && response.body() != null
+                        && response.body().isExito() && response.body().getDatos() != null) {
+                    try {
+                        com.google.gson.Gson gson = new com.google.gson.Gson();
+                        String json = gson.toJson(response.body().getDatos());
+                        ChatResponse chatResp = gson.fromJson(json, ChatResponse.class);
 
-                                conversacionId = chatResp.getConversacionId();
-                                adapter.addMensaje(new MensajeChatAdapter.Mensaje(
-                                        chatResp.getRespuesta(), false));
-                                binding.rvMensajes.smoothScrollToPosition(
-                                        adapter.getItemCount() - 1);
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error parsing chat response", e);
-                                adapter.addMensaje(new MensajeChatAdapter.Mensaje(
-                                        getString(R.string.error_procesar_mensaje), false));
-                            }
-                        } else {
-                            adapter.addMensaje(new MensajeChatAdapter.Mensaje(
-                                    getString(R.string.error_intentar), false));
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull retrofit2.Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
-                        binding.loadingView.setVisibility(View.GONE);
+                        conversacionId = chatResp.getConversacionId();
                         adapter.addMensaje(new MensajeChatAdapter.Mensaje(
-                                getString(R.string.error_conexion), false));
+                                chatResp.getRespuesta(), false));
+                        binding.rvMensajes.smoothScrollToPosition(
+                                adapter.getItemCount() - 1);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error parsing chat response", e);
+                        adapter.addMensaje(new MensajeChatAdapter.Mensaje(
+                                getString(R.string.error_procesar_mensaje), false));
                     }
-                });
+                } else {
+                    adapter.addMensaje(new MensajeChatAdapter.Mensaje(
+                            getString(R.string.error_intentar), false));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull retrofit2.Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+                activeCall = null;
+                binding.loadingView.setVisibility(View.GONE);
+                int msgRes;
+                if (t instanceof SocketTimeoutException) {
+                    msgRes = R.string.error_timeout;
+                } else if (t instanceof UnknownHostException || t instanceof ConnectException) {
+                    msgRes = R.string.error_sin_conexion;
+                } else {
+                    msgRes = R.string.error_conexion_ia;
+                }
+                adapter.addMensaje(new MensajeChatAdapter.Mensaje(
+                        getString(msgRes), false));
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (activeCall != null && !activeCall.isCanceled()) {
+            activeCall.cancel();
+        }
+        super.onDestroy();
     }
 }

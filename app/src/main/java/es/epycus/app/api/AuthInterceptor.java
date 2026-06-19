@@ -2,6 +2,8 @@ package es.epycus.app.api;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 
 import java.io.IOException;
 
@@ -94,8 +96,10 @@ public class AuthInterceptor implements Interceptor {
 
     private void forceLogout() {
         sessionManager.logout();
-        Intent intent = new Intent(context, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        context.startActivity(intent);
+        new Handler(Looper.getMainLooper()).post(() -> {
+            Intent intent = new Intent(context, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            context.startActivity(intent);
+        });
     }
 }
