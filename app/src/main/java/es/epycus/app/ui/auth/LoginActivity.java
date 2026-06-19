@@ -1,11 +1,7 @@
 package es.epycus.app.ui.auth;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.snackbar.Snackbar;
 
 import es.epycus.app.R;
+import es.epycus.app.databinding.ActivityLoginBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.entidades.AuthResponse;
 import es.epycus.app.repository.AuthRepository;
@@ -21,17 +18,16 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-@SuppressLint("SetTextI18n")
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText etCorreo, etContrasena;
-    private Button btnLogin, btnRegistro;
+    private ActivityLoginBinding binding;
     private AuthRepository authRepository;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         authRepository = new AuthRepository(this);
 
@@ -40,22 +36,17 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        etCorreo = findViewById(R.id.etCorreo);
-        etContrasena = findViewById(R.id.etContrasena);
-        btnLogin = findViewById(R.id.btnLogin);
-        btnRegistro = findViewById(R.id.btnRegistro);
-
-        btnLogin.setOnClickListener(v -> iniciarSesion());
-        btnRegistro.setOnClickListener(v ->
+        binding.btnLogin.setOnClickListener(v -> iniciarSesion());
+        binding.btnRegistro.setOnClickListener(v ->
                 startActivity(new Intent(LoginActivity.this, RegistroActivity.class)));
     }
 
     private void iniciarSesion() {
-        String correo = etCorreo.getText().toString().trim();
-        String contrasena = etContrasena.getText().toString().trim();
+        String correo = binding.etCorreo.getText().toString().trim();
+        String contrasena = binding.etContrasena.getText().toString().trim();
 
         if (correo.isEmpty() || contrasena.isEmpty()) {
-            Snackbar.make(btnLogin, "Completa todos los campos", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(binding.btnLogin, getString(R.string.completa_campos), Snackbar.LENGTH_SHORT).show();
             return;
         }
 
@@ -72,26 +63,26 @@ public class LoginActivity extends AppCompatActivity {
                     authRepository.saveSession(authData, 0, correo, correo);
                     navegarAlHome();
                 } else {
-                    String msg = "Credenciales incorrectas";
+                    String msg = getString(R.string.credenciales_incorrectas);
                     if (response.body() != null && response.body().getMensaje() != null) {
                         msg = response.body().getMensaje();
                     }
-                    Snackbar.make(btnLogin, msg, Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(binding.btnLogin, msg, Snackbar.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<RespuestaApi<AuthResponse>> call, Throwable t) {
                 setLoading(false);
-                Snackbar.make(btnLogin, "Error de conexion: verifica tu internet",
+                Snackbar.make(binding.btnLogin, getString(R.string.error_conexion_verifica),
                         Snackbar.LENGTH_LONG).show();
             }
         });
     }
 
     private void setLoading(boolean loading) {
-        btnLogin.setEnabled(!loading);
-        btnLogin.setText(loading ? "Iniciando sesion..." : "Iniciar sesion");
+        binding.btnLogin.setEnabled(!loading);
+        binding.btnLogin.setText(loading ? getString(R.string.iniciando_sesion) : getString(R.string.iniciar_sesion));
     }
 
     private void navegarAlHome() {

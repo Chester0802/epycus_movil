@@ -2,10 +2,10 @@ package es.epycus.app.ui.diario;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +15,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import es.epycus.app.R;
 import es.epycus.app.api.RetrofitClient;
+import es.epycus.app.databinding.FragmentDiarioBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.ui.ia.IaChatActivity;
 import retrofit2.Call;
@@ -23,6 +24,8 @@ import retrofit2.Response;
 
 public class DiarioFragment extends Fragment {
 
+    private static final String TAG = "DiarioFragment";
+    private FragmentDiarioBinding binding;
     private View selectedMood;
     private String selectedMoodText = "";
 
@@ -30,13 +33,8 @@ public class DiarioFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_diario, container, false);
-
-        View moodGenial = view.findViewById(R.id.moodGenial);
-        View moodBien = view.findViewById(R.id.moodBien);
-        View moodNormal = view.findViewById(R.id.moodNormal);
-        View moodCansado = view.findViewById(R.id.moodCansado);
-        View moodEstresado = view.findViewById(R.id.moodEstresado);
+        binding = FragmentDiarioBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
         View.OnClickListener moodListener = v -> {
             if (selectedMood != null) {
@@ -52,24 +50,24 @@ public class DiarioFragment extends Fragment {
             else if (v.getId() == R.id.moodEstresado) selectedMoodText = "Estresado";
         };
 
-        moodGenial.setOnClickListener(moodListener);
-        moodBien.setOnClickListener(moodListener);
-        moodNormal.setOnClickListener(moodListener);
-        moodCansado.setOnClickListener(moodListener);
-        moodEstresado.setOnClickListener(moodListener);
+        binding.moodGenial.setOnClickListener(moodListener);
+        binding.moodBien.setOnClickListener(moodListener);
+        binding.moodNormal.setOnClickListener(moodListener);
+        binding.moodCansado.setOnClickListener(moodListener);
+        binding.moodEstresado.setOnClickListener(moodListener);
 
-        view.findViewById(R.id.btnGuardarAnimo).setOnClickListener(v -> {
+        binding.btnGuardarAnimo.setOnClickListener(v -> {
             if (selectedMoodText.isEmpty()) {
-                Snackbar.make(v, "Selecciona como te sientes", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(v, getString(R.string.selecciona_como_te_sientes), Snackbar.LENGTH_SHORT).show();
                 return;
             }
             guardarAnimo(selectedMoodText);
         });
 
-        view.findViewById(R.id.btnChatEdy).setOnClickListener(v ->
+        binding.btnChatEdy.setOnClickListener(v ->
                 startActivity(new Intent(getActivity(), IaChatActivity.class)));
 
-        cargarPreguntaGuia(view);
+        cargarPreguntaGuia();
 
         return view;
     }
@@ -84,7 +82,7 @@ public class DiarioFragment extends Fragment {
                     public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
                                            @NonNull Response<RespuestaApi<Object>> response) {
                         if (response.isSuccessful()) {
-                            Snackbar.make(requireView(), "Estado de animo guardado",
+                            Snackbar.make(requireView(), getString(R.string.estado_animo_guardado),
                                     Snackbar.LENGTH_SHORT).show();
                             if (selectedMood != null) {
                                 selectedMood.setBackgroundResource(R.drawable.bg_card_rounded);
@@ -96,15 +94,13 @@ public class DiarioFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
-                        Snackbar.make(requireView(), "Error de conexion",
+                        Snackbar.make(requireView(), getString(R.string.error_conexion),
                                 Snackbar.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void cargarPreguntaGuia(View view) {
-        TextView tvPregunta = view.findViewById(R.id.tvPreguntaGuia);
-
+    private void cargarPreguntaGuia() {
         RetrofitClient.getInstance(requireContext()).getApiDiarioService()
                 .preguntaGuia().enqueue(new Callback<>() {
                     @Override
@@ -118,14 +114,25 @@ public class DiarioFragment extends Fragment {
                                 com.google.gson.JsonObject obj = gson.fromJson(json,
                                         com.google.gson.JsonObject.class);
                                 if (obj.has("pregunta")) {
-                                    tvPregunta.setText(obj.get("pregunta").getAsString());
+                                    binding.tvPreguntaGuia.setText(obj.get("pregunta").getAsString());
                                 }
-                            } catch (Exception ignored) {}
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error parsing pregunta guia", e);
+                            }
                         }
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {}
+                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+                        Snackbar.make(requireView(), getString(R.string.error_conexion),
+                                Snackbar.LENGTH_SHORT).show();
+                    }
                 });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

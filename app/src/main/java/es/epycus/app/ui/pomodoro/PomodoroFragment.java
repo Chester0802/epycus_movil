@@ -1,25 +1,21 @@
 package es.epycus.app.ui.pomodoro;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import es.epycus.app.R;
+import es.epycus.app.databinding.FragmentPomodoroBinding;
 
-@SuppressLint("SetTextI18n")
 public class PomodoroFragment extends Fragment {
 
-    private TextView tvTiempo, tvEstado, tvCiclos, tvTotalHoy;
-    private Button btnControl;
+    private FragmentPomodoroBinding binding;
     private CountDownTimer timer;
     private boolean isRunning = false;
     private boolean isPausa = false;
@@ -35,19 +31,14 @@ public class PomodoroFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_pomodoro, container, false);
-
-        tvTiempo = view.findViewById(R.id.tvTiempo);
-        tvEstado = view.findViewById(R.id.tvEstado);
-        tvCiclos = view.findViewById(R.id.tvCiclos);
-        tvTotalHoy = view.findViewById(R.id.tvTotalHoy);
-        btnControl = view.findViewById(R.id.btnControl);
+        binding = FragmentPomodoroBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
         actualizarDisplay();
-        tvCiclos.setText("Ciclos: 0");
-        tvTotalHoy.setText("Hoy: 0 completados");
+        binding.tvCiclos.setText(getString(R.string.ciclos_formato, 0));
+        binding.tvTotalHoy.setText(getString(R.string.hoy_completados_formato, 0));
 
-        btnControl.setOnClickListener(v -> {
+        binding.btnControl.setOnClickListener(v -> {
             if (isRunning) {
                 pausar();
             } else {
@@ -60,7 +51,7 @@ public class PomodoroFragment extends Fragment {
 
     private void iniciar() {
         isRunning = true;
-        btnControl.setText("Pausar");
+        binding.btnControl.setText(getString(R.string.pausar));
 
         timer = new CountDownTimer(segundosRestantes * 1000L, 1000) {
             @Override
@@ -73,21 +64,21 @@ public class PomodoroFragment extends Fragment {
             public void onFinish() {
                 isRunning = false;
                 if (isPausa) {
-                    btnControl.setText("Iniciar foco");
-                    tvEstado.setText("Pausa terminada!");
+                    binding.btnControl.setText(getString(R.string.iniciar_foco));
+                    binding.tvEstado.setText(getString(R.string.pausa_terminada));
                     isPausa = false;
                     segundosRestantes = TIEMPO_FOCO;
                 } else {
                     ciclosCompletados++;
                     ciclosHoy++;
-                    tvCiclos.setText("Ciclos: " + ciclosCompletados);
-                    tvTotalHoy.setText("Hoy: " + ciclosHoy + " completados");
-                    btnControl.setText("Iniciar pausa");
-                    tvEstado.setText("Foco completado! Toma un descanso");
+                    binding.tvCiclos.setText(getString(R.string.ciclos_formato, ciclosCompletados));
+                    binding.tvTotalHoy.setText(getString(R.string.hoy_completados_formato, ciclosHoy));
+                    binding.btnControl.setText(getString(R.string.iniciar_pausa));
+                    binding.tvEstado.setText(getString(R.string.foco_completado));
 
                     if (ciclosCompletados % ciclosAntesPausaLarga == 0) {
                         segundosRestantes = TIEMPO_PAUSA_LARGA;
-                        tvEstado.setText("Pausa larga - " + TIEMPO_PAUSA_LARGA / 60 + " min");
+                        binding.tvEstado.setText(getString(R.string.pausa_larga_formato, TIEMPO_PAUSA_LARGA / 60));
                     } else {
                         segundosRestantes = TIEMPO_PAUSA;
                     }
@@ -103,14 +94,14 @@ public class PomodoroFragment extends Fragment {
             timer.cancel();
         }
         isRunning = false;
-        btnControl.setText("Reanudar");
+        binding.btnControl.setText(getString(R.string.reanudar));
     }
 
     private void actualizarDisplay() {
         int minutos = segundosRestantes / 60;
         int segs = segundosRestantes % 60;
-        tvTiempo.setText(String.format("%02d:%02d", minutos, segs));
-        tvEstado.setText(isPausa ? "Pausa" : "Foco");
+        binding.tvTiempo.setText(String.format("%02d:%02d", minutos, segs));
+        binding.tvEstado.setText(isPausa ? (CharSequence) getString(R.string.pausa) : getString(R.string.foco));
     }
 
     @Override
@@ -119,5 +110,6 @@ public class PomodoroFragment extends Fragment {
         if (timer != null) {
             timer.cancel();
         }
+        binding = null;
     }
 }

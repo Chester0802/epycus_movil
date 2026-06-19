@@ -1,6 +1,70 @@
 <resources>
     <string name="app_name">Epycus</string>
 
+    <!-- Login -->
+    <string name="iniciar_sesion">Iniciar sesi\u00f3n</string>
+    <string name="iniciando_sesion">Iniciando sesi\u00f3n...</string>
+    <string name="completa_campos">Completa todos los campos</string>
+    <string name="credenciales_incorrectas">Credenciales incorrectas</string>
+    <string name="error_conexion_verifica">Error de conexi\u00f3n: verifica tu internet</string>
+
+    <!-- Registro -->
+    <string name="registrandose">Registrando...</string>
+    <string name="registrarse">Registrarse</string>
+    <string name="contrasenas_no_coinciden">Las contrase\u00f1as no coinciden</string>
+    <string name="registro_exitoso">Registro exitoso. Revisa tu correo para verificar tu cuenta.</string>
+    <string name="error_registro">Error en el registro</string>
+    <string name="error_carreras">Error al cargar carreras</string>
+    <string name="error_carreras_conexion">No se pudieron cargar las carreras</string>
+    <string name="error_conexion_formato">Error de conexi\u00f3n: %s</string>
+
+    <!-- Diario -->
+    <string name="selecciona_como_te_sientes">Selecciona c\u00f3mo te sientes</string>
+    <string name="estado_animo_guardado">Estado de \u00e1nimo guardado</string>
+
+    <!-- General -->
+    <string name="error_conexion">No se pudo conectar al servidor</string>
+
+    <!-- H\u00e1bitos -->
+    <string name="habito_completado_xp">\u00a1H\u00e1bito completado! +XP</string>
+    <string name="error_al_completar">Error al completar</string>
+    <string name="funcionalidad_pronto">Funcionalidad pronto disponible</string>
+    <string name="habitos_hoy_formato">%d h\u00e1bitos hoy</string>
+    <string name="error_conexion_habitos">Error de conexi\u00f3n</string>
+
+    <!-- Inicio / Dashboard -->
+    <string name="hola_formato">Hola, %s</string>
+    <string name="bienvenido_formato">Bienvenido, %s</string>
+    <string name="nv_formato">Nv.%d</string>
+    <string name="xp_formato">%d XP</string>
+
+    <!-- Perfil -->
+    <string name="nivel_formato">Nivel %d</string>
+    <string name="dias_formato">%d d\u00edas</string>
+    <string name="sin_carrera">Sin carrera</string>
+    <string name="miembro_desde_formato">Miembro desde %s</string>
+    <string name="proximamente">Pr\u00f3ximamente</string>
+
+    <!-- Pomodoro -->
+    <string name="pausa">Pausa</string>
+    <string name="foco">Foco</string>
+    <string name="pausar">Pausar</string>
+    <string name="reanudar">Reanudar</string>
+    <string name="iniciar_foco">Iniciar foco</string>
+    <string name="iniciar_pausa">Iniciar pausa</string>
+    <string name="pausa_terminada">\u00a1Pausa terminada!</string>
+    <string name="foco_completado">\u00a1Foco completado! Toma un descanso</string>
+    <string name="pausa_larga_formato">Pausa larga - %d min</string>
+    <string name="ciclos_formato">Ciclos: %d</string>
+    <string name="hoy_completados_formato">Hoy: %d completados</string>
+
+    <!-- IA Chat -->
+    <string name="edy_presentacion">\u00a1Hola! Soy Edy, tu asistente de bienestar. \u00bfC\u00f3mo te sientes hoy?</string>
+    <string name="error_procesar_mensaje">Lo siento, no pude procesar tu mensaje.</string>
+    <string name="error_intentar">Lo siento, hubo un error. Intenta de nuevo.</string>
+    <string name="error_conexion_ia">Error de conexi\u00f3n. Verifica tu internet.</string>
+    <string name="autor_formato">- %s</string>
+
     <string-array name="generos">
         <item>Masculino</item>
         <item>Femenino</item>

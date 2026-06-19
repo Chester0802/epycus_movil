@@ -1,13 +1,11 @@
 package es.epycus.app.ui.perfil;
 
 import android.content.Intent;
-import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,17 +15,17 @@ import com.google.android.material.snackbar.Snackbar;
 
 import es.epycus.app.R;
 import es.epycus.app.api.RetrofitClient;
+import es.epycus.app.databinding.FragmentPerfilBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.PerfilResponse;
 import es.epycus.app.repository.AuthRepository;
 import es.epycus.app.ui.auth.LoginActivity;
 import es.epycus.app.util.SessionManager;
 
-@SuppressLint("SetTextI18n")
 public class PerfilFragment extends Fragment {
 
-    private TextView tvNombre, tvCorreo, tvNivel, tvRacha, tvXp, tvCarrera, tvMiembroDesde;
-    private View loadingView;
+    private static final String TAG = "PerfilFragment";
+    private FragmentPerfilBinding binding;
     private SessionManager sessionManager;
     private AuthRepository authRepository;
 
@@ -35,44 +33,36 @@ public class PerfilFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_perfil, container, false);
+        binding = FragmentPerfilBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
         sessionManager = SessionManager.getInstance(requireContext());
         authRepository = new AuthRepository(requireContext());
 
-        tvNombre = view.findViewById(R.id.tvNombre);
-        tvCorreo = view.findViewById(R.id.tvCorreo);
-        tvNivel = view.findViewById(R.id.tvNivel);
-        tvRacha = view.findViewById(R.id.tvRacha);
-        tvXp = view.findViewById(R.id.tvXp);
-        tvCarrera = view.findViewById(R.id.tvCarrera);
-        tvMiembroDesde = view.findViewById(R.id.tvMiembroDesde);
-        loadingView = view.findViewById(R.id.loadingView);
-
         cargarPerfil();
 
-        view.findViewById(R.id.btnCerrarSesion).setOnClickListener(v -> cerrarSesion());
-        view.findViewById(R.id.btnPersonajes).setOnClickListener(v ->
-                Snackbar.make(v, "Proximamente", Snackbar.LENGTH_SHORT).show());
-        view.findViewById(R.id.btnLogros).setOnClickListener(v ->
-                Snackbar.make(v, "Proximamente", Snackbar.LENGTH_SHORT).show());
-        view.findViewById(R.id.btnEstadisticas).setOnClickListener(v ->
-                Snackbar.make(v, "Proximamente", Snackbar.LENGTH_SHORT).show());
-        view.findViewById(R.id.btnConfiguracion).setOnClickListener(v ->
-                Snackbar.make(v, "Proximamente", Snackbar.LENGTH_SHORT).show());
+        binding.btnCerrarSesion.setOnClickListener(v -> cerrarSesion());
+        binding.btnPersonajes.setOnClickListener(v ->
+                Snackbar.make(v, getString(R.string.proximamente), Snackbar.LENGTH_SHORT).show());
+        binding.btnLogros.setOnClickListener(v ->
+                Snackbar.make(v, getString(R.string.proximamente), Snackbar.LENGTH_SHORT).show());
+        binding.btnEstadisticas.setOnClickListener(v ->
+                Snackbar.make(v, getString(R.string.proximamente), Snackbar.LENGTH_SHORT).show());
+        binding.btnConfiguracion.setOnClickListener(v ->
+                Snackbar.make(v, getString(R.string.proximamente), Snackbar.LENGTH_SHORT).show());
 
         return view;
     }
 
     private void cargarPerfil() {
-        loadingView.setVisibility(View.VISIBLE);
+        binding.loadingView.setVisibility(View.VISIBLE);
 
         RetrofitClient.getInstance(requireContext()).getApiPerfilService()
                 .obtenerPerfil().enqueue(new retrofit2.Callback<>() {
                     @Override
                     public void onResponse(@NonNull retrofit2.Call<RespuestaApi<Object>> call,
                                            @NonNull retrofit2.Response<RespuestaApi<Object>> response) {
-                        loadingView.setVisibility(View.GONE);
+                        binding.loadingView.setVisibility(View.GONE);
 
                         if (response.isSuccessful() && response.body() != null
                                 && response.body().isExito() && response.body().getDatos() != null) {
@@ -82,15 +72,15 @@ public class PerfilFragment extends Fragment {
                                 PerfilResponse perfilResp = gson.fromJson(json, PerfilResponse.class);
 
                                 PerfilResponse.Perfil perfil = perfilResp.getPerfil();
-                                tvNombre.setText(perfil.getNombre());
-                                tvCorreo.setText(perfil.getCorreoElectronico());
-                                tvNivel.setText("Nivel " + perfil.getNivelActual());
-                                tvRacha.setText(perfil.getRachaActual() + " dias");
-                                tvXp.setText(perfil.getXpTotal() + " XP");
-                                tvCarrera.setText(perfil.getCarreraNombre() != null ?
-                                        perfil.getCarreraNombre() : "Sin carrera");
-                                tvMiembroDesde.setText("Miembro desde " +
-                                        perfil.getFechaRegistro());
+                                binding.tvNombre.setText(perfil.getNombre());
+                                binding.tvCorreo.setText(perfil.getCorreoElectronico());
+                                binding.tvNivel.setText(getString(R.string.nivel_formato, perfil.getNivelActual()));
+                                binding.tvRacha.setText(getString(R.string.dias_formato, perfil.getRachaActual()));
+                                binding.tvXp.setText(getString(R.string.xp_formato, perfil.getXpTotal()));
+                                binding.tvCarrera.setText(perfil.getCarreraNombre() != null ?
+                                        perfil.getCarreraNombre() : getString(R.string.sin_carrera));
+                                binding.tvMiembroDesde.setText(getString(R.string.miembro_desde_formato,
+                                        perfil.getFechaRegistro()));
 
                                 sessionManager.saveSession(
                                         sessionManager.getToken(),
@@ -100,6 +90,7 @@ public class PerfilFragment extends Fragment {
                                         perfil.getCorreoElectronico()
                                 );
                             } catch (Exception e) {
+                                Log.e(TAG, "Error parsing perfil", e);
                                 cargarDatosLocales();
                             }
                         } else {
@@ -109,18 +100,18 @@ public class PerfilFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull retrofit2.Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
-                        loadingView.setVisibility(View.GONE);
+                        binding.loadingView.setVisibility(View.GONE);
                         cargarDatosLocales();
                     }
                 });
     }
 
     private void cargarDatosLocales() {
-        tvNombre.setText(sessionManager.getUserName());
-        tvCorreo.setText(sessionManager.getUserEmail());
-        tvNivel.setText("Nivel 1");
-        tvRacha.setText("0 dias");
-        tvXp.setText("0 XP");
+        binding.tvNombre.setText(sessionManager.getUserName());
+        binding.tvCorreo.setText(sessionManager.getUserEmail());
+        binding.tvNivel.setText(getString(R.string.nivel_formato, 1));
+        binding.tvRacha.setText(getString(R.string.dias_formato, 0));
+        binding.tvXp.setText(getString(R.string.xp_formato, 0));
     }
 
     private void cerrarSesion() {
@@ -144,5 +135,11 @@ public class PerfilFragment extends Fragment {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         requireActivity().finish();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

@@ -1,18 +1,16 @@
 package es.epycus.app.ui.habitos;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -20,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import es.epycus.app.R;
+import es.epycus.app.databinding.FragmentHabitosBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.HabitoHoyDto;
 import es.epycus.app.repository.HabitosRepository;
@@ -28,12 +27,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-@SuppressLint("SetTextI18n")
 public class HabitosFragment extends Fragment {
 
-    private RecyclerView rvHabitos;
-    private TextView tvEmpty, tvHabitosCount;
-    private View loadingView;
+    private static final String TAG = "HabitosFragment";
+    private FragmentHabitosBinding binding;
     private HabitosRepository repository;
     private HabitoHoyAdapter adapter;
 
@@ -41,12 +38,9 @@ public class HabitosFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_habitos, container, false);
+        binding = FragmentHabitosBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
-        rvHabitos = view.findViewById(R.id.rvHabitos);
-        tvEmpty = view.findViewById(R.id.tvEmpty);
-        tvHabitosCount = view.findViewById(R.id.tvHabitosCount);
-        loadingView = view.findViewById(R.id.loadingView);
         repository = new HabitosRepository(requireContext());
 
         adapter = new HabitoHoyAdapter(new HabitoHoyAdapter.OnHabitoListener() {
@@ -61,27 +55,27 @@ public class HabitosFragment extends Fragment {
             }
         });
 
-        rvHabitos.setLayoutManager(new LinearLayoutManager(getContext()));
-        rvHabitos.setAdapter(adapter);
+        binding.rvHabitos.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.rvHabitos.setAdapter(adapter);
 
         cargarHabitos();
 
-        view.findViewById(R.id.btnNuevoHabito).setOnClickListener(v ->
-                Snackbar.make(v, "Funcionalidad pronto disponible", Snackbar.LENGTH_SHORT).show());
+        binding.btnNuevoHabito.setOnClickListener(v ->
+                Snackbar.make(v, getString(R.string.funcionalidad_pronto), Snackbar.LENGTH_SHORT).show());
 
         return view;
     }
 
     private void cargarHabitos() {
-        loadingView.setVisibility(View.VISIBLE);
-        tvEmpty.setVisibility(View.GONE);
-        rvHabitos.setVisibility(View.GONE);
+        binding.loadingView.setVisibility(View.VISIBLE);
+        binding.tvEmpty.setVisibility(View.GONE);
+        binding.rvHabitos.setVisibility(View.GONE);
 
         repository.hoy().enqueue(new Callback<>() {
             @Override
-                    public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                           @NonNull Response<RespuestaApi<Object>> response) {
-                loadingView.setVisibility(View.GONE);
+            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
+                                   @NonNull Response<RespuestaApi<Object>> response) {
+                binding.loadingView.setVisibility(View.GONE);
 
                 if (response.isSuccessful() && response.body() != null && response.body().isExito()
                         && response.body().getDatos() != null) {
@@ -92,25 +86,26 @@ public class HabitosFragment extends Fragment {
                         List<HabitoHoyDto> habitos = Arrays.asList(habitosArray);
 
                         if (habitos.isEmpty()) {
-                            tvEmpty.setVisibility(View.VISIBLE);
+                            binding.tvEmpty.setVisibility(View.VISIBLE);
                         } else {
-                            rvHabitos.setVisibility(View.VISIBLE);
+                            binding.rvHabitos.setVisibility(View.VISIBLE);
                             adapter.setHabitos(habitos);
-                            tvHabitosCount.setText(habitos.size() + " habitos hoy");
+                            binding.tvHabitosCount.setText(getString(R.string.habitos_hoy_formato, habitos.size()));
                         }
                     } catch (Exception e) {
-                        tvEmpty.setVisibility(View.VISIBLE);
+                        Log.e(TAG, "Error parsing habitos", e);
+                        binding.tvEmpty.setVisibility(View.VISIBLE);
                     }
                 } else {
-                    tvEmpty.setVisibility(View.VISIBLE);
+                    binding.tvEmpty.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
-                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
-                loadingView.setVisibility(View.GONE);
-                tvEmpty.setVisibility(View.VISIBLE);
-                tvEmpty.setText("Error de conexion");
+            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+                binding.loadingView.setVisibility(View.GONE);
+                binding.tvEmpty.setVisibility(View.VISIBLE);
+                binding.tvEmpty.setText(getString(R.string.error_conexion_habitos));
             }
         });
     }
@@ -118,18 +113,18 @@ public class HabitosFragment extends Fragment {
     private void completarHabito(int id) {
         repository.completar(id).enqueue(new Callback<>() {
             @Override
-                    public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                           @NonNull Response<RespuestaApi<Object>> response) {
+            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
+                                   @NonNull Response<RespuestaApi<Object>> response) {
                 if (response.isSuccessful()) {
-                    Snackbar.make(rvHabitos, "Habito completado! +XP",
+                    Snackbar.make(binding.rvHabitos, getString(R.string.habito_completado_xp),
                             Snackbar.LENGTH_SHORT).show();
                     cargarHabitos();
                 }
             }
 
             @Override
-                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), "Error al completar", Toast.LENGTH_SHORT).show();
+            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), getString(R.string.error_al_completar), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -137,13 +132,22 @@ public class HabitosFragment extends Fragment {
     private void fallarHabito(int id) {
         repository.fallar(id).enqueue(new Callback<>() {
             @Override
-                    public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                           @NonNull Response<RespuestaApi<Object>> response) {
+            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
+                                   @NonNull Response<RespuestaApi<Object>> response) {
                 cargarHabitos();
             }
 
             @Override
-                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {}
+            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+                Snackbar.make(binding.rvHabitos, getString(R.string.error_conexion),
+                        Snackbar.LENGTH_SHORT).show();
+            }
         });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

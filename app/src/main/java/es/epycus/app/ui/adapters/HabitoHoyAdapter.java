@@ -1,6 +1,5 @@
 package es.epycus.app.ui.adapters;
 
-import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import java.util.List;
 import es.epycus.app.R;
 import es.epycus.app.model.dto.HabitoHoyDto;
 
-@SuppressLint("SetTextI18n")
 public class HabitoHoyAdapter extends RecyclerView.Adapter<HabitoHoyAdapter.ViewHolder> {
 
     private List<HabitoHoyDto> habitos = new ArrayList<>();
@@ -48,7 +46,8 @@ public class HabitoHoyAdapter extends RecyclerView.Adapter<HabitoHoyAdapter.View
         HabitoHoyDto habito = habitos.get(position);
         holder.tvNombre.setText(habito.getNombre());
         holder.tvCategoria.setText(habito.getCategoria());
-        holder.tvXp.setText(habito.getXpPotencial() + " XP");
+        holder.tvXp.setText(holder.itemView.getContext().getString(
+                R.string.xp_formato, habito.getXpPotencial()));
 
         if (habito.isCompletado()) {
             holder.itemView.setAlpha(0.5f);

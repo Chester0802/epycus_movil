@@ -8,6 +8,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import es.epycus.app.ui.MainContainerActivity;
 
+/**
+ * Código muerto — esta Activity ya no se usa.
+ * Launcher real: LoginActivity.
+ * Se puede eliminar junto con activity_main.xml y su declaración en AndroidManifest.xml.
+ */
 public class MainActivity extends AppCompatActivity {
 
     @Override

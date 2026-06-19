@@ -7,9 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import es.epycus.app.R;
+import es.epycus.app.databinding.ActivityMainContainerBinding;
 import es.epycus.app.ui.habitos.HabitosFragment;
 import es.epycus.app.ui.home.InicioFragment;
 import es.epycus.app.ui.pomodoro.PomodoroFragment;
@@ -18,22 +17,22 @@ import es.epycus.app.ui.perfil.PerfilFragment;
 
 public class MainContainerActivity extends AppCompatActivity {
 
-    private BottomNavigationView bottomNav;
+    private ActivityMainContainerBinding binding;
     private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_container);
+        binding = ActivityMainContainerBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        bottomNav = findViewById(R.id.bottomNav);
         fragmentManager = getSupportFragmentManager();
 
         if (savedInstanceState == null) {
             cargarFragmento(new InicioFragment());
         }
 
-        bottomNav.setOnItemSelectedListener(item -> {
+        binding.bottomNav.setOnItemSelectedListener(item -> {
             Fragment fragmento = null;
             int id = item.getItemId();
 

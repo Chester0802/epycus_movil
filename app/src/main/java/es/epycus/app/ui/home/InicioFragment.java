@@ -1,19 +1,20 @@
 package es.epycus.app.ui.home;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import es.epycus.app.R;
 import es.epycus.app.api.RetrofitClient;
+import es.epycus.app.databinding.FragmentInicioBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.DashboardResponse;
 import es.epycus.app.model.dto.GamificacionResponse;
@@ -22,36 +23,23 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-@SuppressLint("SetTextI18n")
 public class InicioFragment extends Fragment {
 
-    private TextView tvBienvenida, tvFrase, tvFraseAutor;
-    private TextView tvHabitosPendientes, tvRacha, tvNivel;
-    private ProgressBar pbXp;
-    private TextView tvXpText;
-    private View loadingView;
+    private static final String TAG = "InicioFragment";
+    private FragmentInicioBinding binding;
     private SessionManager sessionManager;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_inicio, container, false);
+        binding = FragmentInicioBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
         sessionManager = SessionManager.getInstance(requireContext());
 
-        tvBienvenida = view.findViewById(R.id.tvBienvenida);
-        tvFrase = view.findViewById(R.id.tvFrase);
-        tvFraseAutor = view.findViewById(R.id.tvFraseAutor);
-        tvHabitosPendientes = view.findViewById(R.id.tvHabitosPendientes);
-        tvRacha = view.findViewById(R.id.tvRacha);
-        tvNivel = view.findViewById(R.id.tvNivel);
-        pbXp = view.findViewById(R.id.pbXp);
-        tvXpText = view.findViewById(R.id.tvXpText);
-        loadingView = view.findViewById(R.id.loadingView);
-
         String nombre = sessionManager.getUserName();
-        tvBienvenida.setText("Hola, " + (nombre != null ? nombre : "Epycus"));
+        binding.tvBienvenida.setText(getString(R.string.hola_formato, nombre != null ? nombre : "Epycus"));
 
         cargarDashboard();
         cargarProgreso();
@@ -65,7 +53,7 @@ public class InicioFragment extends Fragment {
                     @Override
                     public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
                                            @NonNull Response<RespuestaApi<Object>> response) {
-                        loadingView.setVisibility(View.GONE);
+                        binding.loadingView.setVisibility(View.GONE);
                         if (response.isSuccessful() && response.body() != null
                                 && response.body().getDatos() != null) {
                             try {
@@ -73,22 +61,25 @@ public class InicioFragment extends Fragment {
                                 String json = gson.toJson(response.body().getDatos());
                                 DashboardResponse data = gson.fromJson(json, DashboardResponse.class);
 
-                                tvHabitosPendientes.setText(
+                                binding.tvHabitosPendientes.setText(
                                         String.valueOf(data.getHabitosPendientes()));
 
                                 if (data.getFrase() != null) {
-                                    tvFrase.setText(data.getFrase().getFrase());
-                                    tvFraseAutor.setText("- " + data.getFrase().getAutor());
+                                    binding.tvFrase.setText(data.getFrase().getFrase());
+                                    binding.tvFraseAutor.setText(getString(R.string.autor_formato, data.getFrase().getAutor()));
                                 }
                             } catch (Exception e) {
-                                tvHabitosPendientes.setText("0");
+                                Log.e(TAG, "Error parsing dashboard", e);
+                                binding.tvHabitosPendientes.setText(String.valueOf(0));
                             }
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
-                        loadingView.setVisibility(View.GONE);
+                        binding.loadingView.setVisibility(View.GONE);
+                        Snackbar.make(requireView(), getString(R.string.error_conexion),
+                                Snackbar.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -106,16 +97,27 @@ public class InicioFragment extends Fragment {
                                 String json = gson.toJson(response.body().getDatos());
                                 GamificacionResponse data = gson.fromJson(json, GamificacionResponse.class);
 
-                                tvRacha.setText(String.valueOf(data.getRachaActual()));
-                                tvNivel.setText("Nv." + data.getNivel());
-                                pbXp.setProgress((int) data.getPorcentajeProgreso());
-                                tvXpText.setText(data.getXpTotal() + " XP");
-                            } catch (Exception ignored) {}
+                                binding.tvRacha.setText(String.valueOf(data.getRachaActual()));
+                                binding.tvNivel.setText(getString(R.string.nv_formato, data.getNivel()));
+                                binding.pbXp.setProgress((int) data.getPorcentajeProgreso());
+                                binding.tvXpText.setText(getString(R.string.xp_formato, data.getXpTotal()));
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error parsing progreso", e);
+                            }
                         }
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {}
+                    public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+                        Snackbar.make(requireView(), getString(R.string.error_conexion),
+                                Snackbar.LENGTH_SHORT).show();
+                    }
                 });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

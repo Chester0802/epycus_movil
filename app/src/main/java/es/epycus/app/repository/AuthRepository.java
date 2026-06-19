@@ -8,7 +8,9 @@ import es.epycus.app.model.dto.LoginDto;
 import es.epycus.app.model.dto.RefreshDto;
 import es.epycus.app.model.dto.RegistroRequestDto;
 import es.epycus.app.model.entidades.AuthResponse;
+import es.epycus.app.model.entidades.Carrera;
 import es.epycus.app.util.SessionManager;
+import java.util.List;
 import retrofit2.Call;
 
 public class AuthRepository {
@@ -31,6 +33,10 @@ public class AuthRepository {
     public Call<RespuestaApi<AuthResponse>> refresh() {
         String refreshToken = sessionManager.getRefreshToken();
         return api.getApiAuthService().refresh(new RefreshDto(refreshToken));
+    }
+
+    public Call<RespuestaApi<List<Carrera>>> obtenerCarreras() {
+        return api.getApiAuthService().obtenerCarreras();
     }
 
     public Call<RespuestaApi<Void>> logout() {

@@ -1,18 +1,17 @@
 package es.epycus.app.ui.auth;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import es.epycus.app.R;
+import es.epycus.app.databinding.ActivityRegistroBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.RegistroRequestDto;
 import es.epycus.app.model.entidades.AuthResponse;
@@ -22,79 +21,94 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-@SuppressLint("SetTextI18n")
 public class RegistroActivity extends AppCompatActivity {
 
-    private EditText etNombre, etCorreo, etContrasena, etConfirmarContrasena, etFechaNacimiento;
-    private Spinner spGenero, spCarrera;
-    private Button btnRegistrar;
+    private ActivityRegistroBinding binding;
     private AuthRepository authRepository;
     private List<Carrera> carreras;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_registro);
+        binding = ActivityRegistroBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         authRepository = new AuthRepository(this);
 
-        etNombre = findViewById(R.id.etNombre);
-        etCorreo = findViewById(R.id.etCorreo);
-        etContrasena = findViewById(R.id.etContrasena);
-        etConfirmarContrasena = findViewById(R.id.etConfirmarContrasena);
-        etFechaNacimiento = findViewById(R.id.etFechaNacimiento);
-        spGenero = findViewById(R.id.spGenero);
-        spCarrera = findViewById(R.id.spCarrera);
-        btnRegistrar = findViewById(R.id.btnRegistrar);
-
         cargarCarreras();
 
-        btnRegistrar.setOnClickListener(v -> registrar());
+        binding.btnRegistrar.setOnClickListener(v -> registrar());
     }
 
     private void cargarCarreras() {
-        // TODO: Load carreras from API and populate spinner
+        authRepository.obtenerCarreras().enqueue(new Callback<RespuestaApi<List<Carrera>>>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<List<Carrera>>> call,
+                                   Response<RespuestaApi<List<Carrera>>> response) {
+                if (response.isSuccessful() && response.body() != null
+                        && response.body().isExito() && response.body().getDatos() != null) {
+                    List<Carrera> lista = response.body().getDatos();
+                    List<String> nombres = new ArrayList<>();
+                    for (Carrera c : lista) {
+                        nombres.add(c.getNombre());
+                    }
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(RegistroActivity.this,
+                            android.R.layout.simple_spinner_item, nombres);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    binding.spCarrera.setAdapter(adapter);
+                } else {
+                    Toast.makeText(RegistroActivity.this,
+                            getString(R.string.error_carreras), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaApi<List<Carrera>>> call, Throwable t) {
+                Toast.makeText(RegistroActivity.this,
+                        getString(R.string.error_carreras_conexion), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void registrar() {
-        String nombre = etNombre.getText().toString().trim();
-        String correo = etCorreo.getText().toString().trim();
-        String contrasena = etContrasena.getText().toString().trim();
-        String confirmar = etConfirmarContrasena.getText().toString().trim();
-        String fechaNac = etFechaNacimiento.getText().toString().trim();
-        String genero = spGenero.getSelectedItem().toString();
-        int carreraId = spCarrera.getSelectedItemPosition();
+        String nombre = binding.etNombre.getText().toString().trim();
+        String correo = binding.etCorreo.getText().toString().trim();
+        String contrasena = binding.etContrasena.getText().toString().trim();
+        String confirmar = binding.etConfirmarContrasena.getText().toString().trim();
+        String fechaNac = binding.etFechaNacimiento.getText().toString().trim();
+        String genero = binding.spGenero.getSelectedItem().toString();
+        int carreraId = binding.spCarrera.getSelectedItemPosition();
 
         if (nombre.isEmpty() || correo.isEmpty() || contrasena.isEmpty()) {
-            Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.completa_campos), Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (!contrasena.equals(confirmar)) {
-            Toast.makeText(this, "Las contrasenas no coinciden", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.contrasenas_no_coinciden), Toast.LENGTH_SHORT).show();
             return;
         }
 
         RegistroRequestDto dto = new RegistroRequestDto(nombre, correo, contrasena,
                 confirmar, fechaNac, genero, carreraId, true);
 
-        btnRegistrar.setEnabled(false);
-        btnRegistrar.setText("Registrando...");
+        binding.btnRegistrar.setEnabled(false);
+        binding.btnRegistrar.setText(getString(R.string.registrandose));
 
         authRepository.registro(dto).enqueue(new Callback<RespuestaApi<AuthResponse>>() {
             @Override
             public void onResponse(Call<RespuestaApi<AuthResponse>> call,
                                    Response<RespuestaApi<AuthResponse>> response) {
-                btnRegistrar.setEnabled(true);
-                btnRegistrar.setText("Registrarse");
+                binding.btnRegistrar.setEnabled(true);
+                binding.btnRegistrar.setText(getString(R.string.registrarse));
 
                 if (response.isSuccessful() && response.body() != null && response.body().isExito()) {
                     Toast.makeText(RegistroActivity.this,
-                            "Registro exitoso. Revisa tu correo para verificar tu cuenta.",
+                            getString(R.string.registro_exitoso),
                             Toast.LENGTH_LONG).show();
                     finish();
                 } else {
-                    String msg = "Error en el registro";
+                    String msg = getString(R.string.error_registro);
                     if (response.body() != null && response.body().getMensaje() != null) {
                         msg = response.body().getMensaje();
                     }
@@ -104,10 +118,10 @@ public class RegistroActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<RespuestaApi<AuthResponse>> call, Throwable t) {
-                btnRegistrar.setEnabled(true);
-                btnRegistrar.setText("Registrarse");
+                binding.btnRegistrar.setEnabled(true);
+                binding.btnRegistrar.setText(getString(R.string.registrarse));
                 Toast.makeText(RegistroActivity.this,
-                        "Error de conexion: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                        getString(R.string.error_conexion_formato, t.getMessage()), Toast.LENGTH_LONG).show();
             }
         });
     }
