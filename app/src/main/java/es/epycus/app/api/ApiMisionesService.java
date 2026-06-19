@@ -1,6 +1,9 @@
 package es.epycus.app.api;
 
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.MisionDto;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -12,10 +15,10 @@ import retrofit2.http.Path;
 
 public interface ApiMisionesService {
     @GET("api/misiones")
-    Call<RespuestaApi<Object>> listar();
+    Call<RespuestaApi<List<MisionDto>>> listar();
 
     @GET("api/misiones/{id}")
-    Call<RespuestaApi<Object>> obtener(@Path("id") int id);
+    Call<RespuestaApi<MisionDto>> obtener(@Path("id") int id);
 
     @POST("api/misiones")
     Call<RespuestaApi<Object>> crear(@Body Object body);

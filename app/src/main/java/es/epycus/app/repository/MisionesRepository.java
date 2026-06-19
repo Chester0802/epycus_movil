@@ -2,10 +2,13 @@ package es.epycus.app.repository;
 
 import android.content.Context;
 
+import java.util.List;
+
 import es.epycus.app.api.RetrofitClient;
 import es.epycus.app.data.local.AppDatabase;
 import es.epycus.app.data.local.entity.CacheEntity;
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.MisionDto;
 import retrofit2.Call;
 
 public class MisionesRepository {
@@ -17,7 +20,7 @@ public class MisionesRepository {
         this.database = AppDatabase.getInstance(context);
     }
 
-    public Call<RespuestaApi<Object>> listar() {
+    public Call<RespuestaApi<List<MisionDto>>> listar() {
         return api.getApiMisionesService().listar();
     }
 
