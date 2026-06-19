@@ -11,9 +11,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 
 import es.epycus.app.R;
 import es.epycus.app.api.RetrofitClient;
+import es.epycus.app.data.local.AppDatabase;
 import es.epycus.app.databinding.FragmentInicioBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.DashboardResponse;
@@ -28,6 +30,7 @@ public class InicioFragment extends Fragment {
     private static final String TAG = "InicioFragment";
     private FragmentInicioBinding binding;
     private SessionManager sessionManager;
+    private AppDatabase database;
 
     @Nullable
     @Override
@@ -37,9 +40,16 @@ public class InicioFragment extends Fragment {
         View view = binding.getRoot();
 
         sessionManager = SessionManager.getInstance(requireContext());
+        database = AppDatabase.getInstance(requireContext());
 
         String nombre = sessionManager.getUserName();
         binding.tvBienvenida.setText(getString(R.string.hola_formato, nombre != null ? nombre : "Epycus"));
+
+        binding.swipeRefresh.setOnRefreshListener(() -> {
+            cargarDashboard();
+            cargarProgreso();
+        });
+        binding.swipeRefresh.setColorSchemeResources(R.color.light_accent, R.color.light_accent_secondary);
 
         cargarDashboard();
         cargarProgreso();
@@ -48,17 +58,22 @@ public class InicioFragment extends Fragment {
     }
 
     private void cargarDashboard() {
+        binding.loadingView.setVisibility(View.VISIBLE);
+
         RetrofitClient.getInstance(requireContext()).getApiDashboardService()
                 .resumen().enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
                                            @NonNull Response<RespuestaApi<Object>> response) {
                         binding.loadingView.setVisibility(View.GONE);
+                        binding.swipeRefresh.setRefreshing(false);
                         if (response.isSuccessful() && response.body() != null
                                 && response.body().getDatos() != null) {
                             try {
-                                com.google.gson.Gson gson = new com.google.gson.Gson();
+                                Gson gson = new Gson();
                                 String json = gson.toJson(response.body().getDatos());
+                                database.cacheDao().insert(
+                                        new es.epycus.app.data.local.entity.CacheEntity("dashboard", json));
                                 DashboardResponse data = gson.fromJson(json, DashboardResponse.class);
 
                                 binding.tvHabitosPendientes.setText(
@@ -78,10 +93,30 @@ public class InicioFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                         binding.loadingView.setVisibility(View.GONE);
+                        binding.swipeRefresh.setRefreshing(false);
+                        cargarDashboardDesdeCache();
                         Snackbar.make(requireView(), getString(R.string.error_conexion),
                                 Snackbar.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void cargarDashboardDesdeCache() {
+        String json = database.cacheDao().getValue("dashboard");
+        if (json != null) {
+            try {
+                Gson gson = new Gson();
+                DashboardResponse data = gson.fromJson(json, DashboardResponse.class);
+                binding.tvHabitosPendientes.setText(
+                        String.valueOf(data.getHabitosPendientes()));
+                if (data.getFrase() != null) {
+                    binding.tvFrase.setText(data.getFrase().getFrase());
+                    binding.tvFraseAutor.setText(getString(R.string.autor_formato, data.getFrase().getAutor()));
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error loading cached dashboard", e);
+            }
+        }
     }
 
     private void cargarProgreso() {
@@ -90,11 +125,14 @@ public class InicioFragment extends Fragment {
                     @Override
                     public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
                                            @NonNull Response<RespuestaApi<Object>> response) {
+                        binding.swipeRefresh.setRefreshing(false);
                         if (response.isSuccessful() && response.body() != null
                                 && response.body().getDatos() != null) {
                             try {
-                                com.google.gson.Gson gson = new com.google.gson.Gson();
+                                Gson gson = new Gson();
                                 String json = gson.toJson(response.body().getDatos());
+                                database.cacheDao().insert(
+                                        new es.epycus.app.data.local.entity.CacheEntity("progreso", json));
                                 GamificacionResponse data = gson.fromJson(json, GamificacionResponse.class);
 
                                 binding.tvRacha.setText(String.valueOf(data.getRachaActual()));
@@ -109,10 +147,28 @@ public class InicioFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+                        binding.swipeRefresh.setRefreshing(false);
+                        cargarProgresoDesdeCache();
                         Snackbar.make(requireView(), getString(R.string.error_conexion),
                                 Snackbar.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void cargarProgresoDesdeCache() {
+        String json = database.cacheDao().getValue("progreso");
+        if (json != null) {
+            try {
+                Gson gson = new Gson();
+                GamificacionResponse data = gson.fromJson(json, GamificacionResponse.class);
+                binding.tvRacha.setText(String.valueOf(data.getRachaActual()));
+                binding.tvNivel.setText(getString(R.string.nv_formato, data.getNivel()));
+                binding.pbXp.setProgress((int) data.getPorcentajeProgreso());
+                binding.tvXpText.setText(getString(R.string.xp_formato, data.getXpTotal()));
+            } catch (Exception e) {
+                Log.e(TAG, "Error loading cached progreso", e);
+            }
+        }
     }
 
     @Override

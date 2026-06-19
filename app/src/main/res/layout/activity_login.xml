@@ -91,16 +91,29 @@
             android:layout_marginBottom="24dp"
             android:layout_gravity="end" />
 
-        <Button
-            android:id="@+id/btnLogin"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="Iniciar sesion"
-            android:textAllCaps="false"
-            android:textSize="15sp"
-            android:backgroundTint="?attr/epAccent"
-            android:textColor="@color/white"
-            app:cornerRadius="14dp" />
+            android:layout_height="52dp">
+
+            <Button
+                android:id="@+id/btnLogin"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="Iniciar sesion"
+                android:textAllCaps="false"
+                android:textSize="15sp"
+                android:backgroundTint="?attr/epAccent"
+                android:textColor="@color/white"
+                app:cornerRadius="14dp" />
+
+            <ProgressBar
+                android:id="@+id/loadingView"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center"
+                android:indeterminateTint="@color/white"
+                android:visibility="gone" />
+        </FrameLayout>
 
         <View
             android:layout_width="match_parent"

@@ -1,11 +1,14 @@
 package es.epycus.app.ui.auth;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,8 +67,8 @@ public class RegistroActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<RespuestaApi<List<Carrera>>> call, Throwable t) {
-                Toast.makeText(RegistroActivity.this,
-                        getString(R.string.error_carreras_conexion), Toast.LENGTH_SHORT).show();
+                Snackbar.make(binding.btnRegistrar, getString(R.string.error_conexion),
+                        Snackbar.LENGTH_SHORT).show();
             }
         });
     }
@@ -92,15 +95,15 @@ public class RegistroActivity extends AppCompatActivity {
         RegistroRequestDto dto = new RegistroRequestDto(nombre, correo, contrasena,
                 confirmar, fechaNac, genero, carreraId, true);
 
-        binding.btnRegistrar.setEnabled(false);
-        binding.btnRegistrar.setText(getString(R.string.registrandose));
+        binding.btnRegistrar.setVisibility(View.INVISIBLE);
+        binding.loadingView.setVisibility(View.VISIBLE);
 
         authRepository.registro(dto).enqueue(new Callback<RespuestaApi<AuthResponse>>() {
             @Override
             public void onResponse(Call<RespuestaApi<AuthResponse>> call,
                                    Response<RespuestaApi<AuthResponse>> response) {
-                binding.btnRegistrar.setEnabled(true);
-                binding.btnRegistrar.setText(getString(R.string.registrarse));
+                binding.btnRegistrar.setVisibility(View.VISIBLE);
+                binding.loadingView.setVisibility(View.GONE);
 
                 if (response.isSuccessful() && response.body() != null && response.body().isExito()) {
                     Toast.makeText(RegistroActivity.this,
@@ -118,10 +121,10 @@ public class RegistroActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<RespuestaApi<AuthResponse>> call, Throwable t) {
-                binding.btnRegistrar.setEnabled(true);
-                binding.btnRegistrar.setText(getString(R.string.registrarse));
-                Toast.makeText(RegistroActivity.this,
-                        getString(R.string.error_conexion_formato, t.getMessage()), Toast.LENGTH_LONG).show();
+                binding.btnRegistrar.setVisibility(View.VISIBLE);
+                binding.loadingView.setVisibility(View.GONE);
+                Snackbar.make(binding.btnRegistrar, getString(R.string.error_conexion),
+                        Snackbar.LENGTH_LONG).show();
             }
         });
     }

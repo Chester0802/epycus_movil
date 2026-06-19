@@ -12,6 +12,8 @@ okhttp = "4.12.0"
 gson = "2.11.0"
 navigation = "2.8.8"
 lifecycle = "2.8.7"
+room = "2.6.1"
+swiperefreshlayout = "1.1.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -30,6 +32,9 @@ nav-fragment = { group = "androidx.navigation", name = "navigation-fragment", ve
 nav-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigation" }
 lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "lifecycle" }
 lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-livedata", version.ref = "lifecycle" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

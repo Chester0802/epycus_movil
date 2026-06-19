@@ -2,6 +2,7 @@ package es.epycus.app.ui.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -74,15 +75,15 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<RespuestaApi<AuthResponse>> call, Throwable t) {
                 setLoading(false);
-                Snackbar.make(binding.btnLogin, getString(R.string.error_conexion_verifica),
+                Snackbar.make(binding.btnLogin, getString(R.string.error_conexion),
                         Snackbar.LENGTH_LONG).show();
             }
         });
     }
 
     private void setLoading(boolean loading) {
-        binding.btnLogin.setEnabled(!loading);
-        binding.btnLogin.setText(loading ? getString(R.string.iniciando_sesion) : getString(R.string.iniciar_sesion));
+        binding.btnLogin.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
+        binding.loadingView.setVisibility(loading ? View.VISIBLE : View.GONE);
     }
 
     private void navegarAlHome() {

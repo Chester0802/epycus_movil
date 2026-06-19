@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -58,6 +57,9 @@ public class HabitosFragment extends Fragment {
         binding.rvHabitos.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvHabitos.setAdapter(adapter);
 
+        binding.swipeRefresh.setOnRefreshListener(this::cargarHabitos);
+        binding.swipeRefresh.setColorSchemeResources(R.color.light_accent, R.color.light_accent_secondary);
+
         cargarHabitos();
 
         binding.btnNuevoHabito.setOnClickListener(v ->
@@ -76,6 +78,7 @@ public class HabitosFragment extends Fragment {
             public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
                                    @NonNull Response<RespuestaApi<Object>> response) {
                 binding.loadingView.setVisibility(View.GONE);
+                binding.swipeRefresh.setRefreshing(false);
 
                 if (response.isSuccessful() && response.body() != null && response.body().isExito()
                         && response.body().getDatos() != null) {
@@ -104,8 +107,11 @@ public class HabitosFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                 binding.loadingView.setVisibility(View.GONE);
+                binding.swipeRefresh.setRefreshing(false);
                 binding.tvEmpty.setVisibility(View.VISIBLE);
-                binding.tvEmpty.setText(getString(R.string.error_conexion_habitos));
+                binding.tvEmpty.setText(getString(R.string.error_conexion));
+                Snackbar.make(binding.rvHabitos, getString(R.string.error_conexion),
+                        Snackbar.LENGTH_SHORT).show();
             }
         });
     }
@@ -124,7 +130,8 @@ public class HabitosFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), getString(R.string.error_al_completar), Toast.LENGTH_SHORT).show();
+                Snackbar.make(binding.rvHabitos, getString(R.string.error_conexion),
+                        Snackbar.LENGTH_SHORT).show();
             }
         });
     }

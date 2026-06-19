@@ -12,9 +12,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 
 import es.epycus.app.R;
 import es.epycus.app.api.RetrofitClient;
+import es.epycus.app.data.local.AppDatabase;
+import es.epycus.app.data.local.entity.CacheEntity;
 import es.epycus.app.databinding.FragmentPerfilBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.PerfilResponse;
@@ -28,6 +31,7 @@ public class PerfilFragment extends Fragment {
     private FragmentPerfilBinding binding;
     private SessionManager sessionManager;
     private AuthRepository authRepository;
+    private AppDatabase database;
 
     @Nullable
     @Override
@@ -38,6 +42,10 @@ public class PerfilFragment extends Fragment {
 
         sessionManager = SessionManager.getInstance(requireContext());
         authRepository = new AuthRepository(requireContext());
+        database = AppDatabase.getInstance(requireContext());
+
+        binding.swipeRefresh.setOnRefreshListener(this::cargarPerfil);
+        binding.swipeRefresh.setColorSchemeResources(R.color.light_accent, R.color.light_accent_secondary);
 
         cargarPerfil();
 
@@ -63,12 +71,15 @@ public class PerfilFragment extends Fragment {
                     public void onResponse(@NonNull retrofit2.Call<RespuestaApi<Object>> call,
                                            @NonNull retrofit2.Response<RespuestaApi<Object>> response) {
                         binding.loadingView.setVisibility(View.GONE);
+                        binding.swipeRefresh.setRefreshing(false);
 
                         if (response.isSuccessful() && response.body() != null
                                 && response.body().isExito() && response.body().getDatos() != null) {
                             try {
-                                com.google.gson.Gson gson = new com.google.gson.Gson();
+                                Gson gson = new Gson();
                                 String json = gson.toJson(response.body().getDatos());
+                                database.cacheDao().insert(
+                                        new CacheEntity("perfil", json));
                                 PerfilResponse perfilResp = gson.fromJson(json, PerfilResponse.class);
 
                                 PerfilResponse.Perfil perfil = perfilResp.getPerfil();
@@ -101,9 +112,38 @@ public class PerfilFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull retrofit2.Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                         binding.loadingView.setVisibility(View.GONE);
-                        cargarDatosLocales();
+                        binding.swipeRefresh.setRefreshing(false);
+                        if (!cargarPerfilDesdeCache()) {
+                            cargarDatosLocales();
+                        }
+                        Snackbar.make(requireView(), getString(R.string.error_conexion),
+                                Snackbar.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private boolean cargarPerfilDesdeCache() {
+        String json = database.cacheDao().getValue("perfil");
+        if (json == null) return false;
+
+        try {
+            Gson gson = new Gson();
+            PerfilResponse perfilResp = gson.fromJson(json, PerfilResponse.class);
+            PerfilResponse.Perfil perfil = perfilResp.getPerfil();
+            binding.tvNombre.setText(perfil.getNombre());
+            binding.tvCorreo.setText(perfil.getCorreoElectronico());
+            binding.tvNivel.setText(getString(R.string.nivel_formato, perfil.getNivelActual()));
+            binding.tvRacha.setText(getString(R.string.dias_formato, perfil.getRachaActual()));
+            binding.tvXp.setText(getString(R.string.xp_formato, perfil.getXpTotal()));
+            binding.tvCarrera.setText(perfil.getCarreraNombre() != null ?
+                    perfil.getCarreraNombre() : getString(R.string.sin_carrera));
+            binding.tvMiembroDesde.setText(getString(R.string.miembro_desde_formato,
+                    perfil.getFechaRegistro()));
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading cached perfil", e);
+            return false;
+        }
     }
 
     private void cargarDatosLocales() {

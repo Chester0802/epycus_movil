@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 public class RetrofitClient {
     private static RetrofitClient instance;
+    private static Retrofit authlessRetrofit;
     private final Retrofit retrofit;
     private final ApiAuthService apiAuthService;
     private final ApiBienestarService apiBienestarService;
@@ -35,7 +36,7 @@ public class RetrofitClient {
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .addInterceptor(new AuthInterceptor(sessionManager))
+                .addInterceptor(new AuthInterceptor(sessionManager, context))
                 .addInterceptor(logging)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
@@ -68,6 +69,22 @@ public class RetrofitClient {
             instance = new RetrofitClient(context.getApplicationContext());
         }
         return instance;
+    }
+
+    public static synchronized Retrofit getAuthlessRetrofit(Context context) {
+        if (authlessRetrofit == null) {
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .build();
+            authlessRetrofit = new Retrofit.Builder()
+                    .baseUrl(BuildConfig.API_BASE_URL)
+                    .client(client)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        return authlessRetrofit;
     }
 
     public ApiAuthService getApiAuthService() { return apiAuthService; }

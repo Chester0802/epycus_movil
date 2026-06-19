@@ -2,15 +2,21 @@ package es.epycus.app.repository;
 
 import android.content.Context;
 
+import java.util.List;
+
 import es.epycus.app.api.RetrofitClient;
+import es.epycus.app.data.local.AppDatabase;
+import es.epycus.app.data.local.entity.HabitoEntity;
 import es.epycus.app.model.RespuestaApi;
 import retrofit2.Call;
 
 public class HabitosRepository {
     private final RetrofitClient api;
+    private final AppDatabase database;
 
     public HabitosRepository(Context context) {
         this.api = RetrofitClient.getInstance(context);
+        this.database = AppDatabase.getInstance(context);
     }
 
     public Call<RespuestaApi<Object>> listar() {
@@ -43,5 +49,14 @@ public class HabitosRepository {
 
     public Call<RespuestaApi<Object>> categorias() {
         return api.getApiHabitosService().categorias();
+    }
+
+    public void cacheHabitos(List<HabitoEntity> habitos) {
+        database.habitoDao().deleteAll();
+        database.habitoDao().insertAll(habitos);
+    }
+
+    public List<HabitoEntity> getCachedHabitos() {
+        return database.habitoDao().getActivos();
     }
 }

@@ -1,261 +1,267 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipeRefresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/epBgPrimary">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="match_parent">
 
-        <!-- Loading -->
-        <LinearLayout
-            android:id="@+id/loadingView"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="visible">
-
-            <ProgressBar
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:indeterminateTint="?attr/epAccent" />
-        </LinearLayout>
-
-        <!-- Avatar & Info -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="24dp">
+            android:padding="16dp">
 
+            <!-- Loading -->
             <LinearLayout
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:gravity="center"
-                android:background="?attr/epAccentLight"
-                app:cornerRadius="36dp"
-                android:layout_marginBottom="12dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="EP"
-                    android:textSize="24sp"
-                    android:textColor="?attr/epAccent"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvNombre"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Usuario"
-                android:textSize="20sp"
-                android:textColor="?attr/epTextPrimary"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvCorreo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="correo@ejemplo.com"
-                android:textSize="13sp"
-                android:textColor="?attr/epTextSecondary" />
-
-            <TextView
-                android:id="@+id/tvCarrera"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Carrera"
-                android:textSize="12sp"
-                android:textColor="?attr/epTextTertiary"
-                android:layout_marginTop="4dp" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="28dp"
-                android:gravity="center"
-                android:background="@drawable/bg_card_rounded"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="4dp"
-                android:layout_marginTop="8dp">
-
-                <TextView
-                    android:id="@+id/tvNivel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nivel 1"
-                    android:textSize="11sp"
-                    android:textColor="?attr/epAccent"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- Stats row -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="24dp">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="70dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="6dp"
+                android:id="@+id/loadingView"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:background="@drawable/bg_card_rounded">
+                android:visibility="visible">
+
+                <ProgressBar
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:indeterminateTint="?attr/epAccent" />
+            </LinearLayout>
+
+            <!-- Avatar & Info -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:gravity="center"
+                    android:background="?attr/epAccentLight"
+                    app:cornerRadius="36dp"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="EP"
+                        android:textSize="24sp"
+                        android:textColor="?attr/epAccent"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/tvRacha"
+                    android:id="@+id/tvNombre"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0 dias"
-                    android:textSize="15sp"
+                    android:text="Usuario"
+                    android:textSize="20sp"
                     android:textColor="?attr/epTextPrimary"
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tvCorreo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Racha"
-                    android:textSize="11sp"
+                    android:text="correo@ejemplo.com"
+                    android:textSize="13sp"
                     android:textColor="?attr/epTextSecondary" />
+
+                <TextView
+                    android:id="@+id/tvCarrera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Carrera"
+                    android:textSize="12sp"
+                    android:textColor="?attr/epTextTertiary"
+                    android:layout_marginTop="4dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:gravity="center"
+                    android:background="@drawable/bg_card_rounded"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="4dp"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:id="@+id/tvNivel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nivel 1"
+                        android:textSize="11sp"
+                        android:textColor="?attr/epAccent"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Stats row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_card_rounded">
+
+                    <TextView
+                        android:id="@+id/tvRacha"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 dias"
+                        android:textSize="15sp"
+                        android:textColor="?attr/epTextPrimary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Racha"
+                        android:textSize="11sp"
+                        android:textColor="?attr/epTextSecondary" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_card_rounded">
+
+                    <TextView
+                        android:id="@+id/tvXp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 XP"
+                        android:textSize="15sp"
+                        android:textColor="?attr/epAccent"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total XP"
+                        android:textSize="11sp"
+                        android:textColor="?attr/epTextSecondary" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Menu items -->
+            <LinearLayout
+                android:id="@+id/btnPersonajes"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_card_rounded"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                android:foreground="?attr/selectableItemBackground">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Mis personajes"
+                    android:textSize="14sp"
+                    android:textColor="?attr/epTextPrimary" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="70dp"
-                android:layout_weight="1"
-                android:layout_marginStart="6dp"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card_rounded">
+                android:id="@+id/btnLogros"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_card_rounded"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                android:foreground="?attr/selectableItemBackground">
 
                 <TextView
-                    android:id="@+id/tvXp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="0 XP"
-                    android:textSize="15sp"
-                    android:textColor="?attr/epAccent"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Total XP"
-                    android:textSize="11sp"
-                    android:textColor="?attr/epTextSecondary" />
+                    android:layout_weight="1"
+                    android:text="Logros"
+                    android:textSize="14sp"
+                    android:textColor="?attr/epTextPrimary" />
             </LinearLayout>
-        </LinearLayout>
 
-        <!-- Menu items -->
-        <LinearLayout
-            android:id="@+id/btnPersonajes"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/bg_card_rounded"
-            android:paddingHorizontal="16dp"
-            android:layout_marginBottom="8dp"
-            android:foreground="?attr/selectableItemBackground">
+            <LinearLayout
+                android:id="@+id/btnEstadisticas"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_card_rounded"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                android:foreground="?attr/selectableItemBackground">
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Mis personajes"
-                android:textSize="14sp"
-                android:textColor="?attr/epTextPrimary" />
-        </LinearLayout>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Estadisticas"
+                    android:textSize="14sp"
+                    android:textColor="?attr/epTextPrimary" />
+            </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/btnLogros"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/bg_card_rounded"
-            android:paddingHorizontal="16dp"
-            android:layout_marginBottom="8dp"
-            android:foreground="?attr/selectableItemBackground">
+            <LinearLayout
+                android:id="@+id/btnConfiguracion"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_card_rounded"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="24dp"
+                android:foreground="?attr/selectableItemBackground">
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Logros"
-                android:textSize="14sp"
-                android:textColor="?attr/epTextPrimary" />
-        </LinearLayout>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Configuracion"
+                    android:textSize="14sp"
+                    android:textColor="?attr/epTextPrimary" />
+            </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/btnEstadisticas"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/bg_card_rounded"
-            android:paddingHorizontal="16dp"
-            android:layout_marginBottom="8dp"
-            android:foreground="?attr/selectableItemBackground">
+            <Button
+                android:id="@+id/btnCerrarSesion"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="Cerrar sesion"
+                android:textAllCaps="false"
+                style="@style/Widget.Epycus.Button.Outline"
+                android:layout_marginBottom="24dp" />
 
             <TextView
-                android:layout_width="0dp"
+                android:id="@+id/tvMiembroDesde"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Estadisticas"
-                android:textSize="14sp"
-                android:textColor="?attr/epTextPrimary" />
+                android:text=""
+                android:textSize="11sp"
+                android:textColor="?attr/epTextTertiary"
+                android:gravity="center"
+                android:layout_marginBottom="24dp" />
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/btnConfiguracion"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/bg_card_rounded"
-            android:paddingHorizontal="16dp"
-            android:layout_marginBottom="24dp"
-            android:foreground="?attr/selectableItemBackground">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Configuracion"
-                android:textSize="14sp"
-                android:textColor="?attr/epTextPrimary" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/btnCerrarSesion"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="Cerrar sesion"
-            android:textAllCaps="false"
-            style="@style/Widget.Epycus.Button.Outline"
-            android:layout_marginBottom="24dp" />
-
-        <TextView
-            android:id="@+id/tvMiembroDesde"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="11sp"
-            android:textColor="?attr/epTextTertiary"
-            android:gravity="center"
-            android:layout_marginBottom="24dp" />
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

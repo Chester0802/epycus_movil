@@ -1,74 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipeRefresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/epBgPrimary"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:background="?attr/epBgPrimary">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Habitos de hoy"
-        android:textSize="22sp"
-        android:textColor="?attr/epTextPrimary"
-        android:textStyle="bold"
-        android:layout_marginTop="16dp" />
-
-    <TextView
-        android:id="@+id/tvHabitosCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cargando..."
-        android:textSize="13sp"
-        android:textColor="?attr/epTextSecondary"
-        android:layout_marginBottom="16dp" />
-
-    <!-- Loading -->
     <LinearLayout
-        android:id="@+id/loadingView"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:gravity="center"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:padding="16dp">
 
-        <ProgressBar
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:indeterminateTint="?attr/epAccent" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Habitos de hoy"
+            android:textSize="22sp"
+            android:textColor="?attr/epTextPrimary"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:id="@+id/tvHabitosCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cargando..."
+            android:textSize="13sp"
+            android:textColor="?attr/epTextSecondary"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Loading -->
+        <LinearLayout
+            android:id="@+id/loadingView"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <ProgressBar
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:indeterminateTint="?attr/epAccent" />
+        </LinearLayout>
+
+        <!-- Empty state -->
+        <TextView
+            android:id="@+id/tvEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No hay habitos para hoy. Crea uno nuevo."
+            android:textSize="14sp"
+            android:textColor="?attr/epTextSecondary"
+            android:gravity="center"
+            android:layout_marginTop="48dp"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvHabitos"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnNuevoHabito"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="+ Nuevo habito"
+            android:textAllCaps="false"
+            android:textSize="15sp"
+            android:backgroundTint="?attr/epAccent"
+            android:textColor="@color/white"
+            app:cornerRadius="12dp"
+            android:layout_marginTop="8dp" />
+
     </LinearLayout>
-
-    <!-- Empty state -->
-    <TextView
-        android:id="@+id/tvEmpty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="No hay habitos para hoy. Crea uno nuevo."
-        android:textSize="14sp"
-        android:textColor="?attr/epTextSecondary"
-        android:gravity="center"
-        android:layout_marginTop="48dp"
-        android:visibility="gone" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvHabitos"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:visibility="gone" />
-
-    <Button
-        android:id="@+id/btnNuevoHabito"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:text="+ Nuevo habito"
-        android:textAllCaps="false"
-        android:textSize="15sp"
-        android:backgroundTint="?attr/epAccent"
-        android:textColor="@color/white"
-        app:cornerRadius="12dp"
-        android:layout_marginTop="8dp" />
-
-</LinearLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -88,7 +88,7 @@ public class IaChatActivity extends AppCompatActivity {
                     public void onFailure(@NonNull retrofit2.Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                         binding.loadingView.setVisibility(View.GONE);
                         adapter.addMensaje(new MensajeChatAdapter.Mensaje(
-                                getString(R.string.error_conexion_ia), false));
+                                getString(R.string.error_conexion), false));
                     }
                 });
     }

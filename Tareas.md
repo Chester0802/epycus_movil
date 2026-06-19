@@ -284,12 +284,12 @@ Agrega una entrada en **# Auditorías** con:
 - [x] **P-009**: Migración a ViewBinding completada
 - [x] **P-010**: Logging agregado en todos los catch blocks
 - [x] **P-011**: `MainActivity.java` marcada como código muerto con nota
-- [ ] Agregar manejo de errores de red consistente (Snackbar/Toast en todos los fragments)
-- [ ] Implementar refresh token automático cuando expire el JWT
-- [ ] Agregar pantalla de splash
-- [ ] Agregar soporte offline (Room database local)
-- [ ] Agregar pull-to-refresh en fragments
-- [ ] Implementar estado de carga (loading spinners) en todas las pantallas
+- [x] Agregar manejo de errores de red consistente (Snackbar/Toast en todos los fragments)
+- [x] Implementar refresh token automático cuando expire el JWT
+- [x] Agregar pantalla de splash
+- [x] Agregar soporte offline (Room database local)
+- [x] Agregar pull-to-refresh en fragments
+- [x] Implementar estado de carga (loading spinners) en todas las pantallas
 
 ### Backend (EpycusApp)
 
@@ -320,6 +320,17 @@ Agrega una entrada en **# Auditorías** con:
 | 2026-06-19 | `app/build.gradle.kts`, +7 archivos .java | **P-009**: Activado `viewBinding = true`, migrados Activities y Fragments a ViewBinding | Medio |
 | 2026-06-19 | `IaChatActivity.java`, `PerfilFragment.java`, `HabitosFragment.java` | **P-010**: Agregado `Log.e` con TAG en todos los catch blocks sin logging | Bajo |
 | 2026-06-19 | `MainActivity.java` | **P-011**: Documentada como código muerto con nota para eliminación futura | Bajo |
+| 2026-06-19 | `LoginActivity.java`, `RegistroActivity.java`, `HabitosFragment.java`, `PerfilFragment.java`, `IaChatActivity.java` | **1 - Red consistente**: Todos los `onFailure` ahora usan `Snackbar` con `R.string.error_conexion`. Se eliminaron literales y strings específicos | Bajo |
+| 2026-06-19 | `AuthInterceptor.java`, `RetrofitClient.java` | **2 - Refresh token**: Intercepta 401, llama a `/auth/refresh` con Retrofit sin auth, actualiza token y reintenta. Si falla, fuerza logout. `X-Retry` header evita bucles | Alto |
+| 2026-06-19 | `ui/splash/SplashActivity.java` (nuevo), `res/layout/activity_splash.xml` (nuevo), `AndroidManifest.xml` | **3 - Splash**: Activity con logo "E" + nombre. Delay 1.5s. Redirige a `MainContainerActivity` o `LoginActivity` según sesión. Declarada como LAUNCHER | Medio |
+| 2026-06-19 | `gradle/libs.versions.toml`, `app/build.gradle.kts` | **4 - Room/SwipeRefresh deps**: Agregadas room-runtime 2.6.1, room-compiler, swiperefreshlayout 1.1.0 | Medio |
+| 2026-06-19 | `data/local/AppDatabase.java`, `data/local/dao/*`, `data/local/entity/*` (7 archivos nuevos) | **4 - Room DB**: Entidades Usuario/Habito/Progreso/Cache, DAOs CRUD, AppDatabase singleton | Medio |
+| 2026-06-19 | `AuthRepository.java`, `HabitosRepository.java` | **4 - Offline repos**: Repositorios cachean en Room tras éxito; `getCachedXxx()` para fallback offline | Medio |
+| 2026-06-19 | `InicioFragment.java`, `DiarioFragment.java`, `PerfilFragment.java` | **4 - Offline cache**: Fragmentos cachean JSON (dashboard, progreso, perfil, pregunta guía) en Room y lo cargan en `onFailure` | Medio |
+| 2026-06-19 | `fragment_inicio.xml`, `fragment_habitos.xml`, `fragment_diario.xml`, `fragment_perfil.xml` | **5 - Pull-to-refresh**: Layouts envueltos en `SwipeRefreshLayout` con id `swipeRefresh` | Bajo |
+| 2026-06-19 | `InicioFragment.java`, `HabitosFragment.java`, `DiarioFragment.java`, `PerfilFragment.java` | **5 - Pull-to-refresh**: `setOnRefreshListener` conectado a `cargarXxx()`. `setRefreshing(false)` en éxito y error | Bajo |
+| 2026-06-19 | `fragment_diario.xml`, `activity_login.xml`, `activity_registro.xml` | **6 - Loading spinners**: Agregado `loadingView` (ProgressBar) a layouts que no lo tenían | Bajo |
+| 2026-06-19 | `DiarioFragment.java`, `LoginActivity.java`, `RegistroActivity.java` | **6 - Loading spinners**: `loadingView` se muestra/oculta durante llamadas API. Login/Registro usan ProgressBar en vez de cambiar texto del botón | Bajo |
 
 ---
 
