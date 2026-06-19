@@ -40,7 +40,6 @@ public abstract class AppDatabase extends RoomDatabase {
                     context.getApplicationContext(),
                     AppDatabase.class,
                     "epycus_cache")
-                    .fallbackToDestructiveMigration()
                     .allowMainThreadQueries()
                     .build();
         }

@@ -17,8 +17,11 @@ import es.epycus.app.model.dto.HabitoHoyDto;
 
 public class HabitoHoyAdapter extends RecyclerView.Adapter<HabitoHoyAdapter.ViewHolder> {
 
+    private static final long DEBOUNCE_INTERVAL = 500;
     private List<HabitoHoyDto> habitos = new ArrayList<>();
     private OnHabitoListener listener;
+    private long lastClickTime = 0;
+    private int lastClickedId = -1;
 
     public interface OnHabitoListener {
         void onCompletar(int id);
@@ -88,8 +91,14 @@ public class HabitoHoyAdapter extends RecyclerView.Adapter<HabitoHoyAdapter.View
         }
 
         holder.itemView.setOnClickListener(v -> {
+            long now = System.currentTimeMillis();
+            int habitoId = habito.getId();
+            if (habitoId == lastClickedId && now - lastClickTime < DEBOUNCE_INTERVAL) return;
+            lastClickTime = now;
+            lastClickedId = habitoId;
+
             if (habito.isPendiente()) {
-                listener.onCompletar(habito.getId());
+                listener.onCompletar(habitoId);
             }
         });
     }

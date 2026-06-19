@@ -18,7 +18,7 @@ android {
         versionName = "1.0"
 
         buildConfigField("String", "API_BASE_URL", "\"https://app.epycus.es/\"")
-        buildConfigField("String", "GOOGLE_CLIENT_ID", "\"YOUR_WEB_CLIENT_ID.apps.googleusercontent.com\"")
+        buildConfigField("String", "GOOGLE_CLIENT_ID", "\"621141066064-vtm8tf4bv7bl3oubq3eesaha0205e6gr.apps.googleusercontent.com\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

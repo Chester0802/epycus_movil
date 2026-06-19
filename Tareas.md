@@ -559,7 +559,11 @@ Agrega una entrada en **# Auditorías** con:
 | A-001 | **Media** | `AppDatabase.java` + 5 archivos | Escrituras Room en main thread | **✅ Corregido** — `writeExecutor` en AppDatabase, todas las writes envueltas en execute() |
 | S-003 | **Media** | `LoginActivity.java`, `AuthRepository.java`, `activity_login.xml` | Google OAuth endpoints definidos pero sin UI | **✅ Corregido** — botón "Continuar con Google", flujo GoogleSignInClient → idToken → googleAuth() API |
 | C-002 | **Baja** | `HabitoHoyAdapter.java`, `MisionAdapter.java` | notifyDataSetChanged sin DiffUtil | **✅ Corregido** — DiffUtil.Callback con areItemsTheSame/areContentsTheSame |
-| - | **Baja** | `build.gradle.kts` | GOOGLE_CLIENT_ID con placeholder | ⚠️ Pendiente — configurar `YOUR_WEB_CLIENT_ID` real en Google Cloud Console |
+| - | **Baja** | `build.gradle.kts` | GOOGLE_CLIENT_ID con placeholder | **✅ Corregido** — configurado con ID real de Google Cloud Console |
+| NAV-001 | **Alta** | `MainContainerActivity.java` | Fragmentos se recrean en cada click del bottom nav sin reutilización | **✅ Corregido** — migrado a show/hide con FragmentManager y tags |
+| A-005 | **Media** | `data/local/AppDatabase.java` | `fallbackToDestructiveMigration()` puede borrar cache local al actualizar DB | **✅ Corregido** — eliminado, se usarán migraciones explícitas |
+| PERF-002 | **Media** | `MensajeChatAdapter.java` | Los mensajes del chat acumulan en memoria sin límite | **✅ Corregido** — límite de 200 mensajes, elimina los más antiguos |
+| GAME-001 | **Baja** | `HabitoHoyAdapter.java` | Sin debounce en onClick — doble click puede enviar múltiples requests | **✅ Corregido** — debounce de 500ms por ID de hábito |
 
 ---
 
@@ -568,11 +572,27 @@ Agrega una entrada en **# Auditorías** con:
 | Categoría | ✅ Buenos | ⚠️ Mejorables | ❌ Pendientes |
 |-----------|----------|---------------|---------------|
 | Networking | Refresh token, interceptor, 14 servicios, logging condicional, calls cancelados, errores diferenciados, errores HTTP específicos (403/422/500) | — | — |
-| UI/UX | ViewBinding, loading, pull-to-refresh, tema toggle, empty states, DiffUtil, Google OAuth UI | Navegación sin reuse (NAV-001) | — |
-| Offline | Room con background executor, cache en 4 repos | Destructive migration (A-005) | — |
+| UI/UX | ViewBinding, loading, pull-to-refresh, tema toggle, empty states, DiffUtil, Google OAuth UI, navegación con show/hide | — | — |
+| Offline | Room con background executor, cache en 4 repos, migraciones explícitas | — | — |
 | Seguridad | AuthInterceptor, force logout main thread, logging condicional, EncryptedSharedPreferences, Google OAuth flujo completo | — | — |
 | Ciclo de Vida | Binding nullified, calls cancelled, timer cancelled, splash handler cleanup, Pomodoro state save/restore | — | — |
 | Testing | — | Sin tests (C-003) | — |
+| Gamificación | DiffUtil, debounce en hábitos, límite mensajes chat | — | — |
+
+---
+
+### Auditoría 005 — 2026-06-19 (Fix de Pendientes Post-Extrema)
+
+**Alcance**: Corrección de los 5 pendientes identificados en auditorías previas (NAV-001, A-005, PERF-002, GAME-001, GOOGLE_CLIENT_ID).
+
+| Fecha | Archivos | Cambio | Riesgo |
+|-------|----------|--------|--------|
+| 2026-06-19 | `MainContainerActivity.java` | **NAV-001**: Migrado de `FragmentTransaction.replace()` a show/hide con tags. Los fragments se reutilizan en lugar de recrearse en cada click del bottom nav, preservando estado y scroll | Medio |
+| 2026-06-19 | `AppDatabase.java` | **A-005**: Eliminado `fallbackToDestructiveMigration()`. Ahora se requerirán migraciones explícitas (`Migration` objects) para cambios de schema, evitando pérdida de cache en producción | Medio |
+| 2026-06-19 | `MensajeChatAdapter.java` | **PERF-002**: Agregado límite `MAX_MENSAJES = 200`. Al superarlo, se elimina el mensaje más antiguo antes de insertar el nuevo, previniendo OOM en conversaciones largas | Bajo |
+| 2026-06-19 | `HabitoHoyAdapter.java` | **GAME-001**: Agregado debounce de 500ms por ID de hábito en onClick. Previene múltiples requests al completar un hábito por doble click accidental | Bajo |
+| 2026-06-19 | `build.gradle.kts` | **GOOGLE_CLIENT_ID**: Reemplazado placeholder `YOUR_WEB_CLIENT_ID` por `621141066064-vtm8tf4bv7bl3oubq3eesaha0205e6gr.apps.googleusercontent.com` | Bajo |
+| 2026-06-19 | `Tareas.md` | Documentación de Auditoría 005 con todos los fixes aplicados | Bajo |
 
 ---
 

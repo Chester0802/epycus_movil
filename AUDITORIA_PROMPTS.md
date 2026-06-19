@@ -375,7 +375,7 @@ res/
 - [x] **8. GOOGLE AUTH**: DTOs, endpoints API, botón UI y flujo GoogleSignInClient implementados (requiere GOOGLE_CLIENT_ID real).
 - [x] **9. EMPTY STATES**: InicioFragment, HabitosFragment, DiarioFragment con mensajes de empty state.
 - [x] **10. ERRORES HTTP**: NetworkUtils con manejo de 403, 422, 500, timeout, DNS. Mensajes diferenciados en todas las pantallas.
-- [ ] **11. NAVEGACIÓN**: Bottom nav sin show/hide — cada click crea nuevo Fragment. Pendiente de migrar.
+- [x] **11. NAVEGACIÓN**: Bottom nav con show/hide — fragments reutilizados con tags, estado preservado entre pestañas.
 - [x] **12. RENDIMIENTO**: Calls cancelados en onDestroyView. Room writes en background Executor. DiffUtil en adapters.
 
 

@@ -15,6 +15,7 @@ import es.epycus.app.R;
 
 public class MensajeChatAdapter extends RecyclerView.Adapter<MensajeChatAdapter.ViewHolder> {
 
+    private static final int MAX_MENSAJES = 200;
     private List<Mensaje> mensajes = new ArrayList<>();
 
     public static class Mensaje {
@@ -32,7 +33,13 @@ public class MensajeChatAdapter extends RecyclerView.Adapter<MensajeChatAdapter.
 
     public void addMensaje(Mensaje mensaje) {
         mensajes.add(mensaje);
-        notifyItemInserted(mensajes.size() - 1);
+        if (mensajes.size() > MAX_MENSAJES) {
+            mensajes.remove(0);
+            notifyItemRemoved(0);
+            notifyItemInserted(mensajes.size() - 1);
+        } else {
+            notifyItemInserted(mensajes.size() - 1);
+        }
     }
 
     @Override

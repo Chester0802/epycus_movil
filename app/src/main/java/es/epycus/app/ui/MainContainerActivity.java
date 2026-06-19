@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import es.epycus.app.R;
 import es.epycus.app.databinding.ActivityMainContainerBinding;
@@ -20,6 +21,7 @@ public class MainContainerActivity extends AppCompatActivity {
 
     private ActivityMainContainerBinding binding;
     private FragmentManager fragmentManager;
+    private Fragment fragmentoActual;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -31,36 +33,58 @@ public class MainContainerActivity extends AppCompatActivity {
         fragmentManager = getSupportFragmentManager();
 
         if (savedInstanceState == null) {
-            cargarFragmento(new InicioFragment());
+            fragmentoActual = new InicioFragment();
+            fragmentManager.beginTransaction()
+                    .add(R.id.fragmentContainer, fragmentoActual, "inicio")
+                    .commit();
+        } else {
+            fragmentoActual = fragmentManager.findFragmentById(R.id.fragmentContainer);
         }
 
         binding.bottomNav.setOnItemSelectedListener(item -> {
-            Fragment fragmento = null;
             int id = item.getItemId();
+            Fragment nuevo;
+            String tag;
 
             if (id == R.id.nav_inicio) {
-                fragmento = new InicioFragment();
+                tag = "inicio";
+                nuevo = fragmentManager.findFragmentByTag(tag);
+                if (nuevo == null) nuevo = new InicioFragment();
             } else if (id == R.id.nav_habitos) {
-                fragmento = new HabitosFragment();
+                tag = "habitos";
+                nuevo = fragmentManager.findFragmentByTag(tag);
+                if (nuevo == null) nuevo = new HabitosFragment();
             } else if (id == R.id.nav_pomodoro) {
-                fragmento = new PomodoroFragment();
+                tag = "pomodoro";
+                nuevo = fragmentManager.findFragmentByTag(tag);
+                if (nuevo == null) nuevo = new PomodoroFragment();
             } else if (id == R.id.nav_diario) {
-                fragmento = new DiarioFragment();
+                tag = "diario";
+                nuevo = fragmentManager.findFragmentByTag(tag);
+                if (nuevo == null) nuevo = new DiarioFragment();
             } else if (id == R.id.nav_perfil) {
-                fragmento = new PerfilFragment();
+                tag = "perfil";
+                nuevo = fragmentManager.findFragmentByTag(tag);
+                if (nuevo == null) nuevo = new PerfilFragment();
+            } else {
+                return false;
             }
 
-            if (fragmento != null) {
-                cargarFragmento(fragmento);
+            if (nuevo != fragmentoActual) {
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                if (fragmentoActual != null) {
+                    transaction.hide(fragmentoActual);
+                }
+                if (nuevo.isAdded()) {
+                    transaction.show(nuevo);
+                } else {
+                    transaction.add(R.id.fragmentContainer, nuevo, tag);
+                }
+                transaction.commit();
+                fragmentoActual = nuevo;
                 return true;
             }
             return false;
         });
-    }
-
-    private void cargarFragmento(Fragment fragmento) {
-        fragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, fragmento)
-                .commit();
     }
 }
