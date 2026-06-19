@@ -116,6 +116,6 @@
             app:cornerRadius="24dp"
             android:padding="12dp"
             android:src="@drawable/ic_home"
-            app:tint="@color/white" />
+            app:tint="?attr/epTextOnPrimary" />
     </LinearLayout>
 </LinearLayout>

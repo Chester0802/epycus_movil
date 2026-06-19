@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="E"
-                android:textColor="@color/white"
+                android:textColor="?attr/epTextOnPrimary"
                 android:textSize="28sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -115,7 +115,7 @@
                 android:textAllCaps="false"
                 android:textSize="15sp"
                 android:backgroundTint="?attr/epAccent"
-                android:textColor="@color/white"
+                android:textColor="?attr/epTextOnPrimary"
                 app:cornerRadius="14dp" />
 
             <ProgressBar
@@ -123,7 +123,7 @@
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:layout_gravity="center"
-                android:indeterminateTint="@color/white"
+                android:indeterminateTint="?attr/epTextOnPrimary"
                 android:visibility="gone" />
         </FrameLayout>
 

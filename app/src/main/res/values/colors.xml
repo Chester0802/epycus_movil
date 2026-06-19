@@ -68,6 +68,10 @@
     <color name="priority_media">#f59e0b</color>
     <color name="priority_alta">#ef4444</color>
 
+    <!-- Text on Primary -->
+    <color name="light_text_on_primary">#ffffff</color>
+    <color name="dark_text_on_primary">#ffffff</color>
+
     <!-- Neutral -->
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>

@@ -25,6 +25,7 @@
         <item name="epWarning">@color/light_warning</item>
         <item name="epError">@color/light_error</item>
         <item name="epInfo">@color/light_info</item>
+        <item name="epTextOnPrimary">@color/light_text_on_primary</item>
         <item name="epRoundedSm">2dp</item>
         <item name="epRoundedMd">4dp</item>
         <item name="epRoundedLg">8dp</item>

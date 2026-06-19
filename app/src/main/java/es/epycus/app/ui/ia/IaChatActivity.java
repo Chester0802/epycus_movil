@@ -16,6 +16,7 @@ import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.ChatRequest;
 import es.epycus.app.model.dto.ChatResponse;
 import es.epycus.app.ui.adapters.MensajeChatAdapter;
+import es.epycus.app.util.ThemeManager;
 
 public class IaChatActivity extends AppCompatActivity {
 
@@ -26,6 +27,7 @@ public class IaChatActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        ThemeManager.getInstance(this).applyTheme();
         super.onCreate(savedInstanceState);
         binding = ActivityIaChatBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

@@ -16,6 +16,7 @@
         <attr name="epWarning" format="color" />
         <attr name="epError" format="color" />
         <attr name="epInfo" format="color" />
+        <attr name="epTextOnPrimary" format="color" />
         <attr name="epRoundedSm" format="dimension" />
         <attr name="epRoundedMd" format="dimension" />
         <attr name="epRoundedLg" format="dimension" />

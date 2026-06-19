@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentManager;
 import es.epycus.app.R;
 import es.epycus.app.databinding.ActivityMainContainerBinding;
 import es.epycus.app.ui.habitos.HabitosFragment;
+import es.epycus.app.util.ThemeManager;
 import es.epycus.app.ui.home.InicioFragment;
 import es.epycus.app.ui.pomodoro.PomodoroFragment;
 import es.epycus.app.ui.diario.DiarioFragment;
@@ -22,6 +23,7 @@ public class MainContainerActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        ThemeManager.getInstance(this).applyTheme();
         super.onCreate(savedInstanceState);
         binding = ActivityMainContainerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

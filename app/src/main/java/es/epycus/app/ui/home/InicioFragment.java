@@ -31,6 +31,8 @@ public class InicioFragment extends Fragment {
     private FragmentInicioBinding binding;
     private SessionManager sessionManager;
     private AppDatabase database;
+    private boolean dashboardDataLoaded = false;
+    private boolean progresoDataLoaded = false;
 
     @Nullable
     @Override
@@ -75,6 +77,7 @@ public class InicioFragment extends Fragment {
                                 database.cacheDao().insert(
                                         new es.epycus.app.data.local.entity.CacheEntity("dashboard", json));
                                 DashboardResponse data = gson.fromJson(json, DashboardResponse.class);
+                                dashboardDataLoaded = true;
 
                                 binding.tvHabitosPendientes.setText(
                                         String.valueOf(data.getHabitosPendientes()));
@@ -88,20 +91,24 @@ public class InicioFragment extends Fragment {
                                 binding.tvHabitosPendientes.setText(String.valueOf(0));
                             }
                         }
+                        verificarCargaCompleta();
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                         binding.loadingView.setVisibility(View.GONE);
                         binding.swipeRefresh.setRefreshing(false);
-                        cargarDashboardDesdeCache();
+                        if (cargarDashboardDesdeCache()) {
+                            dashboardDataLoaded = true;
+                        }
+                        verificarCargaCompleta();
                         Snackbar.make(requireView(), getString(R.string.error_conexion),
                                 Snackbar.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void cargarDashboardDesdeCache() {
+    private boolean cargarDashboardDesdeCache() {
         String json = database.cacheDao().getValue("dashboard");
         if (json != null) {
             try {
@@ -113,10 +120,12 @@ public class InicioFragment extends Fragment {
                     binding.tvFrase.setText(data.getFrase().getFrase());
                     binding.tvFraseAutor.setText(getString(R.string.autor_formato, data.getFrase().getAutor()));
                 }
+                return true;
             } catch (Exception e) {
                 Log.e(TAG, "Error loading cached dashboard", e);
             }
         }
+        return false;
     }
 
     private void cargarProgreso() {
@@ -134,6 +143,7 @@ public class InicioFragment extends Fragment {
                                 database.cacheDao().insert(
                                         new es.epycus.app.data.local.entity.CacheEntity("progreso", json));
                                 GamificacionResponse data = gson.fromJson(json, GamificacionResponse.class);
+                                progresoDataLoaded = true;
 
                                 binding.tvRacha.setText(String.valueOf(data.getRachaActual()));
                                 binding.tvNivel.setText(getString(R.string.nv_formato, data.getNivel()));
@@ -143,19 +153,23 @@ public class InicioFragment extends Fragment {
                                 Log.e(TAG, "Error parsing progreso", e);
                             }
                         }
+                        verificarCargaCompleta();
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                         binding.swipeRefresh.setRefreshing(false);
-                        cargarProgresoDesdeCache();
+                        if (cargarProgresoDesdeCache()) {
+                            progresoDataLoaded = true;
+                        }
+                        verificarCargaCompleta();
                         Snackbar.make(requireView(), getString(R.string.error_conexion),
                                 Snackbar.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void cargarProgresoDesdeCache() {
+    private boolean cargarProgresoDesdeCache() {
         String json = database.cacheDao().getValue("progreso");
         if (json != null) {
             try {
@@ -165,9 +179,17 @@ public class InicioFragment extends Fragment {
                 binding.tvNivel.setText(getString(R.string.nv_formato, data.getNivel()));
                 binding.pbXp.setProgress((int) data.getPorcentajeProgreso());
                 binding.tvXpText.setText(getString(R.string.xp_formato, data.getXpTotal()));
+                return true;
             } catch (Exception e) {
                 Log.e(TAG, "Error loading cached progreso", e);
             }
+        }
+        return false;
+    }
+
+    private void verificarCargaCompleta() {
+        if (!dashboardDataLoaded && !progresoDataLoaded) {
+            binding.emptyView.setVisibility(View.VISIBLE);
         }
     }
 

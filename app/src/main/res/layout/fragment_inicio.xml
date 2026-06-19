@@ -31,6 +31,33 @@
                     android:indeterminateTint="?attr/epAccent" />
             </LinearLayout>
 
+            <!-- Empty state -->
+            <LinearLayout
+                android:id="@+id/emptyView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No hay datos disponibles"
+                    android:textSize="16sp"
+                    android:textColor="?attr/epTextSecondary"
+                    android:gravity="center" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tira hacia abajo para refrescar"
+                    android:textSize="13sp"
+                    android:textColor="?attr/epTextTertiary"
+                    android:gravity="center"
+                    android:layout_marginTop="8dp" />
+            </LinearLayout>
+
             <!-- Hero greeting -->
             <TextView
                 android:id="@+id/tvBienvenida"

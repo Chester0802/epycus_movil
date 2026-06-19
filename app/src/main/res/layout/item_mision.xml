@@ -27,6 +27,7 @@
         android:text="Media"
         android:textSize="11sp"
         android:textStyle="bold"
+        android:textColor="?attr/epTextSecondary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvMisionNombre"
         android:layout_marginStart="16dp" />

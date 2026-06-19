@@ -20,6 +20,7 @@ import es.epycus.app.model.dto.RegistroRequestDto;
 import es.epycus.app.model.entidades.AuthResponse;
 import es.epycus.app.model.entidades.Carrera;
 import es.epycus.app.repository.AuthRepository;
+import es.epycus.app.util.ThemeManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,6 +33,7 @@ public class RegistroActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        ThemeManager.getInstance(this).applyTheme();
         super.onCreate(savedInstanceState);
         binding = ActivityRegistroBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

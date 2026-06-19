@@ -104,13 +104,17 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginBottom="12dp"
-            android:entries="@array/generos" />
+            android:entries="@array/generos"
+            android:textColor="?attr/epTextPrimary"
+            android:popupBackground="?attr/epSurface" />
 
         <Spinner
             android:id="@+id/spCarrera"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="24dp"
+            android:textColor="?attr/epTextPrimary"
+            android:popupBackground="?attr/epSurface" />
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -124,7 +128,7 @@
                 android:textAllCaps="false"
                 android:textSize="15sp"
                 android:backgroundTint="?attr/epAccent"
-                android:textColor="@color/white"
+                android:textColor="?attr/epTextOnPrimary"
                 app:cornerRadius="14dp" />
 
             <ProgressBar
@@ -132,7 +136,7 @@
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:layout_gravity="center"
-                android:indeterminateTint="@color/white"
+                android:indeterminateTint="?attr/epTextOnPrimary"
                 android:visibility="gone" />
         </FrameLayout>
 
