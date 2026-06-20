@@ -97,9 +97,9 @@ public class DiarioFragment extends Fragment {
 
             return view;
         } catch (Exception e) {
-            Log.e(TAG, "Error creating DiarioFragment view", e);
-            TextView tv = new TextView(getContext());
-            tv.setText("Error al cargar diario");
+            Log.e(TAG, "Error creating DiarioFragment view: " + e.getMessage(), e);
+            TextView tv = new TextView(getContext() != null ? getContext() : inflater.getContext());
+            tv.setText("Error al cargar diario: " + e.getClass().getSimpleName());
             tv.setPadding(32, 32, 32, 32);
             return tv;
         }

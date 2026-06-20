@@ -201,8 +201,10 @@ public class InicioFragment extends Fragment {
                         if (data.getImagenPersonaje() != null && !data.getImagenPersonaje().isEmpty()) {
                             Glide.with(InicioFragment.this)
                                     .load(data.getImagenPersonaje())
-                                    .circleCrop()
+                                    .error(R.drawable.ic_profile)
                                     .into(binding.ivPersonaje);
+                        } else {
+                            binding.ivPersonaje.setImageResource(R.drawable.ic_profile);
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "Error parsing progreso", e);

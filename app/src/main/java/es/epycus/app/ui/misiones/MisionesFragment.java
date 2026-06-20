@@ -41,6 +41,7 @@ public class MisionesFragment extends Fragment {
     private MisionesRepository repository;
     private MisionAdapter adapter;
     private final List<Call<?>> activeCalls = new ArrayList<>();
+    private int defaultCategoriaId = -1;
 
     @Nullable
     @Override
@@ -61,8 +62,39 @@ public class MisionesFragment extends Fragment {
         binding.btnNuevaMision.setOnClickListener(v -> mostrarDialogoNuevaMision());
 
         cargarMisiones();
+        cargarCategorias();
 
         return view;
+    }
+
+    private void cargarCategorias() {
+        Call<RespuestaApi<Object>> call = repository.categorias();
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
+                                   @NonNull Response<RespuestaApi<Object>> response) {
+                activeCalls.remove(call);
+                if (response.isSuccessful() && response.body() != null
+                        && response.body().isExito() && response.body().getDatos() != null) {
+                    try {
+                        Gson gson = new Gson();
+                        String json = gson.toJson(response.body().getDatos());
+                        com.google.gson.JsonArray arr = com.google.gson.JsonParser.parseString(json).getAsJsonArray();
+                        if (arr.size() > 0) {
+                            defaultCategoriaId = arr.get(0).getAsJsonObject().get("id").getAsInt();
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error parsing categorias", e);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+                activeCalls.remove(call);
+            }
+        });
     }
 
     private void cargarMisiones() {
@@ -169,6 +201,9 @@ public class MisionesFragment extends Fragment {
         body.addProperty("nombre", nombre);
         if (!descripcion.isEmpty()) body.addProperty("descripcion", descripcion);
         body.addProperty("prioridad", prioridad);
+        if (defaultCategoriaId > 0) {
+            body.addProperty("categoriaId", defaultCategoriaId);
+        }
 
         Call<RespuestaApi<Object>> call = repository.crear(body);
         activeCalls.add(call);

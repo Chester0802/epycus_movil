@@ -115,10 +115,10 @@ public class PerfilFragment extends Fragment {
                         if (perfilResp.getImagenPersonaje() != null && !perfilResp.getImagenPersonaje().isEmpty()) {
                             Glide.with(PerfilFragment.this)
                                     .load(perfilResp.getImagenPersonaje())
-                                    .circleCrop()
+                                    .error(R.drawable.ic_profile)
                                     .into(binding.ivAvatar);
                         } else {
-                            binding.ivAvatar.setImageDrawable(null);
+                            binding.ivAvatar.setImageResource(R.drawable.ic_profile);
                         }
 
                         sessionManager.saveSession(
