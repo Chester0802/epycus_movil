@@ -49,48 +49,60 @@ public class DiarioFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binding = FragmentDiarioBinding.inflate(inflater, container, false);
-        View view = binding.getRoot();
+        try {
+            binding = FragmentDiarioBinding.inflate(inflater, container, false);
+            View view = binding.getRoot();
 
-        diarioRepository = new DiarioRepository(requireContext());
+            diarioRepository = new DiarioRepository(requireContext());
 
-        View.OnClickListener moodListener = v -> {
-            if (selectedMood != null) {
-                selectedMood.setBackgroundResource(R.drawable.bg_card_rounded);
-            }
-            selectedMood = v;
-            v.setBackgroundResource(R.drawable.bg_accent_gradient);
+            View.OnClickListener moodListener = v -> {
+                if (!isAlive()) return;
+                if (selectedMood != null) {
+                    selectedMood.setBackgroundResource(R.drawable.bg_card_rounded);
+                }
+                selectedMood = v;
+                v.setBackgroundResource(R.drawable.bg_accent_gradient);
 
-            if (v.getId() == R.id.moodGenial) selectedMoodText = "Genial";
-            else if (v.getId() == R.id.moodBien) selectedMoodText = "Bien";
-            else if (v.getId() == R.id.moodNormal) selectedMoodText = "Normal";
-            else if (v.getId() == R.id.moodCansado) selectedMoodText = "Cansado";
-            else if (v.getId() == R.id.moodEstresado) selectedMoodText = "Estresado";
-        };
+                if (v.getId() == R.id.moodGenial) selectedMoodText = "Genial";
+                else if (v.getId() == R.id.moodBien) selectedMoodText = "Bien";
+                else if (v.getId() == R.id.moodNormal) selectedMoodText = "Normal";
+                else if (v.getId() == R.id.moodCansado) selectedMoodText = "Cansado";
+                else if (v.getId() == R.id.moodEstresado) selectedMoodText = "Estresado";
+            };
 
-        binding.moodGenial.setOnClickListener(moodListener);
-        binding.moodBien.setOnClickListener(moodListener);
-        binding.moodNormal.setOnClickListener(moodListener);
-        binding.moodCansado.setOnClickListener(moodListener);
-        binding.moodEstresado.setOnClickListener(moodListener);
+            binding.moodGenial.setOnClickListener(moodListener);
+            binding.moodBien.setOnClickListener(moodListener);
+            binding.moodNormal.setOnClickListener(moodListener);
+            binding.moodCansado.setOnClickListener(moodListener);
+            binding.moodEstresado.setOnClickListener(moodListener);
 
-        binding.btnGuardarAnimo.setOnClickListener(v -> {
-            if (selectedMoodText.isEmpty()) {
-                Snackbar.make(v, getString(R.string.selecciona_como_te_sientes), Snackbar.LENGTH_SHORT).show();
-                return;
-            }
-            guardarAnimo(selectedMoodText);
-        });
+            binding.btnGuardarAnimo.setOnClickListener(v -> {
+                if (!isAlive()) return;
+                if (selectedMoodText.isEmpty()) {
+                    Snackbar.make(v, getString(R.string.selecciona_como_te_sientes), Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+                guardarAnimo(selectedMoodText);
+            });
 
-        binding.btnChatEdy.setOnClickListener(v ->
-                startActivity(new Intent(getActivity(), IaChatActivity.class)));
+            binding.btnChatEdy.setOnClickListener(v -> {
+                if (getActivity() == null) return;
+                startActivity(new Intent(getActivity(), IaChatActivity.class));
+            });
 
-        binding.swipeRefresh.setOnRefreshListener(this::recargarTodo);
-        binding.swipeRefresh.setColorSchemeResources(R.color.light_accent, R.color.light_accent_secondary);
+            binding.swipeRefresh.setOnRefreshListener(this::recargarTodo);
+            binding.swipeRefresh.setColorSchemeResources(R.color.light_accent, R.color.light_accent_secondary);
 
-        recargarTodo();
+            recargarTodo();
 
-        return view;
+            return view;
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating DiarioFragment view", e);
+            TextView tv = new TextView(getContext());
+            tv.setText("Error al cargar diario");
+            tv.setPadding(32, 32, 32, 32);
+            return tv;
+        }
     }
 
     private void recargarTodo() {
