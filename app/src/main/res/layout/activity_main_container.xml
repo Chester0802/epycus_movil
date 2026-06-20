@@ -19,16 +19,16 @@
         android:layout_gravity="bottom"
         app:backgroundTint="?attr/epSurface"
         app:fabAlignmentMode="center"
-        app:fabCradleMargin="10dp"
-        app:fabCradleRoundedCornerRadius="16dp"
-        app:fabCradleVerticalOffset="2dp"
+        app:fabCradleMargin="12dp"
+        app:fabCradleRoundedCornerRadius="20dp"
+        app:fabCradleVerticalOffset="4dp"
         app:elevation="8dp">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNav"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
+            android:layout_marginHorizontal="16dp"
             android:background="@android:color/transparent"
             app:elevation="0dp"
             app:itemIconTint="@color/bottom_nav_color"
@@ -47,7 +47,7 @@
         app:layout_anchor="@id/bottomAppBar"
         app:srcCompat="@drawable/ic_send"
         app:tint="@color/white"
-        app:fabSize="normal"
-        app:maxImageSize="24dp" />
+        app:fabSize="mini"
+        app:maxImageSize="20dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

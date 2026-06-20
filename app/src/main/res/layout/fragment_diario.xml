@@ -354,6 +354,64 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- Misiones Section -->
+            <LinearLayout
+                android:id="@+id/layoutMisiones"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/misiones_titulo"
+                    android:textSize="18sp"
+                    android:textColor="?attr/epTextPrimary"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="12dp" />
+
+                <LinearLayout
+                    android:id="@+id/layoutMisionesEmpty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="24dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sin_misiones"
+                        android:textSize="14sp"
+                        android:textColor="?attr/epTextSecondary" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvMisiones"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNuevaMision"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="@string/nueva_mision"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                android:backgroundTint="?attr/epAccentSecondary"
+                android:textColor="?attr/epTextOnPrimary"
+                app:cornerRadius="16dp"
+                android:layout_marginTop="12dp"
+                app:icon="@drawable/ic_add"
+                app:iconGravity="textStart"
+                app:iconTint="?attr/epTextOnPrimary" />
+
         </LinearLayout>
     </ScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -314,8 +314,11 @@ public class HabitosFragment extends Fragment {
     private void crearHabito(String nombre, String categoria, String frecuencia) {
         JsonObject body = new JsonObject();
         body.addProperty("nombre", nombre);
+
+        // Mapeo de frecuencia para la API (Indispensable para que el server no de error)
+        String frecuenciaApi = frecuencia.toLowerCase().contains("semanal") ? "WEEKLY" : "DAILY";
+        body.addProperty("frecuencia", frecuenciaApi);
         body.addProperty("categoria", categoria);
-        body.addProperty("frecuencia", frecuencia);
 
         Call<RespuestaApi<Object>> call = repository.crear(body);
         activeCalls.add(call);
@@ -325,7 +328,7 @@ public class HabitosFragment extends Fragment {
                 activeCalls.remove(call);
                 if (response.isSuccessful()) {
                     Snackbar.make(binding.getRoot(), getString(R.string.habito_creado), Snackbar.LENGTH_SHORT).show();
-                    cargarHabitos();
+                    cargarHabitos(); // Recarga la lista
                 } else {
                     String msg = NetworkUtils.getErrorMessage(requireContext(), response);
                     Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_SHORT).show();
@@ -339,6 +342,7 @@ public class HabitosFragment extends Fragment {
             }
         });
     }
+
 
     private void completarHabito(int id) {
         Call<RespuestaApi<Object>> call = repository.completar(id);
