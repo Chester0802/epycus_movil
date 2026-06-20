@@ -59,6 +59,22 @@
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
 
+        <!-- Nuevo hábito button — always visible, above the list -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnNuevoHabito"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="@string/nuevo_habito_btn"
+            android:textAllCaps="false"
+            android:textSize="13sp"
+            android:backgroundTint="?attr/epAccent"
+            android:textColor="?attr/epTextOnPrimary"
+            app:cornerRadius="20dp"
+            android:layout_marginBottom="8dp"
+            app:icon="@drawable/ic_add"
+            app:iconGravity="textStart"
+            app:iconTint="?attr/epTextOnPrimary" />
+
         <!-- Loading -->
         <LinearLayout
             android:id="@+id/loadingView"
@@ -104,13 +120,13 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEmptyCrearHabito"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"
+                android:layout_height="40dp"
                 android:text="@string/crear_primer_habito_btn"
                 android:textAllCaps="false"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 android:backgroundTint="?attr/epAccent"
                 android:textColor="?attr/epTextOnPrimary"
-                app:cornerRadius="24dp"
+                app:cornerRadius="20dp"
                 android:layout_marginTop="16dp" />
         </LinearLayout>
 
@@ -120,22 +136,6 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:visibility="gone" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnNuevoHabito"
-            android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:text="@string/nuevo_habito_btn"
-            android:textAllCaps="false"
-            android:textSize="14sp"
-            android:backgroundTint="?attr/epAccent"
-            android:textColor="?attr/epTextOnPrimary"
-            app:cornerRadius="12dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            app:icon="@drawable/ic_add"
-            app:iconGravity="textStart"
-            app:iconTint="?attr/epTextOnPrimary" />
 
     </LinearLayout>
 

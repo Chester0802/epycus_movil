@@ -44,8 +44,6 @@ public class DiarioFragment extends Fragment {
     private String selectedMoodText = "";
     private DiarioRepository diarioRepository;
     private final List<Call<?>> activeCalls = new ArrayList<>();
-    private String entradaHoyTexto = "";
-    private String entradaHoyEstado = "";
 
     @Nullable
     @Override
@@ -101,6 +99,10 @@ public class DiarioFragment extends Fragment {
         cargarHistorialAnimo();
     }
 
+    private boolean isAlive() {
+        return isAdded() && binding != null;
+    }
+
     private void guardarAnimo(String estado) {
         JsonObject body = new JsonObject();
         body.addProperty("estado", estado);
@@ -117,6 +119,7 @@ public class DiarioFragment extends Fragment {
             public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
                                    @NonNull Response<RespuestaApi<Object>> response) {
                 activeCalls.remove(call);
+                if (!isAlive()) return;
                 if (response.isSuccessful()) {
                     Snackbar.make(requireView(), getString(R.string.estado_animo_guardado),
                             Snackbar.LENGTH_SHORT).show();
@@ -137,6 +140,7 @@ public class DiarioFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
+                if (!isAlive()) return;
                 mostrarErrorRed(t);
             }
         });
@@ -150,47 +154,56 @@ public class DiarioFragment extends Fragment {
             public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
                                    @NonNull Response<RespuestaApi<Object>> response) {
                 activeCalls.remove(call);
-                if (response.isSuccessful() && response.body() != null && response.body().isExito()
-                        && response.body().getDatos() != null) {
-                    try {
+                if (!isAlive()) return;
+                try {
+                    if (response.isSuccessful() && response.body() != null && response.body().isExito()
+                            && response.body().getDatos() != null) {
                         Gson gson = new Gson();
                         String json = gson.toJson(response.body().getDatos());
                         JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
-                        if (obj.has("estado")) {
-                            entradaHoyEstado = obj.get("estado").getAsString();
-                        }
-                        if (obj.has("nota")) {
-                            entradaHoyTexto = obj.get("nota").getAsString();
+
+                        String estado = "";
+                        String nota = "";
+
+                        if (obj.has("entrada") && !obj.get("entrada").isJsonNull()) {
+                            JsonObject entrada = obj.getAsJsonObject("entrada");
+                            if (entrada.has("estado") && !entrada.get("estado").isJsonNull()) {
+                                estado = entrada.get("estado").getAsString();
+                            }
+                            if (entrada.has("nota") && !entrada.get("nota").isJsonNull()) {
+                                nota = entrada.get("nota").getAsString();
+                            }
                         }
 
                         String resumen;
-                        if (!entradaHoyEstado.isEmpty()) {
-                            resumen = getString(R.string.entrada_hoy_formato, entradaHoyEstado);
-                            if (!entradaHoyTexto.isEmpty()) {
-                                resumen += "\n\"" + entradaHoyTexto + "\"";
+                        if (!estado.isEmpty()) {
+                            resumen = getString(R.string.entrada_hoy_formato, estado);
+                            if (!nota.isEmpty()) {
+                                resumen += "\n\"" + nota + "\"";
                             }
                         } else {
                             resumen = getString(R.string.sin_entrada_hoy);
                         }
                         binding.tvEntradaHoy.setText(resumen);
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error parsing entrada hoy", e);
+                    } else {
                         binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
                     }
-                } else {
-                    binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error parsing entrada hoy", e);
+                    if (isAlive()) binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
-                binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
+                if (isAlive()) binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
             }
         });
     }
 
     private void cargarPreguntaGuia() {
+        if (!isAlive()) return;
         binding.loadingView.setVisibility(View.VISIBLE);
         Call<RespuestaApi<PreguntaGuiaResponse>> call = diarioRepository.preguntaGuia();
         activeCalls.add(call);
@@ -199,21 +212,27 @@ public class DiarioFragment extends Fragment {
             public void onResponse(@NonNull Call<RespuestaApi<PreguntaGuiaResponse>> call,
                                    @NonNull Response<RespuestaApi<PreguntaGuiaResponse>> response) {
                 activeCalls.remove(call);
+                if (!isAlive()) return;
                 binding.loadingView.setVisibility(View.GONE);
                 binding.swipeRefresh.setRefreshing(false);
-                if (response.isSuccessful() && response.body() != null
-                        && response.body().getDatos() != null) {
-                    PreguntaGuiaResponse data = response.body().getDatos();
-                    Gson gson = new Gson();
-                    String json = gson.toJson(data);
-                    diarioRepository.cacheJson(CACHE_KEY_PREGUNTA, json);
-                    binding.tvPreguntaGuia.setText(data.getPregunta());
+                try {
+                    if (response.isSuccessful() && response.body() != null
+                            && response.body().getDatos() != null) {
+                        PreguntaGuiaResponse data = response.body().getDatos();
+                        Gson gson = new Gson();
+                        String json = gson.toJson(data);
+                        diarioRepository.cacheJson(CACHE_KEY_PREGUNTA, json);
+                        binding.tvPreguntaGuia.setText(data.getPregunta());
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error parsing pregunta guia", e);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<RespuestaApi<PreguntaGuiaResponse>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
+                if (!isAlive()) return;
                 binding.loadingView.setVisibility(View.GONE);
                 binding.swipeRefresh.setRefreshing(false);
                 cargarPreguntaGuiaDesdeCache();
@@ -224,7 +243,7 @@ public class DiarioFragment extends Fragment {
 
     private void cargarPreguntaGuiaDesdeCache() {
         String json = diarioRepository.getCachedJson(CACHE_KEY_PREGUNTA);
-        if (json != null) {
+        if (json != null && isAlive()) {
             try {
                 Gson gson = new Gson();
                 PreguntaGuiaResponse data = gson.fromJson(json, PreguntaGuiaResponse.class);
@@ -244,9 +263,10 @@ public class DiarioFragment extends Fragment {
             public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
                                    @NonNull Response<RespuestaApi<Object>> response) {
                 activeCalls.remove(call);
-                if (response.isSuccessful() && response.body() != null && response.body().isExito()
-                        && response.body().getDatos() != null) {
-                    try {
+                if (!isAlive()) return;
+                try {
+                    if (response.isSuccessful() && response.body() != null && response.body().isExito()
+                            && response.body().getDatos() != null) {
                         Gson gson = new Gson();
                         String json = gson.toJson(response.body().getDatos());
                         JsonArray arr = JsonParser.parseString(json).getAsJsonArray();
@@ -258,32 +278,35 @@ public class DiarioFragment extends Fragment {
                         List<MoodHistoryItem> items = new ArrayList<>();
                         for (int i = 0; i < arr.size(); i++) {
                             JsonObject obj = arr.get(i).getAsJsonObject();
-                            String fecha = obj.has("fecha") ? obj.get("fecha").getAsString() : "";
-                            String estado = obj.has("estado") ? obj.get("estado").getAsString() : "";
+                            String fecha = obj.has("fecha") && !obj.get("fecha").isJsonNull()
+                                    ? obj.get("fecha").getAsString() : "";
+                            String estado = obj.has("estado") && !obj.get("estado").isJsonNull()
+                                    ? obj.get("estado").getAsString() : "";
                             String nota = obj.has("nota") && !obj.get("nota").isJsonNull()
                                     ? obj.get("nota").getAsString() : "";
                             items.add(new MoodHistoryItem(fecha, estado, nota));
                         }
                         binding.rvHistorialAnimo.setLayoutManager(new LinearLayoutManager(getContext()));
                         binding.rvHistorialAnimo.setAdapter(new MoodHistoryAdapter(items));
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error parsing historial", e);
+                    } else {
                         binding.layoutHistorial.setVisibility(View.GONE);
                     }
-                } else {
-                    binding.layoutHistorial.setVisibility(View.GONE);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error parsing historial", e);
+                    if (isAlive()) binding.layoutHistorial.setVisibility(View.GONE);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
-                binding.layoutHistorial.setVisibility(View.GONE);
+                if (isAlive()) binding.layoutHistorial.setVisibility(View.GONE);
             }
         });
     }
 
     private void mostrarErrorRed(Throwable t) {
+        if (!isAlive()) return;
         Snackbar.make(requireView(),
                 getString(NetworkUtils.getNetworkErrorResId(t)), Snackbar.LENGTH_SHORT).show();
     }

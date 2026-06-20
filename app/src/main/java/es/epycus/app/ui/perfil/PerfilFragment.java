@@ -374,7 +374,9 @@ public class PerfilFragment extends Fragment {
     }
 
     private void mostrarDialogoConfiguracion() {
+        boolean isLight = ThemeManager.getInstance(requireContext()).isLightTheme();
         String[] opciones = {
+                isLight ? getString(R.string.modo_oscuro) : getString(R.string.modo_claro),
                 getString(R.string.cambiar_contrasena),
                 getString(R.string.notificaciones_preferencias),
                 getString(R.string.acerca_de)
@@ -385,12 +387,16 @@ public class PerfilFragment extends Fragment {
         builder.setItems(opciones, (dialog, which) -> {
             switch (which) {
                 case 0:
-                    mostrarDialogoCambiarContrasena();
+                    ThemeManager.getInstance(requireContext()).toggle();
+                    requireActivity().recreate();
                     break;
                 case 1:
-                    Snackbar.make(binding.getRoot(), getString(R.string.notificaciones_proximamente), Snackbar.LENGTH_SHORT).show();
+                    mostrarDialogoCambiarContrasena();
                     break;
                 case 2:
+                    Snackbar.make(binding.getRoot(), getString(R.string.notificaciones_proximamente), Snackbar.LENGTH_SHORT).show();
+                    break;
+                case 3:
                     mostrarAcercaDe();
                     break;
             }
