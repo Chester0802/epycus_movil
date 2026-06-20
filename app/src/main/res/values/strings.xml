@@ -245,6 +245,9 @@
     <!-- Diario empty state -->
     <string name="sin_contenido_diario">Aún no hay contenido en tu diario.</string>
 
+    <!-- Mood history -->
+    <string name="historial_animo">Historial de estado de ánimo</string>
+
     <string-array name="generos">
         <item>Masculino</item>
         <item>Femenino</item>

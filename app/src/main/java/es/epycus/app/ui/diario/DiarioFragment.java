@@ -1,25 +1,24 @@
 package es.epycus.app.ui.diario;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +27,8 @@ import es.epycus.app.R;
 import es.epycus.app.api.RetrofitClient;
 import es.epycus.app.databinding.FragmentDiarioBinding;
 import es.epycus.app.model.RespuestaApi;
-import es.epycus.app.model.dto.MisionDto;
 import es.epycus.app.model.dto.PreguntaGuiaResponse;
 import es.epycus.app.repository.DiarioRepository;
-import es.epycus.app.repository.MisionesRepository;
-import es.epycus.app.ui.adapters.MisionAdapter;
 import es.epycus.app.ui.ia.IaChatActivity;
 import es.epycus.app.util.NetworkUtils;
 import retrofit2.Call;
@@ -43,13 +39,10 @@ public class DiarioFragment extends Fragment {
 
     private static final String TAG = "DiarioFragment";
     private static final String CACHE_KEY_PREGUNTA = "pregunta_guia";
-    private static final String CACHE_KEY_MISIONES = "misiones";
     private FragmentDiarioBinding binding;
     private View selectedMood;
     private String selectedMoodText = "";
     private DiarioRepository diarioRepository;
-    private MisionesRepository misionesRepository;
-    private MisionAdapter misionAdapter;
     private final List<Call<?>> activeCalls = new ArrayList<>();
     private String entradaHoyTexto = "";
     private String entradaHoyEstado = "";
@@ -62,7 +55,6 @@ public class DiarioFragment extends Fragment {
         View view = binding.getRoot();
 
         diarioRepository = new DiarioRepository(requireContext());
-        misionesRepository = new MisionesRepository(requireContext());
 
         View.OnClickListener moodListener = v -> {
             if (selectedMood != null) {
@@ -95,12 +87,6 @@ public class DiarioFragment extends Fragment {
         binding.btnChatEdy.setOnClickListener(v ->
                 startActivity(new Intent(getActivity(), IaChatActivity.class)));
 
-        misionAdapter = new MisionAdapter(id -> completarMision(id));
-        binding.rvMisiones.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.rvMisiones.setAdapter(misionAdapter);
-
-        binding.btnNuevaMision.setOnClickListener(v -> mostrarDialogoNuevaMision());
-
         binding.swipeRefresh.setOnRefreshListener(this::recargarTodo);
         binding.swipeRefresh.setColorSchemeResources(R.color.light_accent, R.color.light_accent_secondary);
 
@@ -112,15 +98,15 @@ public class DiarioFragment extends Fragment {
     private void recargarTodo() {
         cargarPreguntaGuia();
         cargarEntradaHoy();
-        cargarMisiones();
+        cargarHistorialAnimo();
     }
 
     private void guardarAnimo(String estado) {
         JsonObject body = new JsonObject();
         body.addProperty("estado", estado);
-        String notas = binding.etNotas.getText().toString().trim();
-        if (!notas.isEmpty()) {
-            body.addProperty("notas", notas);
+        String nota = binding.etNotas.getText().toString().trim();
+        if (!nota.isEmpty()) {
+            body.addProperty("nota", nota);
         }
 
         Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiEstadoAnimoService()
@@ -141,6 +127,7 @@ public class DiarioFragment extends Fragment {
                     }
                     binding.etNotas.setText("");
                     cargarEntradaHoy();
+                    cargarHistorialAnimo();
                 } else {
                     String msg = NetworkUtils.getErrorMessage(requireContext(), response);
                     Snackbar.make(requireView(), msg, Snackbar.LENGTH_SHORT).show();
@@ -168,12 +155,12 @@ public class DiarioFragment extends Fragment {
                     try {
                         Gson gson = new Gson();
                         String json = gson.toJson(response.body().getDatos());
-                        JsonObject obj = com.google.gson.JsonParser.parseString(json).getAsJsonObject();
+                        JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
                         if (obj.has("estado")) {
                             entradaHoyEstado = obj.get("estado").getAsString();
                         }
-                        if (obj.has("notas")) {
-                            entradaHoyTexto = obj.get("notas").getAsString();
+                        if (obj.has("nota")) {
+                            entradaHoyTexto = obj.get("nota").getAsString();
                         }
 
                         String resumen;
@@ -248,157 +235,50 @@ public class DiarioFragment extends Fragment {
         }
     }
 
-    private void cargarMisiones() {
-        Call<RespuestaApi<List<MisionDto>>> call = misionesRepository.listar();
-        activeCalls.add(call);
-        call.enqueue(new Callback<>() {
-            @Override
-            public void onResponse(@NonNull Call<RespuestaApi<List<MisionDto>>> call,
-                                   @NonNull Response<RespuestaApi<List<MisionDto>>> response) {
-                activeCalls.remove(call);
-                if (response.isSuccessful() && response.body() != null
-                        && response.body().isExito() && response.body().getDatos() != null) {
-                    try {
-                        List<MisionDto> misiones = response.body().getDatos();
-                        Gson gson = new Gson();
-                        String json = gson.toJson(misiones);
-                        misionesRepository.cacheJson(CACHE_KEY_MISIONES, json);
-                        actualizarVistaMisiones(misiones);
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error parsing misiones", e);
-                        ocultarMisiones();
-                    }
-                } else {
-                    ocultarMisiones();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<RespuestaApi<List<MisionDto>>> call, @NonNull Throwable t) {
-                activeCalls.remove(call);
-                String cached = misionesRepository.getCachedJson(CACHE_KEY_MISIONES);
-                if (cached != null) {
-                    try {
-                        Gson gson = new Gson();
-                        MisionDto[] arr = gson.fromJson(cached, MisionDto[].class);
-                        List<MisionDto> misiones = new ArrayList<>();
-                        for (MisionDto m : arr) misiones.add(m);
-                        actualizarVistaMisiones(misiones);
-                    } catch (Exception e) {
-                        ocultarMisiones();
-                    }
-                } else {
-                    ocultarMisiones();
-                }
-            }
-        });
-    }
-
-    private void actualizarVistaMisiones(List<MisionDto> misiones) {
-        binding.layoutMisiones.setVisibility(View.VISIBLE);
-        if (misiones.isEmpty()) {
-            binding.rvMisiones.setVisibility(View.GONE);
-            binding.layoutMisionesEmpty.setVisibility(View.VISIBLE);
-        } else {
-            binding.rvMisiones.setVisibility(View.VISIBLE);
-            binding.layoutMisionesEmpty.setVisibility(View.GONE);
-            misionAdapter.setMisiones(misiones);
-        }
-    }
-
-    private void ocultarMisiones() {
-        binding.layoutMisiones.setVisibility(View.GONE);
-    }
-
-    private void completarMision(int id) {
-        Call<RespuestaApi<Object>> call = misionesRepository.completar(id);
+    private void cargarHistorialAnimo() {
+        Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiEstadoAnimoService()
+                .historial();
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
                                    @NonNull Response<RespuestaApi<Object>> response) {
                 activeCalls.remove(call);
-                if (response.isSuccessful()) {
-                    Snackbar.make(requireView(), getString(R.string.mision_completada),
-                            Snackbar.LENGTH_SHORT).show();
-                    cargarMisiones();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
-                activeCalls.remove(call);
-                mostrarErrorRed(t);
-            }
-        });
-    }
-
-    private void mostrarDialogoNuevaMision() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle(getString(R.string.nueva_mision));
-
-        LinearLayout layout = new LinearLayout(requireContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(48, 16, 48, 16);
-
-        EditText etNombre = new EditText(requireContext());
-        etNombre.setHint(getString(R.string.mision_nombre_hint));
-        layout.addView(etNombre);
-
-        EditText etDescripcion = new EditText(requireContext());
-        etDescripcion.setHint(getString(R.string.mision_descripcion_hint));
-        layout.addView(etDescripcion);
-
-        Spinner spPrioridad = new Spinner(requireContext());
-        ArrayAdapter<String> prioridadAdapter = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_spinner_item,
-                new String[]{getString(R.string.prioridad_alta), getString(R.string.prioridad_media), getString(R.string.prioridad_baja)});
-        prioridadAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spPrioridad.setAdapter(prioridadAdapter);
-        layout.addView(spPrioridad);
-
-        builder.setView(layout);
-        builder.setPositiveButton(getString(R.string.crear), (dialog, which) -> {
-            String nombre = etNombre.getText().toString().trim();
-            if (nombre.isEmpty()) {
-                Snackbar.make(requireView(), getString(R.string.completa_campos), Snackbar.LENGTH_SHORT).show();
-                return;
-            }
-            String descripcion = etDescripcion.getText().toString().trim();
-            String prioridad = spPrioridad.getSelectedItem().toString();
-            crearMision(nombre, descripcion, prioridad);
-        });
-        builder.setNegativeButton(getString(R.string.cancelar), null);
-        builder.show();
-    }
-
-    private void crearMision(String nombre, String descripcion, String prioridad) {
-        JsonObject body = new JsonObject();
-        body.addProperty("nombre", nombre);
-        if (!descripcion.isEmpty()) body.addProperty("descripcion", descripcion);
-        body.addProperty("prioridad", prioridad);
-
-        Call<RespuestaApi<Object>> call = misionesRepository.crear(body);
-        activeCalls.add(call);
-        call.enqueue(new Callback<>() {
-            @Override
-            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                   @NonNull Response<RespuestaApi<Object>> response) {
-                activeCalls.remove(call);
-                if (response.isSuccessful()) {
-                    Snackbar.make(requireView(), getString(R.string.mision_creada),
-                            Snackbar.LENGTH_SHORT).show();
-                    cargarMisiones();
+                if (response.isSuccessful() && response.body() != null && response.body().isExito()
+                        && response.body().getDatos() != null) {
+                    try {
+                        Gson gson = new Gson();
+                        String json = gson.toJson(response.body().getDatos());
+                        JsonArray arr = JsonParser.parseString(json).getAsJsonArray();
+                        if (arr.size() == 0) {
+                            binding.layoutHistorial.setVisibility(View.GONE);
+                            return;
+                        }
+                        binding.layoutHistorial.setVisibility(View.VISIBLE);
+                        List<MoodHistoryItem> items = new ArrayList<>();
+                        for (int i = 0; i < arr.size(); i++) {
+                            JsonObject obj = arr.get(i).getAsJsonObject();
+                            String fecha = obj.has("fecha") ? obj.get("fecha").getAsString() : "";
+                            String estado = obj.has("estado") ? obj.get("estado").getAsString() : "";
+                            String nota = obj.has("nota") && !obj.get("nota").isJsonNull()
+                                    ? obj.get("nota").getAsString() : "";
+                            items.add(new MoodHistoryItem(fecha, estado, nota));
+                        }
+                        binding.rvHistorialAnimo.setLayoutManager(new LinearLayoutManager(getContext()));
+                        binding.rvHistorialAnimo.setAdapter(new MoodHistoryAdapter(items));
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error parsing historial", e);
+                        binding.layoutHistorial.setVisibility(View.GONE);
+                    }
                 } else {
-                    String msg = NetworkUtils.getErrorMessage(requireContext(), response);
-                    Snackbar.make(requireView(), msg, Snackbar.LENGTH_SHORT).show();
+                    binding.layoutHistorial.setVisibility(View.GONE);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
-                mostrarErrorRed(t);
+                binding.layoutHistorial.setVisibility(View.GONE);
             }
         });
     }
@@ -416,5 +296,57 @@ public class DiarioFragment extends Fragment {
         activeCalls.clear();
         super.onDestroyView();
         binding = null;
+    }
+
+    private static class MoodHistoryItem {
+        final String fecha;
+        final String estado;
+        final String nota;
+
+        MoodHistoryItem(String fecha, String estado, String nota) {
+            this.fecha = fecha;
+            this.estado = estado;
+            this.nota = nota;
+        }
+    }
+
+    private static class MoodHistoryAdapter extends RecyclerView.Adapter<MoodHistoryAdapter.ViewHolder> {
+        private final List<MoodHistoryItem> items;
+
+        MoodHistoryAdapter(List<MoodHistoryItem> items) {
+            this.items = items;
+        }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            TextView tv = new TextView(parent.getContext());
+            tv.setPadding(0, 0, 0, 8);
+            return new ViewHolder(tv);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            MoodHistoryItem item = items.get(position);
+            String text = item.fecha + " - " + item.estado;
+            if (!item.nota.isEmpty()) {
+                text += " (\"" + item.nota + "\")";
+            }
+            holder.textView.setText(text);
+        }
+
+        @Override
+        public int getItemCount() {
+            return items.size();
+        }
+
+        static class ViewHolder extends RecyclerView.ViewHolder {
+            final TextView textView;
+
+            ViewHolder(TextView tv) {
+                super(tv);
+                textView = tv;
+            }
+        }
     }
 }

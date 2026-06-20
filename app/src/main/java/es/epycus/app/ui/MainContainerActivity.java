@@ -1,6 +1,5 @@
 package es.epycus.app.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -12,12 +11,12 @@ import androidx.fragment.app.FragmentTransaction;
 import es.epycus.app.R;
 import es.epycus.app.databinding.ActivityMainContainerBinding;
 import es.epycus.app.ui.habitos.HabitosFragment;
-import es.epycus.app.ui.ia.IaChatActivity;
 import es.epycus.app.util.ThemeManager;
 import es.epycus.app.ui.home.InicioFragment;
 import es.epycus.app.ui.pomodoro.PomodoroFragment;
 import es.epycus.app.ui.diario.DiarioFragment;
 import es.epycus.app.ui.perfil.PerfilFragment;
+import es.epycus.app.ui.misiones.MisionesFragment;
 
 public class MainContainerActivity extends AppCompatActivity {
 
@@ -44,7 +43,6 @@ public class MainContainerActivity extends AppCompatActivity {
         }
 
         setupNavigation();
-        setupFab();
     }
 
     private void setupNavigation() {
@@ -61,6 +59,10 @@ public class MainContainerActivity extends AppCompatActivity {
                 tag = "habitos";
                 nuevo = fragmentManager.findFragmentByTag(tag);
                 if (nuevo == null) nuevo = new HabitosFragment();
+            } else if (id == R.id.nav_misiones) {
+                tag = "misiones";
+                nuevo = fragmentManager.findFragmentByTag(tag);
+                if (nuevo == null) nuevo = new MisionesFragment();
             } else if (id == R.id.nav_diario) {
                 tag = "diario";
                 nuevo = fragmentManager.findFragmentByTag(tag);
@@ -89,13 +91,6 @@ public class MainContainerActivity extends AppCompatActivity {
                 return true;
             }
             return false;
-        });
-    }
-
-    private void setupFab() {
-        binding.fabEdy.setOnClickListener(v -> {
-            Intent intent = new Intent(this, IaChatActivity.class);
-            startActivity(intent);
         });
     }
 
