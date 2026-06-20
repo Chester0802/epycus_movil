@@ -248,6 +248,15 @@
     <!-- Mood history -->
     <string name="historial_animo">Historial de estado de ánimo</string>
 
+    <!-- Pomodoro extra -->
+    <string name="sesion_inicial">Sesión 0</string>
+    <string name="ciclos_label">Ciclos</string>
+    <string name="hoy_label">Hoy</string>
+    <string name="racha_label">Racha</string>
+    <string name="racha_default">—</string>
+    <string name="streak_emoji">🔥</string>
+    <string name="sesion_formato">Sesión %d</string>
+
     <string-array name="generos">
         <item>Masculino</item>
         <item>Femenino</item>

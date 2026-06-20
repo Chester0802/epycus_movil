@@ -71,6 +71,7 @@ public class PomodoroFragment extends Fragment {
         actualizarDisplay();
         binding.tvCiclos.setText(getString(R.string.ciclos_formato, ciclosCompletados));
         binding.tvTotalHoy.setText(getString(R.string.hoy_completados_formato, ciclosHoy));
+        binding.tvSessionLabel.setText(getString(R.string.sesion_formato, ciclosCompletados));
 
         binding.btnControl.setOnClickListener(v -> {
             if (isRunning) {
@@ -105,10 +106,13 @@ public class PomodoroFragment extends Fragment {
     private void actualizarBoton() {
         if (isRunning) {
             binding.btnControl.setText(R.string.pausar);
+            binding.btnControl.setIconResource(R.drawable.ic_pause);
         } else if (segundosRestantes <= 0) {
             binding.btnControl.setText(R.string.iniciar_foco);
+            binding.btnControl.setIconResource(R.drawable.ic_play);
         } else {
             binding.btnControl.setText(R.string.reanudar);
+            binding.btnControl.setIconResource(R.drawable.ic_play);
         }
     }
 
@@ -124,6 +128,7 @@ public class PomodoroFragment extends Fragment {
             public void onFinish() {
                 isRunning = false;
                 if (isPausa) {
+                    binding.btnControl.setIconResource(R.drawable.ic_play);
                     binding.btnControl.setText(R.string.iniciar_foco);
                     binding.tvEstado.setText(R.string.pausa_terminada);
                     isPausa = false;
@@ -134,6 +139,8 @@ public class PomodoroFragment extends Fragment {
                     ciclosHoy++;
                     binding.tvCiclos.setText(getString(R.string.ciclos_formato, ciclosCompletados));
                     binding.tvTotalHoy.setText(getString(R.string.hoy_completados_formato, ciclosHoy));
+                    binding.tvSessionLabel.setText(getString(R.string.sesion_formato, ciclosCompletados));
+                    binding.btnControl.setIconResource(R.drawable.ic_play);
                     binding.btnControl.setText(R.string.iniciar_pausa);
                     binding.tvEstado.setText(R.string.foco_completado);
 
@@ -156,6 +163,7 @@ public class PomodoroFragment extends Fragment {
             iniciarSesionEnBackend();
         }
         isRunning = true;
+        binding.btnControl.setIconResource(R.drawable.ic_pause);
         binding.btnControl.setText(R.string.pausar);
         reanudarTimer();
     }
@@ -165,6 +173,7 @@ public class PomodoroFragment extends Fragment {
             timer.cancel();
         }
         isRunning = false;
+        binding.btnControl.setIconResource(R.drawable.ic_play);
         binding.btnControl.setText(R.string.reanudar);
     }
 

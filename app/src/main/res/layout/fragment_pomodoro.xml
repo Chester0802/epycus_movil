@@ -38,106 +38,204 @@
             android:textSize="22sp"
             android:textColor="?attr/epTextPrimary"
             android:textStyle="bold"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="4dp" />
-
-        <TextView
-            android:id="@+id/tvEstado"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/foco"
-            android:textSize="14sp"
-            android:textColor="?attr/epAccent"
-            android:layout_marginBottom="32dp" />
+            android:layout_marginTop="16dp" />
 
         <!-- Timer Circle -->
         <LinearLayout
-            android:layout_width="260dp"
-            android:layout_height="260dp"
-            android:background="@drawable/bg_card_rounded"
+            android:layout_width="240dp"
+            android:layout_height="240dp"
+            android:background="@drawable/bg_timer_circle"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginTop="28dp"
+            android:elevation="8dp">
+
+            <TextView
+                android:id="@+id/tvEstado"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/foco"
+                android:textSize="13sp"
+                android:textColor="#CCFFFFFF"
+                android:layout_marginBottom="4dp" />
 
             <TextView
                 android:id="@+id/tvTiempo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/tiempo_inicial"
-                android:textSize="56sp"
-                android:textColor="?attr/epAccent"
-                android:textStyle="bold" />
+                android:textSize="52sp"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:letterSpacing="0.05" />
+
+            <TextView
+                android:id="@+id/tvSessionLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sesion_inicial"
+                android:textSize="12sp"
+                android:textColor="#AAFFFFFF"
+                android:layout_marginTop="4dp" />
         </LinearLayout>
 
         <!-- Control Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnControl"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="160dp"
+            android:layout_height="44dp"
             android:text="@string/iniciar"
             android:textAllCaps="false"
-            android:textSize="13sp"
+            android:textSize="15sp"
             android:backgroundTint="?attr/epAccent"
             android:textColor="?attr/epTextOnPrimary"
-            app:cornerRadius="36dp"
-            android:layout_marginTop="32dp" />
+            app:cornerRadius="22dp"
+            android:layout_marginTop="24dp"
+            app:icon="@drawable/ic_play"
+            app:iconGravity="textStart"
+            app:iconTint="?attr/epTextOnPrimary" />
 
-        <!-- Tip -->
-        <TextView
-            android:id="@+id/tvTip"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="13sp"
-            android:textColor="?attr/epTextSecondary"
-            android:gravity="center"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Stats -->
+        <!-- Stats Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp">
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="60dp"
+                android:layout_height="80dp"
                 android:layout_weight="1"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="6dp"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:background="@drawable/bg_card_rounded">
+                android:background="@drawable/bg_stat_card">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_pomodoro"
+                    app:tint="?attr/epAccent"
+                    android:contentDescription="@null"
+                    android:layout_marginBottom="4dp" />
 
                 <TextView
                     android:id="@+id/tvCiclos"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/ciclos_inicial"
-                    android:textSize="14sp"
+                    android:textSize="12sp"
                     android:textColor="?attr/epTextPrimary"
                     android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ciclos_label"
+                    android:textSize="10sp"
+                    android:textColor="?attr/epTextTertiary" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="60dp"
+                android:layout_height="80dp"
                 android:layout_weight="1"
-                android:layout_marginStart="8dp"
+                android:layout_marginHorizontal="6dp"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:background="@drawable/bg_card_rounded">
+                android:background="@drawable/bg_stat_card">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/streak_emoji"
+                    android:textSize="20sp"
+                    android:layout_marginBottom="2dp" />
 
                 <TextView
                     android:id="@+id/tvTotalHoy"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/hoy_inicial"
-                    android:textSize="14sp"
-                    android:textColor="?attr/epAccent"
+                    android:textSize="12sp"
+                    android:textColor="?attr/epTextPrimary"
                     android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hoy_label"
+                    android:textSize="10sp"
+                    android:textColor="?attr/epTextTertiary" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:background="@drawable/bg_stat_card">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_streak"
+                    app:tint="?attr/epAccentSecondary"
+                    android:contentDescription="@null"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/tvRacha"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/racha_default"
+                    android:textSize="12sp"
+                    android:textColor="?attr/epTextPrimary"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/racha_label"
+                    android:textSize="10sp"
+                    android:textColor="?attr/epTextTertiary" />
             </LinearLayout>
         </LinearLayout>
 
+        <!-- Tip Card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_stat_card"
+            android:padding="14dp"
+            android:layout_marginTop="16dp">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_lightbulb"
+                app:tint="?attr/epAccentSecondary"
+                android:contentDescription="@null"
+                android:layout_marginEnd="10dp" />
+
+            <TextView
+                android:id="@+id/tvTip"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="12sp"
+                android:textColor="?attr/epTextSecondary"
+                android:lineSpacingExtra="2dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:orientation="vertical" />
     </LinearLayout>
     </ScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
