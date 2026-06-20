@@ -69,8 +69,6 @@ public class MainContainerActivity extends AppCompatActivity {
                 tag = "perfil";
                 nuevo = fragmentManager.findFragmentByTag(tag);
                 if (nuevo == null) nuevo = new PerfilFragment();
-            } else if (id == R.id.nav_placeholder) {
-                return false;
             } else {
                 return false;
             }
