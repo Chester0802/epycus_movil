@@ -3,6 +3,8 @@ package es.epycus.app.api;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.ChatRequest;
 import es.epycus.app.model.dto.ChatResponse;
+import es.epycus.app.model.dto.SuccessResponseDto;
+import es.epycus.app.model.dto.IaMensajesHoyResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -27,8 +29,8 @@ public interface ApiIaService {
     Call<RespuestaApi<Object>> contextoBienestar();
 
     @POST("api/ia/feedback")
-    Call<RespuestaApi<Object>> feedback(@Body Object body);
+    Call<RespuestaApi<SuccessResponseDto>> feedback(@Body Object body);
 
     @GET("api/ia/mensajes-hoy")
-    Call<RespuestaApi<Object>> mensajesHoy();
+    Call<RespuestaApi<IaMensajesHoyResponse>> mensajesHoy();
 }

@@ -22,6 +22,8 @@ import retrofit2.Call;
 public class AuthInterceptor implements Interceptor {
     private final SessionManager sessionManager;
     private final Context context;
+    private final Object refreshLock = new Object();
+    private volatile boolean refreshing = false;
 
     public AuthInterceptor(SessionManager sessionManager, Context context) {
         this.sessionManager = sessionManager;
@@ -45,6 +47,19 @@ public class AuthInterceptor implements Interceptor {
                 return refreshAndRetry(chain, original);
             }
 
+            if (response.code() == 401 && refreshing) {
+                response.close();
+                String newToken = sessionManager.getToken();
+                if (newToken != null && !newToken.equals(token)) {
+                    Request.Builder retryBuilder = original.newBuilder()
+                            .header("Authorization", "Bearer " + newToken)
+                            .header("X-Retry", "true");
+                    return chain.proceed(retryBuilder.build());
+                }
+                forceLogout();
+                throw new IOException("Refresh already in progress but token not updated");
+            }
+
             return response;
         }
 
@@ -52,13 +67,24 @@ public class AuthInterceptor implements Interceptor {
     }
 
     private Response refreshAndRetry(Chain chain, Request original) throws IOException {
-        String refreshToken = sessionManager.getRefreshToken();
-        if (refreshToken == null) {
-            forceLogout();
-            throw new IOException("No refresh token available");
+        synchronized (refreshLock) {
+            if (refreshing) {
+                String currentToken = sessionManager.getToken();
+                Request.Builder retryBuilder = original.newBuilder()
+                        .header("Authorization", "Bearer " + currentToken)
+                        .header("X-Retry", "true");
+                return chain.proceed(retryBuilder.build());
+            }
+            refreshing = true;
         }
 
         try {
+            String refreshToken = sessionManager.getRefreshToken();
+            if (refreshToken == null) {
+                forceLogout();
+                throw new IOException("No refresh token available");
+            }
+
             ApiAuthService authlessService = RetrofitClient.getAuthlessRetrofit(context)
                     .create(ApiAuthService.class);
 
@@ -91,6 +117,10 @@ public class AuthInterceptor implements Interceptor {
         } catch (Exception e) {
             forceLogout();
             throw new IOException("Token refresh failed", e);
+        } finally {
+            synchronized (refreshLock) {
+                refreshing = false;
+            }
         }
     }
 

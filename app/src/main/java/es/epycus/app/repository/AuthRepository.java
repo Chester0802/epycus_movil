@@ -11,6 +11,7 @@ import es.epycus.app.model.dto.LoginDto;
 import es.epycus.app.model.dto.RefreshDto;
 import es.epycus.app.model.dto.RecuperarContrasenaDto;
 import es.epycus.app.model.dto.RegistroRequestDto;
+import es.epycus.app.model.dto.MensajeResponseDto;
 import es.epycus.app.model.entidades.AuthResponse;
 import es.epycus.app.model.entidades.Carrera;
 import es.epycus.app.util.SessionManager;
@@ -47,15 +48,17 @@ public class AuthRepository {
         return api.getApiAuthService().refresh(new RefreshDto(refreshToken));
     }
 
+    public RetrofitClient getApi() { return api; }
+
     public Call<RespuestaApi<List<Carrera>>> obtenerCarreras() {
         return api.getApiAuthService().obtenerCarreras();
     }
 
-    public Call<RespuestaApi<Void>> logout() {
+    public Call<RespuestaApi<MensajeResponseDto>> logout() {
         return api.getApiAuthService().logout();
     }
 
-    public Call<RespuestaApi<Object>> recuperarContrasena(RecuperarContrasenaDto dto) {
+    public Call<RespuestaApi<MensajeResponseDto>> recuperarContrasena(RecuperarContrasenaDto dto) {
         return api.getApiAuthService().recuperarContrasena(dto);
     }
 

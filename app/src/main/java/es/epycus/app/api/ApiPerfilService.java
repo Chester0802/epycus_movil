@@ -2,6 +2,9 @@ package es.epycus.app.api;
 
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.PerfilResponse;
+import es.epycus.app.model.dto.MensajeResponseDto;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -13,16 +16,16 @@ public interface ApiPerfilService {
     Call<RespuestaApi<PerfilResponse>> obtenerPerfil();
 
     @PUT("api/perfil")
-    Call<RespuestaApi<Object>> actualizar(@Body Object body);
+    Call<RespuestaApi<MensajeResponseDto>> actualizar(@Body Object body);
 
     @PUT("api/perfil/cambiar-contrasena")
-    Call<RespuestaApi<Object>> cambiarContrasena(@Body Object body);
+    Call<RespuestaApi<MensajeResponseDto>> cambiarContrasena(@Body Object body);
 
     @PUT("api/perfil/personaje")
     Call<RespuestaApi<Object>> cambiarPersonaje(@Body Object body);
 
     @PUT("api/perfil/tema")
-    Call<RespuestaApi<Object>> cambiarTema(@Body Object body);
+    Call<RespuestaApi<MensajeResponseDto>> cambiarTema(@Body Object body);
 
     @GET("api/perfil/personajes")
     Call<RespuestaApi<Object>> personajes();

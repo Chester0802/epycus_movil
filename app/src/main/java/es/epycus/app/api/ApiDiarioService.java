@@ -2,6 +2,8 @@ package es.epycus.app.api;
 
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.PreguntaGuiaResponse;
+import es.epycus.app.model.dto.DiarioRachaResponse;
+import es.epycus.app.model.dto.DiarioPromedioMesResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -28,10 +30,10 @@ public interface ApiDiarioService {
     Call<RespuestaApi<Object>> actualizar(@Path("fecha") String fecha, @Body Object body);
 
     @GET("api/diario/racha")
-    Call<RespuestaApi<Object>> racha();
+    Call<RespuestaApi<DiarioRachaResponse>> racha();
 
     @GET("api/diario/promedio-mes")
-    Call<RespuestaApi<Object>> promedioMes(@Query("anio") int anio, @Query("mes") int mes);
+    Call<RespuestaApi<DiarioPromedioMesResponse>> promedioMes(@Query("anio") int anio, @Query("mes") int mes);
 
     @GET("api/diario/pregunta-guia")
     Call<RespuestaApi<PreguntaGuiaResponse>> preguntaGuia();

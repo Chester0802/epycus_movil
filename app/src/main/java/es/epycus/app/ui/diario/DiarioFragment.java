@@ -26,6 +26,7 @@ import java.util.List;
 import es.epycus.app.R;
 import es.epycus.app.api.RetrofitClient;
 import es.epycus.app.databinding.FragmentDiarioBinding;
+import es.epycus.app.util.CacheManager;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.PreguntaGuiaResponse;
 import es.epycus.app.repository.DiarioRepository;
@@ -233,7 +234,7 @@ public class DiarioFragment extends Fragment {
                         PreguntaGuiaResponse data = response.body().getDatos();
                         Gson gson = new Gson();
                         String json = gson.toJson(data);
-                        diarioRepository.cacheJson(CACHE_KEY_PREGUNTA, json);
+                        diarioRepository.cacheJson(CACHE_KEY_PREGUNTA, json, CacheManager.TTL_PREGUNTA_GUIA);
                         binding.tvPreguntaGuia.setText(data.getPregunta());
                     }
                 } catch (Exception e) {

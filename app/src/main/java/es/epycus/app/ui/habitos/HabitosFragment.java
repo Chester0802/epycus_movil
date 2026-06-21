@@ -29,7 +29,9 @@ import es.epycus.app.R;
 import es.epycus.app.databinding.FragmentHabitosBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.HabitoHoyDto;
+import es.epycus.app.model.dto.SuccessResponseDto;
 import es.epycus.app.repository.HabitosRepository;
+import es.epycus.app.util.CacheManager;
 import es.epycus.app.ui.adapters.HabitoHoyAdapter;
 import es.epycus.app.util.NetworkUtils;
 import retrofit2.Call;
@@ -118,7 +120,7 @@ public class HabitosFragment extends Fragment {
                         todosHabitos = response.body().getDatos();
                         Gson gson = new Gson();
                         String json = gson.toJson(todosHabitos);
-                        repository.cacheHabitosJson(CACHE_KEY_HABITOS, json);
+                        repository.cacheHabitosJson(CACHE_KEY_HABITOS, json, CacheManager.TTL_HABITOS);
 
                         aplicarFiltro();
                         binding.tvHabitosCount.setText(getString(R.string.habitos_hoy_formato, todosHabitos.size()));
@@ -320,11 +322,11 @@ public class HabitosFragment extends Fragment {
         body.addProperty("frecuencia", frecuenciaApi);
         body.addProperty("categoria", categoria);
 
-        Call<RespuestaApi<Object>> call = repository.crear(body);
+        Call<RespuestaApi<SuccessResponseDto>> call = repository.crear(body);
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<RespuestaApi<Object>> call, Response<RespuestaApi<Object>> response) {
+            public void onResponse(Call<RespuestaApi<SuccessResponseDto>> call, Response<RespuestaApi<SuccessResponseDto>> response) {
                 activeCalls.remove(call);
                 if (response.isSuccessful()) {
                     Snackbar.make(binding.getRoot(), getString(R.string.habito_creado), Snackbar.LENGTH_SHORT).show();
@@ -336,7 +338,7 @@ public class HabitosFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+            public void onFailure(Call<RespuestaApi<SuccessResponseDto>> call, Throwable t) {
                 activeCalls.remove(call);
                 mostrarErrorRed(t);
             }
@@ -379,9 +381,9 @@ public class HabitosFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
                 activeCalls.remove(call);
-                mostrarErrorRed(t);
+                cargarHabitos();
             }
         });
     }
@@ -391,17 +393,17 @@ public class HabitosFragment extends Fragment {
     }
 
     private void eliminarHabito(int id) {
-        Call<RespuestaApi<Object>> call = repository.eliminar(id);
+        Call<RespuestaApi<SuccessResponseDto>> call = repository.eliminar(id);
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<RespuestaApi<Object>> call, Response<RespuestaApi<Object>> response) {
+            public void onResponse(Call<RespuestaApi<SuccessResponseDto>> call, Response<RespuestaApi<SuccessResponseDto>> response) {
                 activeCalls.remove(call);
                 cargarHabitos();
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+            public void onFailure(Call<RespuestaApi<SuccessResponseDto>> call, Throwable t) {
                 activeCalls.remove(call);
                 mostrarErrorRed(t);
             }

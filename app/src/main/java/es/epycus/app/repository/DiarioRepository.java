@@ -3,19 +3,19 @@ package es.epycus.app.repository;
 import android.content.Context;
 
 import es.epycus.app.api.RetrofitClient;
-import es.epycus.app.data.local.AppDatabase;
-import es.epycus.app.data.local.entity.CacheEntity;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.PreguntaGuiaResponse;
+import es.epycus.app.model.dto.DiarioRachaResponse;
+import es.epycus.app.util.CacheManager;
 import retrofit2.Call;
 
 public class DiarioRepository {
     private final RetrofitClient api;
-    private final AppDatabase database;
+    private final CacheManager cacheManager;
 
     public DiarioRepository(Context context) {
         this.api = RetrofitClient.getInstance(context);
-        this.database = AppDatabase.getInstance(context);
+        this.cacheManager = CacheManager.getInstance(context);
     }
 
     public Call<RespuestaApi<Object>> hoy() {
@@ -30,7 +30,7 @@ public class DiarioRepository {
         return api.getApiDiarioService().crear(body);
     }
 
-    public Call<RespuestaApi<Object>> racha() {
+    public Call<RespuestaApi<DiarioRachaResponse>> racha() {
         return api.getApiDiarioService().racha();
     }
 
@@ -38,12 +38,11 @@ public class DiarioRepository {
         return api.getApiDiarioService().preguntaGuia();
     }
 
-    public void cacheJson(String key, String json) {
-        AppDatabase.getWriteExecutor().execute(() ->
-                database.cacheDao().insert(new CacheEntity(key, json)));
+    public void cacheJson(String key, String json, long ttlSeconds) {
+        cacheManager.put(key, json, ttlSeconds);
     }
 
     public String getCachedJson(String key) {
-        return database.cacheDao().getValue(key);
+        return cacheManager.get(key);
     }
 }

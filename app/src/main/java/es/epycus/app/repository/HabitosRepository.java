@@ -6,18 +6,21 @@ import java.util.List;
 
 import es.epycus.app.api.RetrofitClient;
 import es.epycus.app.data.local.AppDatabase;
-import es.epycus.app.data.local.entity.CacheEntity;
 import es.epycus.app.data.local.entity.HabitoEntity;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.HabitoHoyDto;
+import es.epycus.app.model.dto.SuccessResponseDto;
+import es.epycus.app.util.CacheManager;
 import retrofit2.Call;
 
 public class HabitosRepository {
     private final RetrofitClient api;
+    private final CacheManager cacheManager;
     private final AppDatabase database;
 
     public HabitosRepository(Context context) {
         this.api = RetrofitClient.getInstance(context);
+        this.cacheManager = CacheManager.getInstance(context);
         this.database = AppDatabase.getInstance(context);
     }
 
@@ -37,15 +40,15 @@ public class HabitosRepository {
         return api.getApiHabitosService().listar();
     }
 
-    public Call<RespuestaApi<Object>> crear(Object body) {
+    public Call<RespuestaApi<SuccessResponseDto>> crear(Object body) {
         return api.getApiHabitosService().crear(body);
     }
 
-    public Call<RespuestaApi<Object>> actualizar(int id, Object body) {
+    public Call<RespuestaApi<SuccessResponseDto>> actualizar(int id, Object body) {
         return api.getApiHabitosService().actualizar(id, body);
     }
 
-    public Call<RespuestaApi<Object>> eliminar(int id) {
+    public Call<RespuestaApi<SuccessResponseDto>> eliminar(int id) {
         return api.getApiHabitosService().eliminar(id);
     }
 
@@ -53,13 +56,12 @@ public class HabitosRepository {
         return api.getApiHabitosService().categorias();
     }
 
-    public void cacheHabitosJson(String key, String json) {
-        AppDatabase.getWriteExecutor().execute(() ->
-                database.cacheDao().insert(new CacheEntity(key, json)));
+    public void cacheHabitosJson(String key, String json, long ttlSeconds) {
+        cacheManager.put(key, json, ttlSeconds);
     }
 
     public String getCachedHabitosJson(String key) {
-        return database.cacheDao().getValue(key);
+        return cacheManager.get(key);
     }
 
     public void cacheHabitos(List<HabitoEntity> habitos) {

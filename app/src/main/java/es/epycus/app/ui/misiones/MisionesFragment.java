@@ -26,7 +26,9 @@ import java.util.List;
 import es.epycus.app.R;
 import es.epycus.app.databinding.FragmentMisionesBinding;
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.MisionCompletarResponse;
 import es.epycus.app.model.dto.MisionDto;
+import es.epycus.app.model.dto.SuccessResponseDto;
 import es.epycus.app.repository.MisionesRepository;
 import es.epycus.app.ui.adapters.MisionAdapter;
 import es.epycus.app.util.NetworkUtils;
@@ -137,12 +139,12 @@ public class MisionesFragment extends Fragment {
     }
 
     private void completarMision(int id) {
-        Call<RespuestaApi<Object>> call = repository.completar(id);
+        Call<RespuestaApi<MisionCompletarResponse>> call = repository.completar(id);
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                   @NonNull Response<RespuestaApi<Object>> response) {
+            public void onResponse(@NonNull Call<RespuestaApi<MisionCompletarResponse>> call,
+                                   @NonNull Response<RespuestaApi<MisionCompletarResponse>> response) {
                 activeCalls.remove(call);
                 if (response.isSuccessful()) {
                     Snackbar.make(requireView(), getString(R.string.mision_completada),
@@ -152,7 +154,7 @@ public class MisionesFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<RespuestaApi<MisionCompletarResponse>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
                 mostrarErrorRed(t);
             }
@@ -205,12 +207,12 @@ public class MisionesFragment extends Fragment {
             body.addProperty("categoriaId", defaultCategoriaId);
         }
 
-        Call<RespuestaApi<Object>> call = repository.crear(body);
+        Call<RespuestaApi<SuccessResponseDto>> call = repository.crear(body);
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                   @NonNull Response<RespuestaApi<Object>> response) {
+            public void onResponse(@NonNull Call<RespuestaApi<SuccessResponseDto>> call,
+                                   @NonNull Response<RespuestaApi<SuccessResponseDto>> response) {
                 activeCalls.remove(call);
                 if (response.isSuccessful()) {
                     Snackbar.make(requireView(), getString(R.string.mision_creada),
@@ -223,7 +225,7 @@ public class MisionesFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<RespuestaApi<SuccessResponseDto>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
                 mostrarErrorRed(t);
             }

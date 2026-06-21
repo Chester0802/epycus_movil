@@ -8,6 +8,7 @@ import es.epycus.app.model.dto.RecuperarContrasenaDto;
 import es.epycus.app.model.dto.RestablecerContrasenaDto;
 import es.epycus.app.model.dto.GoogleAuthDto;
 import es.epycus.app.model.dto.CompletarRegistroGoogleDto;
+import es.epycus.app.model.dto.MensajeResponseDto;
 import es.epycus.app.model.entidades.AuthResponse;
 import es.epycus.app.model.entidades.Carrera;
 
@@ -27,19 +28,19 @@ public interface ApiAuthService {
     Call<RespuestaApi<AuthResponse>> refresh(@Body RefreshDto body);
 
     @POST("api/auth/logout")
-    Call<RespuestaApi<Void>> logout();
+    Call<RespuestaApi<MensajeResponseDto>> logout();
 
     @POST("api/auth/registro")
     Call<RespuestaApi<AuthResponse>> registro(@Body RegistroRequestDto body);
 
     @GET("api/auth/verificar-correo")
-    Call<RespuestaApi<Object>> verificarCorreo(@Query("token") String token);
+    Call<RespuestaApi<MensajeResponseDto>> verificarCorreo(@Query("token") String token);
 
     @POST("api/auth/recuperar-contrasena")
-    Call<RespuestaApi<Object>> recuperarContrasena(@Body RecuperarContrasenaDto body);
+    Call<RespuestaApi<MensajeResponseDto>> recuperarContrasena(@Body RecuperarContrasenaDto body);
 
     @POST("api/auth/restablecer-contrasena")
-    Call<RespuestaApi<Object>> restablecerContrasena(@Body RestablecerContrasenaDto body);
+    Call<RespuestaApi<MensajeResponseDto>> restablecerContrasena(@Body RestablecerContrasenaDto body);
 
     @POST("api/auth/google")
     Call<RespuestaApi<AuthResponse>> googleAuth(@Body GoogleAuthDto body);

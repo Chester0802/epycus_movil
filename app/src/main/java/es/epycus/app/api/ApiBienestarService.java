@@ -3,6 +3,10 @@ package es.epycus.app.api;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.PausaActivaDto;
 import es.epycus.app.model.dto.RecomendacionPausaDto;
+import es.epycus.app.model.dto.BienestarResumenResponse;
+import es.epycus.app.model.dto.AlertasResponse;
+import es.epycus.app.model.dto.EstadoHoyResponse;
+import es.epycus.app.model.dto.CantidadResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -12,25 +16,25 @@ import retrofit2.http.Query;
 
 public interface ApiBienestarService {
     @GET("api/bienestar/resumen")
-    Call<RespuestaApi<Object>> resumen();
+    Call<RespuestaApi<BienestarResumenResponse>> resumen();
 
     @GET("api/bienestar/alertas")
-    Call<RespuestaApi<Object>> alertas();
+    Call<RespuestaApi<AlertasResponse>> alertas();
 
     @GET("api/bienestar/frase")
     Call<RespuestaApi<Object>> frase();
 
     @GET("api/bienestar/estado-hoy")
-    Call<RespuestaApi<Object>> estadoHoy();
+    Call<RespuestaApi<EstadoHoyResponse>> estadoHoy();
 
     @GET("api/bienestar/historial-animo")
     Call<RespuestaApi<Object>> historialAnimo(@Query("dias") int dias);
 
     @GET("api/bienestar/habitos-pendientes")
-    Call<RespuestaApi<Object>> habitosPendientes();
+    Call<RespuestaApi<CantidadResponse>> habitosPendientes();
 
     @GET("api/bienestar/misiones-pendientes")
-    Call<RespuestaApi<Object>> misionesPendientes();
+    Call<RespuestaApi<CantidadResponse>> misionesPendientes();
 
     @POST("api/bienestar/pausa-activa")
     Call<RespuestaApi<RecomendacionPausaDto>> pausaActiva(@Body PausaActivaDto body);

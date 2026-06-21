@@ -30,8 +30,13 @@ import es.epycus.app.data.local.entity.UsuarioEntity;
 import es.epycus.app.databinding.FragmentPerfilBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.PerfilResponse;
+import es.epycus.app.model.dto.MensajeResponseDto;
+import es.epycus.app.model.dto.PomodoroConfiguracionResponse;
+import es.epycus.app.model.dto.SuccessResponseDto;
 import es.epycus.app.repository.AuthRepository;
+import es.epycus.app.repository.PomodoroRepository;
 import es.epycus.app.ui.auth.LoginActivity;
+import es.epycus.app.util.CacheManager;
 import es.epycus.app.util.NetworkUtils;
 import es.epycus.app.util.SessionManager;
 import es.epycus.app.util.ThemeManager;
@@ -221,10 +226,10 @@ public class PerfilFragment extends Fragment {
                         String json = gson.toJson(response.body().getDatos());
                         mostrarPersonajesDialog(json);
                     } catch (Exception e) {
-                        Toast.makeText(getContext(), R.string.proximamente, Toast.LENGTH_SHORT).show();
+                        Snackbar.make(binding.getRoot(), R.string.error_datos, Snackbar.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(getContext(), R.string.proximamente, Toast.LENGTH_SHORT).show();
+                    Snackbar.make(binding.getRoot(), R.string.sin_personajes_disponibles, Snackbar.LENGTH_SHORT).show();
                 }
             }
 
@@ -252,7 +257,7 @@ public class PerfilFragment extends Fragment {
             });
             builder.show();
         } catch (Exception e) {
-            Toast.makeText(getContext(), R.string.proximamente, Toast.LENGTH_SHORT).show();
+            Snackbar.make(binding.getRoot(), R.string.error_datos, Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -297,10 +302,10 @@ public class PerfilFragment extends Fragment {
                         String json = gson.toJson(response.body().getDatos());
                         mostrarLogrosDialog(json);
                     } catch (Exception e) {
-                        Toast.makeText(getContext(), R.string.proximamente, Toast.LENGTH_SHORT).show();
+                        Snackbar.make(binding.getRoot(), R.string.error_datos, Snackbar.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(getContext(), R.string.proximamente, Toast.LENGTH_SHORT).show();
+                    Snackbar.make(binding.getRoot(), R.string.sin_logros_disponibles, Snackbar.LENGTH_SHORT).show();
                 }
             }
 
@@ -328,7 +333,7 @@ public class PerfilFragment extends Fragment {
             builder.setItems(nombres, null);
             builder.show();
         } catch (Exception e) {
-            Toast.makeText(getContext(), R.string.proximamente, Toast.LENGTH_SHORT).show();
+            Snackbar.make(binding.getRoot(), R.string.error_datos, Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -369,7 +374,7 @@ public class PerfilFragment extends Fragment {
             builder.setPositiveButton(getString(R.string.cancelar), null);
             builder.show();
         } catch (Exception e) {
-            Toast.makeText(getContext(), R.string.proximamente, Toast.LENGTH_SHORT).show();
+            Snackbar.make(binding.getRoot(), R.string.carga_perfil_estadisticas, Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -394,7 +399,7 @@ public class PerfilFragment extends Fragment {
                     mostrarDialogoCambiarContrasena();
                     break;
                 case 2:
-                    Snackbar.make(binding.getRoot(), getString(R.string.notificaciones_proximamente), Snackbar.LENGTH_SHORT).show();
+                    mostrarDialogoNotificaciones();
                     break;
                 case 3:
                     mostrarAcercaDe();
@@ -431,12 +436,12 @@ public class PerfilFragment extends Fragment {
             body.addProperty("contrasenaActual", actual);
             body.addProperty("nuevaContrasena", nueva);
 
-            Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiPerfilService()
+            Call<RespuestaApi<MensajeResponseDto>> call = RetrofitClient.getInstance(requireContext()).getApiPerfilService()
                     .cambiarContrasena(body);
             activeCalls.add(call);
             call.enqueue(new Callback<>() {
                 @Override
-                public void onResponse(Call<RespuestaApi<Object>> call, retrofit2.Response<RespuestaApi<Object>> response) {
+                public void onResponse(Call<RespuestaApi<MensajeResponseDto>> call, retrofit2.Response<RespuestaApi<MensajeResponseDto>> response) {
                     activeCalls.remove(call);
                     if (response.isSuccessful()) {
                         Snackbar.make(binding.getRoot(), getString(R.string.contrasena_actualizada), Snackbar.LENGTH_SHORT).show();
@@ -447,7 +452,7 @@ public class PerfilFragment extends Fragment {
                 }
 
                 @Override
-                public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+                public void onFailure(Call<RespuestaApi<MensajeResponseDto>> call, Throwable t) {
                     activeCalls.remove(call);
                     mostrarErrorRed(t);
                 }
@@ -465,19 +470,96 @@ public class PerfilFragment extends Fragment {
         builder.show();
     }
 
-    private void cerrarSesion() {
-        Call<RespuestaApi<Void>> call = authRepository.logout();
+    private void mostrarDialogoNotificaciones() {
+        String[] opcionesNotif = {
+                getString(R.string.notif_pomodoro_sonido),
+                getString(R.string.notif_pomodoro_vibracion),
+                getString(R.string.notif_pomodoro_tictac),
+                getString(R.string.notif_pomodoro_escritorio)
+        };
+        boolean[] valoresNotif = {false, false, false, false};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle(getString(R.string.notificaciones_preferencias));
+        builder.setMultiChoiceItems(opcionesNotif, valoresNotif, (dialog, which, isChecked) -> {
+            valoresNotif[which] = isChecked;
+        });
+        builder.setPositiveButton(getString(R.string.guardar), (dialog, which) -> {
+            guardarPreferenciasNotificaciones(valoresNotif);
+        });
+        builder.setNegativeButton(getString(R.string.cancelar), null);
+        builder.show();
+
+        cargarPreferenciasNotificaciones(valoresNotif, builder);
+    }
+
+    private void cargarPreferenciasNotificaciones(boolean[] valores, AlertDialog.Builder builder) {
+        PomodoroRepository pomodoroRepository = new PomodoroRepository(requireContext());
+        Call<RespuestaApi<PomodoroConfiguracionResponse>> call = pomodoroRepository.configuracion();
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<RespuestaApi<Void>> call,
-                                   @NonNull retrofit2.Response<RespuestaApi<Void>> response) {
+            public void onResponse(Call<RespuestaApi<PomodoroConfiguracionResponse>> call, retrofit2.Response<RespuestaApi<PomodoroConfiguracionResponse>> response) {
+                activeCalls.remove(call);
+                if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
+                    PomodoroConfiguracionResponse cfg = response.body().getDatos();
+                    valores[0] = cfg.isSonidoActivo();
+                    valores[1] = cfg.isVibracionActiva();
+                    valores[2] = cfg.isTicTacActivo();
+                    valores[3] = cfg.isNotificacionDesktop();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaApi<PomodoroConfiguracionResponse>> call, Throwable t) {
+                activeCalls.remove(call);
+            }
+        });
+    }
+
+    private void guardarPreferenciasNotificaciones(boolean[] valores) {
+        JsonObject body = new JsonObject();
+        body.addProperty("sonidoActivo", valores[0]);
+        body.addProperty("vibracionActiva", valores[1]);
+        body.addProperty("ticTacActivo", valores[2]);
+        body.addProperty("notificacionDesktop", valores[3]);
+
+        PomodoroRepository pomodoroRepository = new PomodoroRepository(requireContext());
+        Call<RespuestaApi<SuccessResponseDto>> call = pomodoroRepository.actualizarConfiguracion(body);
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<SuccessResponseDto>> call, retrofit2.Response<RespuestaApi<SuccessResponseDto>> response) {
+                activeCalls.remove(call);
+                if (response.isSuccessful()) {
+                    Snackbar.make(binding.getRoot(), R.string.preferencias_guardadas, Snackbar.LENGTH_SHORT).show();
+                } else {
+                    String msg = NetworkUtils.getErrorMessage(requireContext(), response);
+                    Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaApi<SuccessResponseDto>> call, Throwable t) {
+                activeCalls.remove(call);
+                mostrarErrorRed(t);
+            }
+        });
+    }
+
+    private void cerrarSesion() {
+        Call<RespuestaApi<MensajeResponseDto>> call = authRepository.logout();
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<RespuestaApi<MensajeResponseDto>> call,
+                                   @NonNull retrofit2.Response<RespuestaApi<MensajeResponseDto>> response) {
                 activeCalls.remove(call);
                 logoutAndRedirect();
             }
 
             @Override
-            public void onFailure(@NonNull Call<RespuestaApi<Void>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<RespuestaApi<MensajeResponseDto>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
                 logoutAndRedirect();
             }

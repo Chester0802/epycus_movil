@@ -21,6 +21,12 @@ import es.epycus.app.databinding.FragmentPomodoroBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.repository.PomodoroRepository;
 import es.epycus.app.util.NetworkUtils;
+import es.epycus.app.model.dto.PomodoroIniciarResponse;
+import es.epycus.app.model.dto.PomodoroCicloCompletadoResponse;
+import es.epycus.app.model.dto.PomodoroTipResponse;
+import es.epycus.app.model.dto.PomodoroConfiguracionResponse;
+import es.epycus.app.model.dto.PomodoroSesionActivaResponse;
+import es.epycus.app.model.dto.PomodoroRachaResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -88,6 +94,8 @@ public class PomodoroFragment extends Fragment {
 
         cargarTipAleatorio();
         cargarConfiguracion();
+        cargarRacha();
+        verificarSesionActiva();
 
         return view;
     }
@@ -189,11 +197,11 @@ public class PomodoroFragment extends Fragment {
         body.addProperty("duracionFoco", TIEMPO_FOCO / 60);
         body.addProperty("duracionPausa", TIEMPO_PAUSA / 60);
 
-        Call<RespuestaApi<Object>> call = repository.iniciar(body);
+        Call<RespuestaApi<PomodoroIniciarResponse>> call = repository.iniciar(body);
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<RespuestaApi<Object>> call, Response<RespuestaApi<Object>> response) {
+            public void onResponse(Call<RespuestaApi<PomodoroIniciarResponse>> call, Response<RespuestaApi<PomodoroIniciarResponse>> response) {
                 activeCalls.remove(call);
                 if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
                     try {
@@ -208,7 +216,7 @@ public class PomodoroFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+            public void onFailure(Call<RespuestaApi<PomodoroIniciarResponse>> call, Throwable t) {
                 activeCalls.remove(call);
             }
         });
@@ -219,27 +227,27 @@ public class PomodoroFragment extends Fragment {
         JsonObject body = new JsonObject();
         body.addProperty("tipo", isPausa ? "pausa" : "foco");
 
-        Call<RespuestaApi<Object>> call = repository.cicloCompletado(sesionId, body);
+        Call<RespuestaApi<PomodoroCicloCompletadoResponse>> call = repository.cicloCompletado(sesionId, body);
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<RespuestaApi<Object>> call, Response<RespuestaApi<Object>> response) {
+            public void onResponse(Call<RespuestaApi<PomodoroCicloCompletadoResponse>> call, Response<RespuestaApi<PomodoroCicloCompletadoResponse>> response) {
                 activeCalls.remove(call);
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+            public void onFailure(Call<RespuestaApi<PomodoroCicloCompletadoResponse>> call, Throwable t) {
                 activeCalls.remove(call);
             }
         });
     }
 
     private void cargarTipAleatorio() {
-        Call<RespuestaApi<Object>> call = repository.tipAleatorio();
+        Call<RespuestaApi<PomodoroTipResponse>> call = repository.tipAleatorio();
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<RespuestaApi<Object>> call, Response<RespuestaApi<Object>> response) {
+            public void onResponse(Call<RespuestaApi<PomodoroTipResponse>> call, Response<RespuestaApi<PomodoroTipResponse>> response) {
                 activeCalls.remove(call);
                 if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
                     try {
@@ -262,7 +270,7 @@ public class PomodoroFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+            public void onFailure(Call<RespuestaApi<PomodoroTipResponse>> call, Throwable t) {
                 activeCalls.remove(call);
                 binding.tvTip.setText(R.string.pomodoro_tip_default);
             }
@@ -270,16 +278,62 @@ public class PomodoroFragment extends Fragment {
     }
 
     private void cargarConfiguracion() {
-        Call<RespuestaApi<Object>> call = repository.configuracion();
+        Call<RespuestaApi<PomodoroConfiguracionResponse>> call = repository.configuracion();
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<RespuestaApi<Object>> call, Response<RespuestaApi<Object>> response) {
+            public void onResponse(Call<RespuestaApi<PomodoroConfiguracionResponse>> call, Response<RespuestaApi<PomodoroConfiguracionResponse>> response) {
                 activeCalls.remove(call);
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+            public void onFailure(Call<RespuestaApi<PomodoroConfiguracionResponse>> call, Throwable t) {
+                activeCalls.remove(call);
+            }
+        });
+    }
+
+    private void cargarRacha() {
+        Call<RespuestaApi<PomodoroRachaResponse>> call = repository.racha();
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<PomodoroRachaResponse>> call, Response<RespuestaApi<PomodoroRachaResponse>> response) {
+                activeCalls.remove(call);
+                if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
+                    binding.tvRacha.setText(String.valueOf(response.body().getDatos().getRacha()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaApi<PomodoroRachaResponse>> call, Throwable t) {
+                activeCalls.remove(call);
+            }
+        });
+    }
+
+    private void verificarSesionActiva() {
+        Call<RespuestaApi<PomodoroSesionActivaResponse>> call = repository.sesionActiva();
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<PomodoroSesionActivaResponse>> call, Response<RespuestaApi<PomodoroSesionActivaResponse>> response) {
+                activeCalls.remove(call);
+                if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
+                    PomodoroSesionActivaResponse data = response.body().getDatos();
+                    if (data.isActiva() && data.getSesionId() != null) {
+                        sesionId = data.getSesionId();
+                        if (data.getCiclosCompletados() != null) {
+                            ciclosCompletados = data.getCiclosCompletados();
+                            binding.tvCiclos.setText(getString(R.string.ciclos_formato, ciclosCompletados));
+                            binding.tvSessionLabel.setText(getString(R.string.sesion_formato, ciclosCompletados));
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaApi<PomodoroSesionActivaResponse>> call, Throwable t) {
                 activeCalls.remove(call);
             }
         });

@@ -2,6 +2,7 @@ package es.epycus.app.api;
 
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.HabitoHoyDto;
+import es.epycus.app.model.dto.SuccessResponseDto;
 
 import java.util.List;
 
@@ -33,13 +34,13 @@ public interface ApiHabitosService {
     Call<RespuestaApi<Object>> obtener(@Path("id") int id);
 
     @POST("api/habitos")
-    Call<RespuestaApi<Object>> crear(@Body Object body);
+    Call<RespuestaApi<SuccessResponseDto>> crear(@Body Object body);
 
     @PUT("api/habitos/{id}")
-    Call<RespuestaApi<Object>> actualizar(@Path("id") int id, @Body Object body);
+    Call<RespuestaApi<SuccessResponseDto>> actualizar(@Path("id") int id, @Body Object body);
 
     @DELETE("api/habitos/{id}")
-    Call<RespuestaApi<Object>> eliminar(@Path("id") int id);
+    Call<RespuestaApi<SuccessResponseDto>> eliminar(@Path("id") int id);
 
     @GET("api/habitos/dashboard")
     Call<RespuestaApi<Object>> dashboard();

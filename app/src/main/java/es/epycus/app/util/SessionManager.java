@@ -81,10 +81,8 @@ public class SessionManager {
     public static String extractNameFromToken(String token) {
         if (token == null) return null;
         try {
-            String[] parts = token.split("\\.");
-            if (parts.length < 2) return null;
-            byte[] decoded = android.util.Base64.decode(parts[1], android.util.Base64.URL_SAFE);
-            String json = new String(decoded, java.nio.charset.StandardCharsets.UTF_8);
+            String json = decodeJwtPayload(token);
+            if (json == null) return null;
             com.google.gson.JsonObject obj = com.google.gson.JsonParser.parseString(json).getAsJsonObject();
             if (obj.has("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")) {
                 return obj.get("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").getAsString();
@@ -97,5 +95,31 @@ public class SessionManager {
             }
         } catch (Exception ignored) { }
         return null;
+    }
+
+    public static int extractIdFromToken(String token) {
+        if (token == null) return -1;
+        try {
+            String json = decodeJwtPayload(token);
+            if (json == null) return -1;
+            com.google.gson.JsonObject obj = com.google.gson.JsonParser.parseString(json).getAsJsonObject();
+            if (obj.has("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")) {
+                return obj.get("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").getAsInt();
+            }
+            if (obj.has("sub")) {
+                return obj.get("sub").getAsInt();
+            }
+            if (obj.has("nameid")) {
+                return obj.get("nameid").getAsInt();
+            }
+        } catch (Exception ignored) { }
+        return -1;
+    }
+
+    private static String decodeJwtPayload(String token) {
+        String[] parts = token.split("\\.");
+        if (parts.length < 2) return null;
+        byte[] decoded = android.util.Base64.decode(parts[1], android.util.Base64.URL_SAFE);
+        return new String(decoded, java.nio.charset.StandardCharsets.UTF_8);
     }
 }

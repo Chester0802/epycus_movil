@@ -20,12 +20,11 @@ import java.util.List;
 import es.epycus.app.R;
 import es.epycus.app.ui.MainContainerActivity;
 import es.epycus.app.api.RetrofitClient;
-import es.epycus.app.data.local.AppDatabase;
-import es.epycus.app.data.local.entity.CacheEntity;
 import es.epycus.app.databinding.FragmentInicioBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.DashboardResponse;
 import es.epycus.app.model.dto.GamificacionResponse;
+import es.epycus.app.util.CacheManager;
 import es.epycus.app.util.NetworkUtils;
 import es.epycus.app.util.SessionManager;
 import retrofit2.Call;
@@ -37,7 +36,7 @@ public class InicioFragment extends Fragment {
     private static final String TAG = "InicioFragment";
     private FragmentInicioBinding binding;
     private SessionManager sessionManager;
-    private AppDatabase database;
+    private CacheManager cacheManager;
     private boolean dashboardDataLoaded = false;
     private boolean progresoDataLoaded = false;
     private final List<Call<?>> activeCalls = new ArrayList<>();
@@ -50,7 +49,7 @@ public class InicioFragment extends Fragment {
         View view = binding.getRoot();
 
         sessionManager = SessionManager.getInstance(requireContext());
-        database = AppDatabase.getInstance(requireContext());
+        cacheManager = CacheManager.getInstance(requireContext());
 
         String nombre = sessionManager.getUserName();
         binding.tvBienvenida.setText(getString(R.string.hola_formato, nombre != null ? nombre : "Epycus"));
@@ -115,9 +114,7 @@ public class InicioFragment extends Fragment {
                         DashboardResponse data = response.body().getDatos();
                         Gson gson = new Gson();
                         String json = gson.toJson(data);
-                        AppDatabase.getWriteExecutor().execute(() ->
-                                database.cacheDao().insert(
-                                        new CacheEntity("dashboard", json)));
+                        cacheManager.put("dashboard", json, CacheManager.TTL_DASHBOARD);
                         dashboardDataLoaded = true;
 
                         binding.tvHabitosPendientes.setText(
@@ -150,7 +147,7 @@ public class InicioFragment extends Fragment {
     }
 
     private boolean cargarDashboardDesdeCache() {
-        String json = database.cacheDao().getValue("dashboard");
+        String json = cacheManager.get("dashboard");
         if (json != null) {
             try {
                 Gson gson = new Gson();
@@ -185,9 +182,7 @@ public class InicioFragment extends Fragment {
                         GamificacionResponse data = response.body().getDatos();
                         Gson gson = new Gson();
                         String json = gson.toJson(data);
-                        AppDatabase.getWriteExecutor().execute(() ->
-                                database.cacheDao().insert(
-                                        new CacheEntity("progreso", json)));
+                        cacheManager.put("progreso", json, CacheManager.TTL_PROGRESO);
                         progresoDataLoaded = true;
 
                         binding.tvRacha.setText(String.valueOf(data.getRachaActual()));
@@ -227,7 +222,7 @@ public class InicioFragment extends Fragment {
     }
 
     private boolean cargarProgresoDesdeCache() {
-        String json = database.cacheDao().getValue("progreso");
+        String json = cacheManager.get("progreso");
         if (json != null) {
             try {
                 Gson gson = new Gson();
@@ -247,8 +242,8 @@ public class InicioFragment extends Fragment {
 
     private void verificarCargaCompleta() {
         if (!dashboardDataLoaded && !progresoDataLoaded) {
-            String cachedDashboard = database.cacheDao().getValue("dashboard");
-            String cachedProgreso = database.cacheDao().getValue("progreso");
+            String cachedDashboard = cacheManager.get("dashboard");
+            String cachedProgreso = cacheManager.get("progreso");
             if (cachedDashboard == null && cachedProgreso == null) {
                 binding.emptyView.setVisibility(View.VISIBLE);
             }

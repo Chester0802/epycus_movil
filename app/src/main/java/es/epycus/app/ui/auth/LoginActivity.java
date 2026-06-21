@@ -99,12 +99,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private void enviarTokenGoogle(GoogleSignInAccount account) {
         setLoading(true);
-        GoogleAuthDto dto = new GoogleAuthDto(
-                account.getId(),
-                account.getEmail() != null ? account.getEmail() : "",
-                account.getDisplayName() != null ? account.getDisplayName() : "",
-                account.getPhotoUrl() != null ? account.getPhotoUrl().toString() : ""
-        );
+        String googleId = account.getId();
+        String email = account.getEmail() != null ? account.getEmail() : "";
+        String nombre = account.getDisplayName() != null ? account.getDisplayName() : "";
+        String fotoUrl = account.getPhotoUrl() != null ? account.getPhotoUrl().toString() : "";
+
+        GoogleAuthDto dto = new GoogleAuthDto(googleId, email, nombre, fotoUrl);
 
         activeCall = authRepository.loginGoogle(dto);
         activeCall.enqueue(new Callback() {
@@ -115,13 +115,17 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (response.isSuccessful() && response.body() != null && ((RespuestaApi<AuthResponse>) response.body()).isExito()) {
                     AuthResponse authData = ((RespuestaApi<AuthResponse>) response.body()).getDatos();
-                    String email = account.getEmail() != null ? account.getEmail() : "";
-                    String nombre = account.getDisplayName() != null ? account.getDisplayName() : "";
-                    authRepository.saveSession(authData, -1, nombre, email);
+                    String userName = SessionManager.extractNameFromToken(authData.getToken());
+                    if (userName == null) userName = nombre;
+                    authRepository.saveSession(authData, -1, userName, email);
                     navegarAlHome();
                 } else {
                     String msg = NetworkUtils.getErrorMessage(LoginActivity.this, response);
-                    Snackbar.make(binding.btnGoogleAuth, msg, Snackbar.LENGTH_LONG).show();
+                    if ("completar_registro".equalsIgnoreCase(msg)) {
+                        abrirCompletarRegistroGoogle(googleId, email, nombre, fotoUrl);
+                    } else {
+                        Snackbar.make(binding.btnGoogleAuth, msg, Snackbar.LENGTH_LONG).show();
+                    }
                 }
             }
 
@@ -133,6 +137,15 @@ public class LoginActivity extends AppCompatActivity {
                         getString(NetworkUtils.getNetworkErrorResId(t)), Snackbar.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void abrirCompletarRegistroGoogle(String googleId, String email, String nombre, String fotoUrl) {
+        Intent intent = new Intent(LoginActivity.this, CompletarRegistroGoogleActivity.class);
+        intent.putExtra("googleId", googleId);
+        intent.putExtra("correo", email);
+        intent.putExtra("nombre", nombre);
+        intent.putExtra("fotoUrl", fotoUrl);
+        startActivity(intent);
     }
 
     private void actualizarIconoTema() {

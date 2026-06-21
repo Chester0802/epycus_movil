@@ -228,6 +228,14 @@
     <string name="racha_dias_label">• Racha: %s días</string>
     <string name="mejor_racha_dias_label">• Mejor racha: %s días</string>
     <string name="habitos_completados_label">• Hábitos completados: %s</string>
+    <string name="error_datos">Error al procesar los datos</string>
+    <string name="sin_personajes_disponibles">No hay personajes disponibles</string>
+    <string name="sin_logros_disponibles">No hay logros disponibles</string>
+    <string name="notif_pomodoro_sonido">Sonido de Pomodoro</string>
+    <string name="notif_pomodoro_vibracion">Vibración</string>
+    <string name="notif_pomodoro_tictac">Tic-tac</string>
+    <string name="notif_pomodoro_escritorio">Notificaciones de escritorio</string>
+    <string name="preferencias_guardadas">Preferencias guardadas</string>
 
     <!-- Inicio placeholders -->
     <string name="nivel_1">Nivel 1</string>
@@ -256,6 +264,11 @@
     <string name="racha_default">—</string>
     <string name="streak_emoji">🔥</string>
     <string name="sesion_formato">Sesión %d</string>
+
+    <!-- Google Sign-In completion -->
+    <string name="completar_registro_titulo">Completa tu registro</string>
+    <string name="completar_registro_subtitulo">Solo unos datos más para terminar tu cuenta</string>
+    <string name="completar_registro">Completar registro</string>
 
     <string-array name="generos">
         <item>Masculino</item>

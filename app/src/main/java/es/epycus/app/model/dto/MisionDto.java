@@ -42,5 +42,5 @@ public class MisionDto {
     public int getXpOtorgado() { return xpOtorgado; }
     public String getFechaCreacion() { return fechaCreacion; }
 
-    public boolean isCompletada() { return "Completada".equals(estado); }
+    public boolean isCompletada() { return "Completado".equals(estado); }
 }
