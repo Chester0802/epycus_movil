@@ -26,6 +26,7 @@ import es.epycus.app.model.dto.PomodoroCicloCompletadoResponse;
 import es.epycus.app.model.dto.PomodoroTipResponse;
 import es.epycus.app.model.dto.PomodoroConfiguracionResponse;
 import es.epycus.app.model.dto.PomodoroSesionActivaResponse;
+import es.epycus.app.model.dto.PomodoroFinalizarResponse;
 import es.epycus.app.model.dto.PomodoroRachaResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,12 +46,12 @@ public class PomodoroFragment extends Fragment {
     private boolean isRunning = false;
     private boolean isPausa = false;
     private int segundosRestantes = 25 * 60;
-    private int ciclosHoy = 0;
-    private final int TIEMPO_FOCO = 25 * 60;
-    private final int TIEMPO_PAUSA = 5 * 60;
-    private final int TIEMPO_PAUSA_LARGA = 15 * 60;
+    private int tiempoFoco = 25 * 60;
+    private int tiempoPausa = 5 * 60;
+    private int tiempoPausaLarga = 15 * 60;
     private int ciclosAntesPausaLarga = 4;
     private int ciclosCompletados = 0;
+    private int ciclosHoy = 0;
     private int sesionId = -1;
     private PomodoroRepository repository;
     private final List<Call<?>> activeCalls = new ArrayList<>();
@@ -66,7 +67,7 @@ public class PomodoroFragment extends Fragment {
         repository = new PomodoroRepository(requireContext());
 
         if (savedInstanceState != null) {
-            segundosRestantes = savedInstanceState.getInt(KEY_SEGUNDOS, TIEMPO_FOCO);
+            segundosRestantes = savedInstanceState.getInt(KEY_SEGUNDOS, 25 * 60);
             isRunning = savedInstanceState.getBoolean(KEY_IS_RUNNING, false);
             isPausa = savedInstanceState.getBoolean(KEY_IS_PAUSA, false);
             ciclosHoy = savedInstanceState.getInt(KEY_CICLOS_HOY, 0);
@@ -92,8 +93,8 @@ public class PomodoroFragment extends Fragment {
             reanudarTimer();
         }
 
-        cargarTipAleatorio();
         cargarConfiguracion();
+        cargarTipAleatorio();
         cargarRacha();
         verificarSesionActiva();
 
@@ -140,7 +141,7 @@ public class PomodoroFragment extends Fragment {
                     binding.btnControl.setText(R.string.iniciar_foco);
                     binding.tvEstado.setText(R.string.pausa_terminada);
                     isPausa = false;
-                    segundosRestantes = TIEMPO_FOCO;
+                    segundosRestantes = tiempoFoco;
                     notificarCicloCompletado();
                 } else {
                     ciclosCompletados++;
@@ -153,10 +154,10 @@ public class PomodoroFragment extends Fragment {
                     binding.tvEstado.setText(R.string.foco_completado);
 
                     if (ciclosCompletados % ciclosAntesPausaLarga == 0) {
-                        segundosRestantes = TIEMPO_PAUSA_LARGA;
-                        binding.tvEstado.setText(getString(R.string.pausa_larga_formato, TIEMPO_PAUSA_LARGA / 60));
+                        segundosRestantes = tiempoPausaLarga;
+                        binding.tvEstado.setText(getString(R.string.pausa_larga_formato, tiempoPausaLarga / 60));
                     } else {
-                        segundosRestantes = TIEMPO_PAUSA;
+                        segundosRestantes = tiempoPausa;
                     }
                     isPausa = true;
                     notificarCicloCompletado();
@@ -194,8 +195,6 @@ public class PomodoroFragment extends Fragment {
 
     private void iniciarSesionEnBackend() {
         JsonObject body = new JsonObject();
-        body.addProperty("duracionFoco", TIEMPO_FOCO / 60);
-        body.addProperty("duracionPausa", TIEMPO_PAUSA / 60);
 
         Call<RespuestaApi<PomodoroIniciarResponse>> call = repository.iniciar(body);
         activeCalls.add(call);
@@ -204,14 +203,7 @@ public class PomodoroFragment extends Fragment {
             public void onResponse(Call<RespuestaApi<PomodoroIniciarResponse>> call, Response<RespuestaApi<PomodoroIniciarResponse>> response) {
                 activeCalls.remove(call);
                 if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
-                    try {
-                        com.google.gson.Gson gson = new com.google.gson.Gson();
-                        String json = gson.toJson(response.body().getDatos());
-                        JsonObject obj = com.google.gson.JsonParser.parseString(json).getAsJsonObject();
-                        if (obj.has("id")) {
-                            sesionId = obj.get("id").getAsInt();
-                        }
-                    } catch (Exception ignored) {}
+                    sesionId = response.body().getDatos().getSesionId();
                 }
             }
 
@@ -225,7 +217,7 @@ public class PomodoroFragment extends Fragment {
     private void notificarCicloCompletado() {
         if (sesionId == -1) return;
         JsonObject body = new JsonObject();
-        body.addProperty("tipo", isPausa ? "pausa" : "foco");
+        body.addProperty("ciclosCompletados", ciclosCompletados);
 
         Call<RespuestaApi<PomodoroCicloCompletadoResponse>> call = repository.cicloCompletado(sesionId, body);
         activeCalls.add(call);
@@ -242,6 +234,26 @@ public class PomodoroFragment extends Fragment {
         });
     }
 
+    private void finalizarSesion() {
+        if (sesionId == -1) return;
+        JsonObject body = new JsonObject();
+        body.addProperty("ciclosCompletados", ciclosCompletados);
+
+        Call<RespuestaApi<PomodoroFinalizarResponse>> call = repository.finalizar(sesionId, body);
+        activeCalls.add(call);
+        call.enqueue(new Callback<RespuestaApi<PomodoroFinalizarResponse>>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<PomodoroFinalizarResponse>> call, Response<RespuestaApi<PomodoroFinalizarResponse>> response) {
+                activeCalls.remove(call);
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaApi<PomodoroFinalizarResponse>> call, Throwable t) {
+                activeCalls.remove(call);
+            }
+        });
+    }
+
     private void cargarTipAleatorio() {
         Call<RespuestaApi<PomodoroTipResponse>> call = repository.tipAleatorio();
         activeCalls.add(call);
@@ -250,19 +262,11 @@ public class PomodoroFragment extends Fragment {
             public void onResponse(Call<RespuestaApi<PomodoroTipResponse>> call, Response<RespuestaApi<PomodoroTipResponse>> response) {
                 activeCalls.remove(call);
                 if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
-                    try {
-                        com.google.gson.Gson gson = new com.google.gson.Gson();
-                        String json = gson.toJson(response.body().getDatos());
-                        JsonObject obj = com.google.gson.JsonParser.parseString(json).getAsJsonObject();
-                        if (obj.has("consejo") || obj.has("texto")) {
-                            String tip = obj.has("consejo") ? obj.get("consejo").getAsString() : obj.get("texto").getAsString();
-                            binding.tvTip.setText(tip);
-                            tipCargado = true;
-                        } else if (obj.has("mensaje")) {
-                            binding.tvTip.setText(obj.get("mensaje").getAsString());
-                            tipCargado = true;
-                        }
-                    } catch (Exception ignored) {}
+                    String tip = response.body().getDatos().getConsejo();
+                    if (tip != null && !tip.isEmpty()) {
+                        binding.tvTip.setText(tip);
+                        tipCargado = true;
+                    }
                 }
                 if (!tipCargado) {
                     binding.tvTip.setText(R.string.pomodoro_tip_default);
@@ -284,6 +288,17 @@ public class PomodoroFragment extends Fragment {
             @Override
             public void onResponse(Call<RespuestaApi<PomodoroConfiguracionResponse>> call, Response<RespuestaApi<PomodoroConfiguracionResponse>> response) {
                 activeCalls.remove(call);
+                if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
+                    PomodoroConfiguracionResponse cfg = response.body().getDatos();
+                    tiempoFoco = cfg.getTiempoEstudio() * 60;
+                    tiempoPausa = cfg.getTiempoDescanso() * 60;
+                    tiempoPausaLarga = cfg.getTiempoDescansoLargo() * 60;
+                    ciclosAntesPausaLarga = cfg.getCiclosAntesDescansoLargo();
+                    if (!isRunning && !isPausa) {
+                        segundosRestantes = tiempoFoco;
+                        actualizarDisplay();
+                    }
+                }
             }
 
             @Override
@@ -344,6 +359,9 @@ public class PomodoroFragment extends Fragment {
         super.onDestroyView();
         if (timer != null) {
             timer.cancel();
+        }
+        if (isRunning || sesionId != -1) {
+            finalizarSesion();
         }
         for (Call<?> call : activeCalls) {
             if (!call.isCanceled()) call.cancel();

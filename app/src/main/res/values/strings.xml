@@ -112,6 +112,10 @@
     <string name="si_cerrar_sesion">Sí, cerrar sesión</string>
     <string name="sesion_cerrada">Sesión cerrada</string>
     <string name="personaje_actualizado">Personaje actualizado</string>
+    <string name="editar_perfil">Editar perfil</string>
+    <string name="nombre_hint">Nombre</string>
+    <string name="carrera">Carrera</string>
+    <string name="perfil_actualizado">Perfil actualizado</string>
     <string name="cambiar_contrasena">Cambiar contraseña</string>
     <string name="contrasena_actual_hint">Contraseña actual</string>
     <string name="nueva_contrasena_hint">Nueva contraseña</string>

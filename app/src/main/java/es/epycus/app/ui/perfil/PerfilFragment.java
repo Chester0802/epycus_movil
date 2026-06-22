@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,6 +36,7 @@ import es.epycus.app.model.dto.PerfilResponse;
 import es.epycus.app.model.dto.PersonajeItem;
 import es.epycus.app.model.dto.PomodoroConfiguracionResponse;
 import es.epycus.app.model.dto.SuccessResponseDto;
+import es.epycus.app.model.entidades.Carrera;
 import es.epycus.app.repository.AuthRepository;
 import es.epycus.app.repository.PomodoroRepository;
 import es.epycus.app.ui.auth.LoginActivity;
@@ -44,6 +46,7 @@ import es.epycus.app.util.SessionManager;
 import es.epycus.app.util.ThemeManager;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PerfilFragment extends Fragment {
 
@@ -383,6 +386,7 @@ public class PerfilFragment extends Fragment {
     private void mostrarDialogoConfiguracion() {
         boolean isLight = ThemeManager.getInstance(requireContext()).isLightTheme();
         String[] opciones = {
+                getString(R.string.editar_perfil),
                 isLight ? getString(R.string.modo_oscuro) : getString(R.string.modo_claro),
                 getString(R.string.cambiar_contrasena),
                 getString(R.string.notificaciones_preferencias),
@@ -394,21 +398,120 @@ public class PerfilFragment extends Fragment {
         builder.setItems(opciones, (dialog, which) -> {
             switch (which) {
                 case 0:
+                    mostrarDialogoEditarPerfil();
+                    break;
+                case 1:
                     ThemeManager.getInstance(requireContext()).toggle();
                     requireActivity().recreate();
                     break;
-                case 1:
+                case 2:
                     mostrarDialogoCambiarContrasena();
                     break;
-                case 2:
+                case 3:
                     mostrarDialogoNotificaciones();
                     break;
-                case 3:
+                case 4:
                     mostrarAcercaDe();
                     break;
             }
         });
         builder.show();
+    }
+
+    private void mostrarDialogoEditarPerfil() {
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_editar_perfil, null);
+        android.widget.EditText etNombre = view.findViewById(R.id.etNombre);
+        android.widget.Spinner spCarrera = view.findViewById(R.id.spCarrera);
+        android.widget.ProgressBar loading = view.findViewById(R.id.loadingCarreras);
+
+        etNombre.setText(sessionManager.getUserName());
+
+        final List<Carrera>[] carrerasRef = new List[]{null};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle(getString(R.string.editar_perfil));
+        builder.setView(view);
+        builder.setPositiveButton(getString(R.string.guardar), null);
+        builder.setNegativeButton(getString(R.string.cancelar), null);
+        AlertDialog dialog = builder.create();
+
+        loading.setVisibility(View.VISIBLE);
+        Call<RespuestaApi<List<Carrera>>> callCarreras = authRepository.obtenerCarreras();
+        activeCalls.add(callCarreras);
+        callCarreras.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<List<Carrera>>> call, Response<RespuestaApi<List<Carrera>>> response) {
+                activeCalls.remove(call);
+                loading.setVisibility(View.GONE);
+                if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
+                    carrerasRef[0] = response.body().getDatos();
+                    List<String> nombres = new ArrayList<>();
+                    for (Carrera c : carrerasRef[0]) {
+                        nombres.add(c.getNombre());
+                    }
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
+                            android.R.layout.simple_spinner_item, nombres);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spCarrera.setAdapter(adapter);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaApi<List<Carrera>>> call, Throwable t) {
+                activeCalls.remove(call);
+                loading.setVisibility(View.GONE);
+            }
+        });
+
+        dialog.setOnShowListener(d -> {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                String nombre = etNombre.getText().toString().trim();
+                if (nombre.isEmpty()) {
+                    Snackbar.make(binding.getRoot(), R.string.completa_campos, Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+                int carreraId = -1;
+                int pos = spCarrera.getSelectedItemPosition();
+                if (carrerasRef[0] != null && pos >= 0 && pos < carrerasRef[0].size()) {
+                    carreraId = carrerasRef[0].get(pos).getId();
+                }
+                editarPerfil(nombre, carreraId, dialog);
+            });
+        });
+
+        dialog.show();
+    }
+
+    private void editarPerfil(String nombre, int carreraId, AlertDialog dialog) {
+        JsonObject body = new JsonObject();
+        body.addProperty("nombre", nombre);
+        if (carreraId > 0) {
+            body.addProperty("carreraId", carreraId);
+        }
+
+        Call<RespuestaApi<MensajeResponseDto>> call = RetrofitClient.getInstance(requireContext()).getApiPerfilService()
+                .actualizar(body);
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<MensajeResponseDto>> call, Response<RespuestaApi<MensajeResponseDto>> response) {
+                activeCalls.remove(call);
+                if (response.isSuccessful()) {
+                    Snackbar.make(binding.getRoot(), R.string.perfil_actualizado, Snackbar.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                    cargarPerfil();
+                } else {
+                    String msg = NetworkUtils.getErrorMessage(requireContext(), response);
+                    Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaApi<MensajeResponseDto>> call, Throwable t) {
+                activeCalls.remove(call);
+                mostrarErrorRed(t);
+            }
+        });
     }
 
     private void mostrarDialogoCambiarContrasena() {
