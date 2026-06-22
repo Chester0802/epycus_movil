@@ -40,46 +40,63 @@
             android:textStyle="bold"
             android:layout_marginTop="16dp" />
 
-        <!-- Timer Circle -->
-        <LinearLayout
+        <!-- Timer Circle with CircularProgress -->
+        <FrameLayout
             android:layout_width="240dp"
             android:layout_height="240dp"
-            android:background="@drawable/bg_timer_circle"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:layout_marginTop="28dp"
-            android:elevation="8dp">
+            android:layout_marginTop="28dp">
 
-            <TextView
-                android:id="@+id/tvEstado"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/foco"
-                android:textSize="13sp"
-                android:textColor="?attr/epTextOnPrimary"
-                android:alpha="0.8"
-                android:layout_marginBottom="4dp" />
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progressIndicator"
+                android:layout_width="240dp"
+                android:layout_height="240dp"
+                android:layout_gravity="center"
+                android:indeterminate="false"
+                app:indicatorSize="220dp"
+                app:trackThickness="5dp"
+                app:trackColor="#33FFFFFF"
+                app:indicatorColor="?attr/epAccentSecondary" />
 
-            <TextView
-                android:id="@+id/tvTiempo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/tiempo_inicial"
-                android:textSize="52sp"
-                android:textColor="?attr/epTextOnPrimary"
-                android:textStyle="bold"
-                android:letterSpacing="0.05" />
+            <LinearLayout
+                android:layout_width="240dp"
+                android:layout_height="240dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_timer_circle"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:elevation="2dp">
 
-            <TextView
-                android:id="@+id/tvSessionLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/sesion_inicial"
-                android:textSize="12sp"
-                android:textColor="?attr/epTextOnPrimary"
-                android:alpha="0.67"
-                android:layout_marginTop="4dp" />
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/tvEstado"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/foco"
+                    android:textSize="13sp"
+                    android:textColor="?attr/epTextOnPrimary"
+                    android:alpha="0.8"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/tvTiempo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tiempo_inicial"
+                    android:textSize="52sp"
+                    android:textColor="?attr/epTextOnPrimary"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.05" />
+
+                <TextView
+                    android:id="@+id/tvSessionLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sesion_inicial"
+                    android:textSize="12sp"
+                    android:textColor="?attr/epTextOnPrimary"
+                    android:alpha="0.67"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+        </FrameLayout>
 
         <!-- Control Button -->
         <com.google.android.material.button.MaterialButton

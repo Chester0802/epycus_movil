@@ -4,9 +4,15 @@ import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.os.VibratorManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +22,9 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.text.SimpleDateFormat;
@@ -24,12 +32,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+
+import es.epycus.app.model.dto.PomodoroHistorialResponse.SesionHistorial;
 
 import es.epycus.app.R;
 import es.epycus.app.databinding.FragmentPomodoroBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.repository.PomodoroRepository;
+import es.epycus.app.util.CacheManager;
 import es.epycus.app.util.NetworkUtils;
 import es.epycus.app.model.dto.PomodoroIniciarResponse;
 import es.epycus.app.model.dto.PomodoroCicloCompletadoResponse;
@@ -72,6 +82,10 @@ public class PomodoroFragment extends Fragment {
     private int ciclosCompletadosSesion = 0;
     private static final String CHANNEL_ID = "pomodoro_channel";
     private static final int NOTIFICATION_ID_CICLO = 1001;
+    private static final String CACHE_KEY_CONFIG = "pomodoro_config";
+    private static final String CACHE_KEY_TIP = "pomodoro_tip";
+    private boolean sonidoActivo = true;
+    private boolean vibracionActiva = true;
 
     @Nullable
     @Override
@@ -84,6 +98,7 @@ public class PomodoroFragment extends Fragment {
 
         binding.swipeRefresh.setOnRefreshListener(this::recargarTodo);
         binding.swipeRefresh.setColorSchemeResources(R.color.light_accent, R.color.light_accent_secondary);
+        binding.progressIndicator.setMax(1000);
 
         if (savedInstanceState != null) {
             segundosRestantes = savedInstanceState.getInt(KEY_SEGUNDOS, 25 * 60);
@@ -163,6 +178,8 @@ public class PomodoroFragment extends Fragment {
                     segundosRestantes = tiempoFoco;
                     notificarCicloCompletado();
                     mostrarNotificacion(false);
+                    if (sonidoActivo) reproducirSonido();
+                    if (vibracionActiva) vibrar();
                 } else {
                     ciclosCompletados++;
                     ciclosCompletadosSesion++;
@@ -183,6 +200,8 @@ public class PomodoroFragment extends Fragment {
                     isPausa = true;
                     notificarCicloCompletado();
                     mostrarNotificacion(true);
+                    if (sonidoActivo) reproducirSonido();
+                    if (vibracionActiva) vibrar();
                 }
                 actualizarDisplay();
             }
@@ -208,11 +227,25 @@ public class PomodoroFragment extends Fragment {
         binding.btnControl.setText(R.string.reanudar);
     }
 
+    private int getTiempoActual() {
+        if (isPausa && ciclosCompletados > 0 && ciclosCompletados % ciclosAntesPausaLarga == 0) {
+            return tiempoPausaLarga;
+        } else if (isPausa) {
+            return tiempoPausa;
+        }
+        return tiempoFoco;
+    }
+
     private void actualizarDisplay() {
         int minutos = segundosRestantes / 60;
         int segs = segundosRestantes % 60;
         binding.tvTiempo.setText(String.format("%02d:%02d", minutos, segs));
         binding.tvEstado.setText(isPausa ? getString(R.string.pausa) : getString(R.string.foco));
+        int total = getTiempoActual();
+        if (total > 0) {
+            int progress = (int) ((long) segundosRestantes * 1000 / total);
+            binding.progressIndicator.setProgress(progress);
+        }
     }
 
     private void iniciarSesionEnBackend() {
@@ -304,6 +337,21 @@ public class PomodoroFragment extends Fragment {
     }
 
     private void cargarTipAleatorio() {
+        String cached = repository.getCachedJson(CACHE_KEY_TIP);
+        if (cached != null) {
+            try {
+                RespuestaApi<PomodoroTipResponse> cachedResp =
+                        new Gson().fromJson(cached, new com.google.gson.reflect.TypeToken<RespuestaApi<PomodoroTipResponse>>(){}.getType());
+                if (cachedResp != null && cachedResp.getDatos() != null) {
+                    String tip = cachedResp.getDatos().getConsejo();
+                    if (tip != null && !tip.isEmpty()) {
+                        binding.tvTip.setText(tip);
+                        tipCargado = true;
+                    }
+                }
+            } catch (Exception ignored) {}
+        }
+
         Call<RespuestaApi<PomodoroTipResponse>> call = repository.tipAleatorio();
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
@@ -315,6 +363,10 @@ public class PomodoroFragment extends Fragment {
                     if (tip != null && !tip.isEmpty()) {
                         binding.tvTip.setText(tip);
                         tipCargado = true;
+                        try {
+                            String json = new Gson().toJson(response.body());
+                            repository.cacheJson(CACHE_KEY_TIP, json, CacheManager.TTL_DIARIO);
+                        } catch (Exception ignored) {}
                     }
                 }
                 if (!tipCargado) {
@@ -331,7 +383,31 @@ public class PomodoroFragment extends Fragment {
         });
     }
 
+    private void aplicarConfiguracion(PomodoroConfiguracionResponse cfg) {
+        tiempoFoco = cfg.getTiempoEstudio() * 60;
+        tiempoPausa = cfg.getTiempoDescanso() * 60;
+        tiempoPausaLarga = cfg.getTiempoDescansoLargo() * 60;
+        ciclosAntesPausaLarga = cfg.getCiclosAntesDescansoLargo();
+        sonidoActivo = cfg.isSonidoActivo();
+        vibracionActiva = cfg.isVibracionActiva();
+        if (!isRunning && !isPausa) {
+            segundosRestantes = tiempoFoco;
+            actualizarDisplay();
+        }
+    }
+
     private void cargarConfiguracion() {
+        String cached = repository.getCachedJson(CACHE_KEY_CONFIG);
+        if (cached != null) {
+            try {
+                RespuestaApi<PomodoroConfiguracionResponse> cachedResp =
+                        new Gson().fromJson(cached, new com.google.gson.reflect.TypeToken<RespuestaApi<PomodoroConfiguracionResponse>>(){}.getType());
+                if (cachedResp != null && cachedResp.getDatos() != null) {
+                    aplicarConfiguracion(cachedResp.getDatos());
+                }
+            } catch (Exception ignored) {}
+        }
+
         Call<RespuestaApi<PomodoroConfiguracionResponse>> call = repository.configuracion();
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
@@ -342,14 +418,11 @@ public class PomodoroFragment extends Fragment {
                 binding.swipeRefresh.setRefreshing(false);
                 if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
                     PomodoroConfiguracionResponse cfg = response.body().getDatos();
-                    tiempoFoco = cfg.getTiempoEstudio() * 60;
-                    tiempoPausa = cfg.getTiempoDescanso() * 60;
-                    tiempoPausaLarga = cfg.getTiempoDescansoLargo() * 60;
-                    ciclosAntesPausaLarga = cfg.getCiclosAntesDescansoLargo();
-                    if (!isRunning && !isPausa) {
-                        segundosRestantes = tiempoFoco;
-                        actualizarDisplay();
-                    }
+                    aplicarConfiguracion(cfg);
+                    try {
+                        String json = new Gson().toJson(response.body());
+                        repository.cacheJson(CACHE_KEY_CONFIG, json, CacheManager.TTL_POMODORO_CONFIG);
+                    } catch (Exception ignored) {}
                 }
             }
 
@@ -387,6 +460,35 @@ public class PomodoroFragment extends Fragment {
         if (!isAdded()) return;
         Snackbar.make(requireView(),
                 getString(NetworkUtils.getNetworkErrorResId(t)), Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void reproducirSonido() {
+        try {
+            Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone ringtone = RingtoneManager.getRingtone(requireContext(), uri);
+            if (ringtone != null) {
+                ringtone.play();
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private void vibrar() {
+        Context context = getContext();
+        if (context == null) return;
+        Vibrator vibrator;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            VibratorManager vm = (VibratorManager) context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE);
+            if (vm == null) return;
+            vibrator = vm.getDefaultVibrator();
+        } else {
+            vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        }
+        if (vibrator == null || !vibrator.hasVibrator()) return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(300, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(300);
+        }
     }
 
     private void mostrarNotificacion(boolean isFoco) {
@@ -511,22 +613,13 @@ public class PomodoroFragment extends Fragment {
 
                 if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
                     PomodoroHistorialResponse data = response.body().getDatos();
-                    Object historialObj = data.getHistorial();
+                    List<SesionHistorial> historial = data.getHistorial();
 
-                    if (historialObj instanceof List && !((List<?>) historialObj).isEmpty()) {
+                    if (historial != null && !historial.isEmpty()) {
                         StringBuilder sb = new StringBuilder();
-                        List<?> items = (List<?>) historialObj;
-                        for (Object item : items) {
-                            String linea;
-                            if (item instanceof Map) {
-                                Map<?, ?> map = (Map<?, ?>) item;
-                                String fecha = map.containsKey("fecha") ? String.valueOf(map.get("fecha")) : "—";
-                                int ciclos = map.containsKey("ciclos") ? ((Number) map.get("ciclos")).intValue() : 0;
-                                int duracion = map.containsKey("duracionMinutos") ? ((Number) map.get("duracionMinutos")).intValue() : 0;
-                                linea = getString(R.string.historial_formato, fecha, ciclos, duracion);
-                            } else {
-                                linea = item.toString();
-                            }
+                        for (SesionHistorial item : historial) {
+                            String fecha = item.getFecha() != null ? item.getFecha() : "—";
+                            String linea = getString(R.string.historial_formato, fecha, item.getCiclos(), item.getDuracionMinutos());
                             sb.append(linea).append("\n");
                         }
                         builder.setMessage(sb.toString().trim());
