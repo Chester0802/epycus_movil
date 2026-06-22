@@ -165,10 +165,15 @@ public class InicioFragment extends Fragment {
                         cacheManager.put("dashboard", json, CacheManager.TTL_DASHBOARD);
                         dashboardDataLoaded = true;
 
-                        binding.tvHabitosPendientes.setText(
-                                String.valueOf(data.getHabitosPendientes()));
-                        binding.tvMisionesPendientes.setText(
-                                String.valueOf(data.getMisionesPendientes()));
+                        DashboardResponse.Kpis kpis = data.getKpis();
+
+                        int habitos = (kpis != null)
+                                ? kpis.getHabitosPendientes() : data.getHabitosPendientes();
+                        int misiones = (kpis != null)
+                                ? kpis.getMisionesPendientes() : data.getMisionesPendientes();
+
+                        binding.tvHabitosPendientes.setText(String.valueOf(habitos));
+                        binding.tvMisionesPendientes.setText(String.valueOf(misiones));
 
                         if (data.getFrase() != null) {
                             binding.tvFrase.setText(data.getFrase().getFrase());
@@ -203,10 +208,15 @@ public class InicioFragment extends Fragment {
             try {
                 Gson gson = new Gson();
                 DashboardResponse data = gson.fromJson(json, DashboardResponse.class);
-                binding.tvHabitosPendientes.setText(
-                        String.valueOf(data.getHabitosPendientes()));
-                binding.tvMisionesPendientes.setText(
-                        String.valueOf(data.getMisionesPendientes()));
+                DashboardResponse.Kpis kpis = data.getKpis();
+
+                int habitos = (kpis != null)
+                        ? kpis.getHabitosPendientes() : data.getHabitosPendientes();
+                int misiones = (kpis != null)
+                        ? kpis.getMisionesPendientes() : data.getMisionesPendientes();
+
+                binding.tvHabitosPendientes.setText(String.valueOf(habitos));
+                binding.tvMisionesPendientes.setText(String.valueOf(misiones));
                 if (data.getFrase() != null) {
                     binding.tvFrase.setText(data.getFrase().getFrase());
                     binding.tvFraseAutor.setText(getString(R.string.autor_formato, data.getFrase().getAutor()));
