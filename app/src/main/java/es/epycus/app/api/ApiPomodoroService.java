@@ -9,6 +9,7 @@ import es.epycus.app.model.dto.PomodoroTipResponse;
 import es.epycus.app.model.dto.PomodoroSesionActivaResponse;
 import es.epycus.app.model.dto.PomodoroHistorialResponse;
 import es.epycus.app.model.dto.PomodoroRachaResponse;
+import es.epycus.app.model.dto.PomodoroEstadisticasDto;
 import es.epycus.app.model.dto.SuccessResponseDto;
 
 import retrofit2.Call;
@@ -51,5 +52,5 @@ public interface ApiPomodoroService {
     Call<RespuestaApi<PomodoroRachaResponse>> racha();
 
     @GET("api/pomodoro/estadisticas")
-    Call<RespuestaApi<Object>> estadisticas(@Query("desde") String desde, @Query("hasta") String hasta);
+    Call<RespuestaApi<PomodoroEstadisticasDto>> estadisticas(@Query("desde") String desde, @Query("hasta") String hasta);
 }

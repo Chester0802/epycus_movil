@@ -283,6 +283,23 @@
     <string name="racha_default">—</string>
     <string name="streak_emoji">🔥</string>
     <string name="sesion_formato">Sesión %d</string>
+    <string name="historial">Historial</string>
+    <string name="config_pomodoro">Configuración de Pomodoro</string>
+    <string name="config_tiempo_estudio">Tiempo de estudio (min)</string>
+    <string name="config_tiempo_descanso">Tiempo de descanso (min)</string>
+    <string name="config_tiempo_descanso_largo">Tiempo de descanso largo (min)</string>
+    <string name="config_ciclos_antes_largo">Ciclos antes de descanso largo</string>
+    <string name="config_guardada">Configuración guardada</string>
+    <string name="config_error">Error al guardar configuración</string>
+    <string name="config_valor_invalido">Los valores deben ser mayores a 0</string>
+    <string name="historial_titulo">Historial de sesiones</string>
+    <string name="historial_vacio">No hay sesiones registradas</string>
+    <string name="historial_formato">%1$s - %2$d ciclos - %3$d min</string>
+    <string name="sesion_cancelada">Sesión cancelada</string>
+    <string name="foco_completado_notif">¡Ciclo de foco completado!</string>
+    <string name="pausa_completada_notif">¡Descanso terminado! Vuelve al trabajo</string>
+    <string name="canal_pomodoro">Pomodoro</string>
+    <string name="ok">OK</string>
 
     <!-- Google Sign-In completion -->
     <string name="completar_registro_titulo">Completa tu registro</string>

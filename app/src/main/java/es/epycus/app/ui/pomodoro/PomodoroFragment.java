@@ -1,5 +1,10 @@
 package es.epycus.app.ui.pomodoro;
 
+import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
@@ -8,13 +13,18 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.JsonObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import es.epycus.app.R;
 import es.epycus.app.databinding.FragmentPomodoroBinding;
@@ -28,6 +38,8 @@ import es.epycus.app.model.dto.PomodoroConfiguracionResponse;
 import es.epycus.app.model.dto.PomodoroSesionActivaResponse;
 import es.epycus.app.model.dto.PomodoroFinalizarResponse;
 import es.epycus.app.model.dto.PomodoroRachaResponse;
+import es.epycus.app.model.dto.PomodoroHistorialResponse;
+import es.epycus.app.model.dto.SuccessResponseDto;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -56,6 +68,10 @@ public class PomodoroFragment extends Fragment {
     private PomodoroRepository repository;
     private final List<Call<?>> activeCalls = new ArrayList<>();
     private boolean tipCargado = false;
+    private boolean sesionFinalizada = false;
+    private int ciclosCompletadosSesion = 0;
+    private static final String CHANNEL_ID = "pomodoro_channel";
+    private static final int NOTIFICATION_ID_CICLO = 1001;
 
     @Nullable
     @Override
@@ -90,6 +106,9 @@ public class PomodoroFragment extends Fragment {
                 iniciar();
             }
         });
+
+        binding.btnConfig.setOnClickListener(v -> showConfigDialog());
+        binding.btnHistorial.setOnClickListener(v -> showHistorialDialog());
         actualizarBoton();
 
         if (isRunning) {
@@ -143,8 +162,10 @@ public class PomodoroFragment extends Fragment {
                     isPausa = false;
                     segundosRestantes = tiempoFoco;
                     notificarCicloCompletado();
+                    mostrarNotificacion(false);
                 } else {
                     ciclosCompletados++;
+                    ciclosCompletadosSesion++;
                     ciclosHoy++;
                     binding.tvCiclos.setText(getString(R.string.ciclos_formato, ciclosCompletados));
                     binding.tvTotalHoy.setText(getString(R.string.hoy_completados_formato, ciclosHoy));
@@ -161,6 +182,7 @@ public class PomodoroFragment extends Fragment {
                     }
                     isPausa = true;
                     notificarCicloCompletado();
+                    mostrarNotificacion(true);
                 }
                 actualizarDisplay();
             }
@@ -236,6 +258,7 @@ public class PomodoroFragment extends Fragment {
 
     private void finalizarSesion() {
         if (sesionId == -1) return;
+        sesionFinalizada = true;
         JsonObject body = new JsonObject();
         body.addProperty("ciclosCompletados", ciclosCompletados);
 
@@ -249,6 +272,24 @@ public class PomodoroFragment extends Fragment {
 
             @Override
             public void onFailure(Call<RespuestaApi<PomodoroFinalizarResponse>> call, Throwable t) {
+                activeCalls.remove(call);
+            }
+        });
+    }
+
+    private void cancelarSesion() {
+        if (sesionId == -1) return;
+
+        Call<RespuestaApi<SuccessResponseDto>> call = repository.cancelar(sesionId);
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<SuccessResponseDto>> call, Response<RespuestaApi<SuccessResponseDto>> response) {
+                activeCalls.remove(call);
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaApi<SuccessResponseDto>> call, Throwable t) {
                 activeCalls.remove(call);
             }
         });
@@ -348,6 +389,166 @@ public class PomodoroFragment extends Fragment {
                 getString(NetworkUtils.getNetworkErrorResId(t)), Snackbar.LENGTH_SHORT).show();
     }
 
+    private void mostrarNotificacion(boolean isFoco) {
+        Context context = getContext();
+        if (context == null) return;
+
+        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm == null) return;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
+                    getString(R.string.canal_pomodoro),
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            nm.createNotificationChannel(channel);
+        }
+
+        String title = getString(isFoco ? R.string.foco_completado_notif : R.string.pausa_completada_notif);
+        String body = getString(R.string.sesion_formato, ciclosCompletados);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_pomodoro)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        nm.notify(NOTIFICATION_ID_CICLO, builder.build());
+    }
+
+    private void showConfigDialog() {
+        View view = getLayoutInflater().inflate(R.layout.dialog_pomodoro_config, null);
+        com.google.android.material.textfield.TextInputEditText etTiempoEstudio = view.findViewById(R.id.etTiempoEstudio);
+        com.google.android.material.textfield.TextInputEditText etTiempoDescanso = view.findViewById(R.id.etTiempoDescanso);
+        com.google.android.material.textfield.TextInputEditText etTiempoDescansoLargo = view.findViewById(R.id.etTiempoDescansoLargo);
+        com.google.android.material.textfield.TextInputEditText etCiclosAntesLargo = view.findViewById(R.id.etCiclosAntesLargo);
+
+        etTiempoEstudio.setText(String.valueOf(tiempoFoco / 60));
+        etTiempoDescanso.setText(String.valueOf(tiempoPausa / 60));
+        etTiempoDescansoLargo.setText(String.valueOf(tiempoPausaLarga / 60));
+        etCiclosAntesLargo.setText(String.valueOf(ciclosAntesPausaLarga));
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle(R.string.config_pomodoro);
+        builder.setView(view);
+        builder.setPositiveButton(R.string.guardar, null);
+        builder.setNegativeButton(R.string.cancelar, null);
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(d -> {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                String sEstudio = etTiempoEstudio.getText().toString().trim();
+                String sDescanso = etTiempoDescanso.getText().toString().trim();
+                String sDescansoLargo = etTiempoDescansoLargo.getText().toString().trim();
+                String sCiclos = etCiclosAntesLargo.getText().toString().trim();
+
+                if (sEstudio.isEmpty() || sDescanso.isEmpty() || sDescansoLargo.isEmpty() || sCiclos.isEmpty()) {
+                    Snackbar.make(requireView(), R.string.config_valor_invalido, Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+
+                int estudio = Integer.parseInt(sEstudio);
+                int descanso = Integer.parseInt(sDescanso);
+                int descansoLargo = Integer.parseInt(sDescansoLargo);
+                int ciclos = Integer.parseInt(sCiclos);
+
+                if (estudio <= 0 || descanso <= 0 || descansoLargo <= 0 || ciclos <= 0) {
+                    Snackbar.make(requireView(), R.string.config_valor_invalido, Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+
+                JsonObject body = new JsonObject();
+                body.addProperty("tiempoEstudio", estudio);
+                body.addProperty("tiempoDescanso", descanso);
+                body.addProperty("tiempoDescansoLargo", descansoLargo);
+                body.addProperty("ciclosAntesDescansoLargo", ciclos);
+
+                Call<RespuestaApi<SuccessResponseDto>> call = repository.actualizarConfiguracion(body);
+                activeCalls.add(call);
+                call.enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(Call<RespuestaApi<SuccessResponseDto>> call, Response<RespuestaApi<SuccessResponseDto>> response) {
+                        activeCalls.remove(call);
+                        if (response.isSuccessful()) {
+                            tiempoFoco = estudio * 60;
+                            tiempoPausa = descanso * 60;
+                            tiempoPausaLarga = descansoLargo * 60;
+                            ciclosAntesPausaLarga = ciclos;
+                            if (!isRunning && !isPausa) {
+                                segundosRestantes = tiempoFoco;
+                                actualizarDisplay();
+                            }
+                            dialog.dismiss();
+                            Snackbar.make(requireView(), R.string.config_guardada, Snackbar.LENGTH_SHORT).show();
+                        } else {
+                            Snackbar.make(requireView(), R.string.config_error, Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<RespuestaApi<SuccessResponseDto>> call, Throwable t) {
+                        activeCalls.remove(call);
+                        mostrarErrorRed(t);
+                    }
+                });
+            });
+        });
+        dialog.show();
+    }
+
+    private void showHistorialDialog() {
+        String hoy = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
+
+        Call<RespuestaApi<PomodoroHistorialResponse>> call = repository.historial(hoy, hoy, 0, 50);
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<PomodoroHistorialResponse>> call, Response<RespuestaApi<PomodoroHistorialResponse>> response) {
+                activeCalls.remove(call);
+                if (!isAdded()) return;
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setTitle(R.string.historial_titulo);
+
+                if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
+                    PomodoroHistorialResponse data = response.body().getDatos();
+                    Object historialObj = data.getHistorial();
+
+                    if (historialObj instanceof List && !((List<?>) historialObj).isEmpty()) {
+                        StringBuilder sb = new StringBuilder();
+                        List<?> items = (List<?>) historialObj;
+                        for (Object item : items) {
+                            String linea;
+                            if (item instanceof Map) {
+                                Map<?, ?> map = (Map<?, ?>) item;
+                                String fecha = map.containsKey("fecha") ? String.valueOf(map.get("fecha")) : "—";
+                                int ciclos = map.containsKey("ciclos") ? ((Number) map.get("ciclos")).intValue() : 0;
+                                int duracion = map.containsKey("duracionMinutos") ? ((Number) map.get("duracionMinutos")).intValue() : 0;
+                                linea = getString(R.string.historial_formato, fecha, ciclos, duracion);
+                            } else {
+                                linea = item.toString();
+                            }
+                            sb.append(linea).append("\n");
+                        }
+                        builder.setMessage(sb.toString().trim());
+                    } else {
+                        builder.setMessage(R.string.historial_vacio);
+                    }
+                } else {
+                    builder.setMessage(R.string.historial_vacio);
+                }
+
+                builder.setPositiveButton(R.string.ok, null);
+                builder.show();
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaApi<PomodoroHistorialResponse>> call, Throwable t) {
+                activeCalls.remove(call);
+                mostrarErrorRed(t);
+            }
+        });
+    }
+
     private void verificarSesionActiva() {
         Call<RespuestaApi<PomodoroSesionActivaResponse>> call = repository.sesionActiva();
         activeCalls.add(call);
@@ -382,8 +583,12 @@ public class PomodoroFragment extends Fragment {
         if (timer != null) {
             timer.cancel();
         }
-        if (isRunning || sesionId != -1) {
-            finalizarSesion();
+        if (sesionId != -1 && !sesionFinalizada) {
+            if (ciclosCompletadosSesion > 0) {
+                finalizarSesion();
+            } else {
+                cancelarSesion();
+            }
         }
         for (Call<?> call : activeCalls) {
             if (!call.isCanceled()) call.cancel();

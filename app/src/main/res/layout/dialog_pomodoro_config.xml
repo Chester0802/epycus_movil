@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        style="@style/Widget.Epycus.Input">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etTiempoEstudio"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:hint="@string/config_tiempo_estudio"
+            android:textSize="15sp"
+            android:inputType="number" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        style="@style/Widget.Epycus.Input">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etTiempoDescanso"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:hint="@string/config_tiempo_descanso"
+            android:textSize="15sp"
+            android:inputType="number" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        style="@style/Widget.Epycus.Input">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etTiempoDescansoLargo"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:hint="@string/config_tiempo_descanso_largo"
+            android:textSize="15sp"
+            android:inputType="number" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.Epycus.Input">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etCiclosAntesLargo"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:hint="@string/config_ciclos_antes_largo"
+            android:textSize="15sp"
+            android:inputType="number" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+</LinearLayout>

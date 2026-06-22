@@ -12,6 +12,7 @@ import es.epycus.app.model.dto.PomodoroTipResponse;
 import es.epycus.app.model.dto.PomodoroSesionActivaResponse;
 import es.epycus.app.model.dto.PomodoroHistorialResponse;
 import es.epycus.app.model.dto.PomodoroRachaResponse;
+import es.epycus.app.model.dto.PomodoroEstadisticasDto;
 import es.epycus.app.model.dto.SuccessResponseDto;
 import es.epycus.app.util.CacheManager;
 import retrofit2.Call;
@@ -65,7 +66,7 @@ public class PomodoroRepository {
         return api.getApiPomodoroService().historial(desde, hasta, pagina, tamano);
     }
 
-    public Call<RespuestaApi<Object>> estadisticas(String desde, String hasta) {
+    public Call<RespuestaApi<PomodoroEstadisticasDto>> estadisticas(String desde, String hasta) {
         return api.getApiPomodoroService().estadisticas(desde, hasta);
     }
 

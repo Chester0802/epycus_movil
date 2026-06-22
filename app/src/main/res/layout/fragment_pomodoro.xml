@@ -56,7 +56,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/foco"
                 android:textSize="13sp"
-                android:textColor="#CCFFFFFF"
+                android:textColor="?attr/epTextOnPrimary"
+                android:alpha="0.8"
                 android:layout_marginBottom="4dp" />
 
             <TextView
@@ -65,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/tiempo_inicial"
                 android:textSize="52sp"
-                android:textColor="@android:color/white"
+                android:textColor="?attr/epTextOnPrimary"
                 android:textStyle="bold"
                 android:letterSpacing="0.05" />
 
@@ -75,7 +76,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/sesion_inicial"
                 android:textSize="12sp"
-                android:textColor="#AAFFFFFF"
+                android:textColor="?attr/epTextOnPrimary"
+                android:alpha="0.67"
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
@@ -230,6 +232,42 @@
                 android:textSize="12sp"
                 android:textColor="?attr/epTextSecondary"
                 android:lineSpacingExtra="2dp" />
+        </LinearLayout>
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnConfig"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:text="@string/configuracion"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                style="@style/Widget.Epycus.Button.Outline"
+                app:icon="@drawable/ic_settings"
+                app:iconGravity="textStart"
+                app:iconTint="?attr/epAccent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnHistorial"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:text="@string/historial"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                style="@style/Widget.Epycus.Button.Outline"
+                app:icon="@drawable/ic_history"
+                app:iconGravity="textStart"
+                app:iconTint="?attr/epAccent" />
         </LinearLayout>
 
         <LinearLayout
