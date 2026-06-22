@@ -198,6 +198,9 @@
     <string name="error_conexion_habitos">Error de conexión</string>
     <string name="error_al_completar">Error al completar</string>
     <string name="funcionalidad_pronto">Funcionalidad pronto disponible</string>
+    <string name="editar_habito">Editar Hábito</string>
+    <string name="error_cargar_habito">Error al cargar el hábito</string>
+    <string name="habito_actualizado">Hábito actualizado</string>
     <string name="credenciales_incorrectas">Credenciales incorrectas</string>
     <string name="error_carreras">Error al cargar carreras</string>
     <string name="error_carreras_conexion">No se pudieron cargar las carreras</string>

@@ -13,6 +13,7 @@ import es.epycus.app.model.dto.FallarHabitoResponse;
 import es.epycus.app.model.dto.HabitoHoyDto;
 import es.epycus.app.model.dto.RegistroSemanaDto;
 import es.epycus.app.model.dto.SuccessResponseDto;
+import es.epycus.app.model.entidades.Habito;
 import es.epycus.app.util.CacheManager;
 import retrofit2.Call;
 
@@ -41,6 +42,10 @@ public class HabitosRepository {
 
     public Call<RespuestaApi<List<RegistroSemanaDto>>> semana(int id) {
         return api.getApiHabitosService().semana(id);
+    }
+
+    public Call<RespuestaApi<Habito>> obtener(int id) {
+        return api.getApiHabitosService().obtener(id);
     }
 
     public Call<RespuestaApi<Object>> listar() {

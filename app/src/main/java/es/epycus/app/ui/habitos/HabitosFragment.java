@@ -32,6 +32,7 @@ import es.epycus.app.model.dto.CompletarHabitoResponse;
 import es.epycus.app.model.dto.FallarHabitoResponse;
 import es.epycus.app.model.dto.HabitoHoyDto;
 import es.epycus.app.model.dto.SuccessResponseDto;
+import es.epycus.app.model.entidades.Habito;
 import es.epycus.app.repository.HabitosRepository;
 import es.epycus.app.util.CacheManager;
 import es.epycus.app.ui.adapters.HabitoHoyAdapter;
@@ -392,7 +393,119 @@ public class HabitosFragment extends Fragment {
     }
 
     private void mostrarDialogoEditarHabito(int id) {
-        Snackbar.make(binding.getRoot(), getString(R.string.funcionalidad_pronto), Snackbar.LENGTH_SHORT).show();
+        binding.loadingView.setVisibility(View.VISIBLE);
+
+        Call<RespuestaApi<Habito>> call = repository.obtener(id);
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<Habito>> call, Response<RespuestaApi<Habito>> response) {
+                activeCalls.remove(call);
+                binding.loadingView.setVisibility(View.GONE);
+                if (response.isSuccessful() && response.body() != null && response.body().isExito()
+                        && response.body().getDatos() != null) {
+                    mostrarDialogoEditarPrecargado(response.body().getDatos());
+                } else {
+                    Snackbar.make(binding.getRoot(), getString(R.string.error_cargar_habito), Snackbar.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaApi<Habito>> call, Throwable t) {
+                activeCalls.remove(call);
+                binding.loadingView.setVisibility(View.GONE);
+                mostrarErrorRed(t);
+            }
+        });
+    }
+
+    private void mostrarDialogoEditarPrecargado(Habito habito) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle(getString(R.string.editar_habito));
+
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_nuevo_habito, null);
+        android.widget.EditText etNombre = view.findViewById(R.id.etNombreHabito);
+        Spinner spCategoria = view.findViewById(R.id.spCategoriaHabito);
+        Spinner spFrecuencia = view.findViewById(R.id.spFrecuenciaHabito);
+
+        ArrayAdapter<String> catAdapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item, categorias);
+        catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spCategoria.setAdapter(catAdapter);
+
+        String[] frecuencias = {
+                getString(R.string.frecuencia_diaria),
+                getString(R.string.frecuencia_semanal),
+                getString(R.string.frecuencia_personalizada)
+        };
+        ArrayAdapter<String> freqAdapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item, frecuencias);
+        freqAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spFrecuencia.setAdapter(freqAdapter);
+
+        etNombre.setText(habito.getNombre());
+
+        String categoriaName = habito.getCategoria();
+        if (categoriaName != null) {
+            int catPos = categorias.indexOf(categoriaName);
+            if (catPos >= 0) {
+                spCategoria.setSelection(catPos);
+            }
+        }
+
+        String frecuenciaStr = habito.getFrecuencia();
+        if (frecuenciaStr != null) {
+            if (frecuenciaStr.equals("WEEKLY")) {
+                spFrecuencia.setSelection(1);
+            } else if (frecuenciaStr.equals("DAILY")) {
+                spFrecuencia.setSelection(0);
+            }
+        }
+
+        builder.setView(view);
+        builder.setPositiveButton(getString(R.string.guardar), (dialog, which) -> {
+            String nombre = etNombre.getText().toString().trim();
+            if (nombre.isEmpty()) {
+                Snackbar.make(binding.getRoot(), getString(R.string.completa_campos), Snackbar.LENGTH_SHORT).show();
+                return;
+            }
+            String categoria = spCategoria.getSelectedItem().toString();
+            String frecuencia = spFrecuencia.getSelectedItem().toString();
+            actualizarHabito(habito.getId(), nombre, categoria, frecuencia);
+        });
+        builder.setNegativeButton(getString(R.string.cancelar), null);
+        builder.show();
+    }
+
+    private void actualizarHabito(int id, String nombre, String categoria, String frecuencia) {
+        JsonObject body = new JsonObject();
+        body.addProperty("nombre", nombre);
+
+        String frecuenciaApi = frecuencia.toLowerCase().contains("semanal") ? "WEEKLY" : "DAILY";
+        body.addProperty("frecuencia", frecuenciaApi);
+        body.addProperty("categoria", categoria);
+
+        Call<RespuestaApi<SuccessResponseDto>> call = repository.actualizar(id, body);
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<SuccessResponseDto>> call, Response<RespuestaApi<SuccessResponseDto>> response) {
+                activeCalls.remove(call);
+                if (response.isSuccessful()) {
+                    Snackbar.make(binding.getRoot(), getString(R.string.habito_actualizado), Snackbar.LENGTH_SHORT).show();
+                    cargarHabitos();
+                } else {
+                    String msg = NetworkUtils.getErrorMessage(requireContext(), response);
+                    Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaApi<SuccessResponseDto>> call, Throwable t) {
+                activeCalls.remove(call);
+                mostrarErrorRed(t);
+            }
+        });
     }
 
     private void eliminarHabito(int id) {

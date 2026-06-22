@@ -280,7 +280,7 @@ Verificar con: .\gradlew.bat assembleDebug
 - [x] 4. Pruebas de contrato JSON (backend + Android)
 - [x] 5. Auth: userId desde JWT, refresh sin loop, logout completo, validar expiracion
 - [x] 6. Misiones: dialogo crear con fecha, categorias, editar
-- [ ] 7. Habitos: editar funcional
+- [x] 7. Habitos: editar funcional
 - [ ] 8. Diario: entrada de texto diaria
 - [ ] 9. Compila en debug y release
 - [ ] 10. Unit tests pasan

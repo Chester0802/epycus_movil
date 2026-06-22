@@ -6,6 +6,7 @@ import es.epycus.app.model.dto.FallarHabitoResponse;
 import es.epycus.app.model.dto.HabitoHoyDto;
 import es.epycus.app.model.dto.RegistroSemanaDto;
 import es.epycus.app.model.dto.SuccessResponseDto;
+import es.epycus.app.model.entidades.Habito;
 
 import java.util.List;
 
@@ -34,7 +35,7 @@ public interface ApiHabitosService {
     Call<RespuestaApi<List<RegistroSemanaDto>>> semana(@Path("id") int id);
 
     @GET("api/habitos/{id}")
-    Call<RespuestaApi<Object>> obtener(@Path("id") int id);
+    Call<RespuestaApi<Habito>> obtener(@Path("id") int id);
 
     @POST("api/habitos")
     Call<RespuestaApi<SuccessResponseDto>> crear(@Body Object body);
