@@ -1,6 +1,9 @@
 package es.epycus.app.api;
 
+import java.util.List;
+
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.CategoriaDto;
 import es.epycus.app.model.dto.MisionDto;
 import es.epycus.app.model.dto.MisionCompletarResponse;
 import es.epycus.app.model.dto.SuccessResponseDto;
@@ -38,5 +41,5 @@ public interface ApiMisionesService {
     Call<RespuestaApi<SuccessResponseDto>> cambiarEstado(@Path("id") int id, @Body Object body);
 
     @GET("api/misiones/categorias")
-    Call<RespuestaApi<Object>> categorias();
+    Call<RespuestaApi<List<CategoriaDto>>> categorias();
 }

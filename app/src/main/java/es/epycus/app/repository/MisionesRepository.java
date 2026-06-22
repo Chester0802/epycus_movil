@@ -8,6 +8,7 @@ import es.epycus.app.api.RetrofitClient;
 import es.epycus.app.data.local.AppDatabase;
 import es.epycus.app.data.local.entity.MisionEntity;
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.CategoriaDto;
 import es.epycus.app.model.dto.MisionDto;
 import es.epycus.app.model.dto.MisionCompletarResponse;
 import es.epycus.app.model.dto.SuccessResponseDto;
@@ -41,7 +42,7 @@ public class MisionesRepository {
         return api.getApiMisionesService().eliminar(id);
     }
 
-    public Call<RespuestaApi<Object>> categorias() {
+    public Call<RespuestaApi<List<CategoriaDto>>> categorias() {
         return api.getApiMisionesService().categorias();
     }
 

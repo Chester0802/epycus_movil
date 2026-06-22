@@ -16,9 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -284,36 +282,30 @@ public class DiarioFragment extends Fragment {
     }
 
     private void cargarHistorialAnimo() {
-        Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiEstadoAnimoService()
-                .historial();
+        Call<RespuestaApi<List<es.epycus.app.model.dto.EstadoAnimoEntry>>> call =
+                RetrofitClient.getInstance(requireContext()).getApiEstadoAnimoService().historial();
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                   @NonNull Response<RespuestaApi<Object>> response) {
+            public void onResponse(@NonNull Call<RespuestaApi<List<es.epycus.app.model.dto.EstadoAnimoEntry>>> call,
+                                   @NonNull Response<RespuestaApi<List<es.epycus.app.model.dto.EstadoAnimoEntry>>> response) {
                 activeCalls.remove(call);
                 if (!isAlive()) return;
                 try {
                     if (response.isSuccessful() && response.body() != null && response.body().isExito()
                             && response.body().getDatos() != null) {
-                        Gson gson = new Gson();
-                        String json = gson.toJson(response.body().getDatos());
-                        JsonArray arr = JsonParser.parseString(json).getAsJsonArray();
-                        if (arr.size() == 0) {
+                        List<es.epycus.app.model.dto.EstadoAnimoEntry> entries = response.body().getDatos();
+                        if (entries.isEmpty()) {
                             binding.layoutHistorial.setVisibility(View.GONE);
                             return;
                         }
                         binding.layoutHistorial.setVisibility(View.VISIBLE);
                         List<MoodHistoryItem> items = new ArrayList<>();
-                        for (int i = 0; i < arr.size(); i++) {
-                            JsonObject obj = arr.get(i).getAsJsonObject();
-                            String fecha = obj.has("fecha") && !obj.get("fecha").isJsonNull()
-                                    ? obj.get("fecha").getAsString() : "";
-                            String estado = obj.has("estado") && !obj.get("estado").isJsonNull()
-                                    ? obj.get("estado").getAsString() : "";
-                            String nota = obj.has("nota") && !obj.get("nota").isJsonNull()
-                                    ? obj.get("nota").getAsString() : "";
-                            items.add(new MoodHistoryItem(fecha, estado, nota));
+                        for (es.epycus.app.model.dto.EstadoAnimoEntry entry : entries) {
+                            items.add(new MoodHistoryItem(
+                                    entry.getFecha() != null ? entry.getFecha() : "",
+                                    entry.getEstado() != null ? entry.getEstado() : "",
+                                    entry.getNota() != null ? entry.getNota() : ""));
                         }
                         binding.rvHistorialAnimo.setLayoutManager(new LinearLayoutManager(getContext()));
                         binding.rvHistorialAnimo.setAdapter(new MoodHistoryAdapter(items));
@@ -327,9 +319,10 @@ public class DiarioFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<RespuestaApi<List<es.epycus.app.model.dto.EstadoAnimoEntry>>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
                 if (isAlive()) binding.layoutHistorial.setVisibility(View.GONE);
+                mostrarErrorRed(t);
             }
         });
     }

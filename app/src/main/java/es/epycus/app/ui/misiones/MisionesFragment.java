@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
@@ -27,6 +26,7 @@ import es.epycus.app.R;
 import es.epycus.app.data.local.entity.MisionEntity;
 import es.epycus.app.databinding.FragmentMisionesBinding;
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.CategoriaDto;
 import es.epycus.app.model.dto.MisionCompletarResponse;
 import es.epycus.app.model.dto.MisionDto;
 import es.epycus.app.model.dto.SuccessResponseDto;
@@ -71,30 +71,24 @@ public class MisionesFragment extends Fragment {
     }
 
     private void cargarCategorias() {
-        Call<RespuestaApi<Object>> call = repository.categorias();
+        Call<RespuestaApi<List<CategoriaDto>>> call = repository.categorias();
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                   @NonNull Response<RespuestaApi<Object>> response) {
+            public void onResponse(@NonNull Call<RespuestaApi<List<CategoriaDto>>> call,
+                                   @NonNull Response<RespuestaApi<List<CategoriaDto>>> response) {
                 activeCalls.remove(call);
                 if (response.isSuccessful() && response.body() != null
                         && response.body().isExito() && response.body().getDatos() != null) {
-                    try {
-                        Gson gson = new Gson();
-                        String json = gson.toJson(response.body().getDatos());
-                        com.google.gson.JsonArray arr = com.google.gson.JsonParser.parseString(json).getAsJsonArray();
-                        if (arr.size() > 0) {
-                            defaultCategoriaId = arr.get(0).getAsJsonObject().get("id").getAsInt();
-                        }
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error parsing categorias", e);
+                    List<CategoriaDto> cats = response.body().getDatos();
+                    if (!cats.isEmpty()) {
+                        defaultCategoriaId = cats.get(0).getId();
                     }
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<RespuestaApi<List<CategoriaDto>>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
             }
         });

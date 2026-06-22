@@ -276,7 +276,7 @@ Verificar con: .\gradlew.bat assembleDebug
 
 - [x] 1. Offline cache: Misiones y Diario en Room
 - [x] 2. Estados de carga/vacio/error/reintento estandarizados
-- [ ] 3. Endpoints Object tipados donde sea posible (listar habitos, dashboard, categorias)
+- [x] 3. Endpoints Object tipados donde sea posible (listar habitos, dashboard, categorias)
 - [ ] 4. Pruebas de contrato JSON (backend + Android)
 - [ ] 5. Auth: userId desde JWT, refresh sin loop, logout completo, validar expiracion
 - [ ] 6. Misiones: dialogo crear con fecha, categorias, editar

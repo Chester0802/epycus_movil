@@ -1,6 +1,9 @@
 package es.epycus.app.api;
 
+import java.util.List;
+
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.EstadoAnimoEntry;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -12,5 +15,5 @@ public interface ApiEstadoAnimoService {
     Call<RespuestaApi<Object>> registrar(@Body Object body);
 
     @GET("api/estado-animo/historial")
-    Call<RespuestaApi<Object>> historial();
+    Call<RespuestaApi<List<EstadoAnimoEntry>>> historial();
 }
