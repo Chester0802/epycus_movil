@@ -186,17 +186,27 @@ public class DiarioFragment extends Fragment {
                         mostrarEntradaHoy(entity);
                     } else if (cached == null) {
                         binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
+                        binding.layoutEmptyDiario.setVisibility(View.VISIBLE);
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Error parsing entrada hoy", e);
-                    if (isAlive() && cached == null) binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
+                    if (isAlive() && cached == null) {
+                        binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
+                        binding.layoutEmptyDiario.setVisibility(View.VISIBLE);
+                    }
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<RespuestaApi<DiarioEntradaResponse>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
-                if (isAlive() && cached == null) binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
+                if (isAlive()) {
+                    if (cached == null) {
+                        binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
+                        binding.layoutEmptyDiario.setVisibility(View.VISIBLE);
+                    }
+                    mostrarErrorRed(t);
+                }
             }
         });
     }
@@ -204,6 +214,10 @@ public class DiarioFragment extends Fragment {
     private void mostrarEntradaHoy(DiarioEntradaEntity entity) {
         String estado = entity.getEstado() != null ? entity.getEstado() : "";
         String nota = entity.getNota() != null ? entity.getNota() : "";
+
+        if (!estado.isEmpty() || !nota.isEmpty()) {
+            binding.layoutEmptyDiario.setVisibility(View.GONE);
+        }
 
         String resumen;
         if (!estado.isEmpty()) {

@@ -225,6 +225,7 @@ public class HabitosFragment extends Fragment {
             public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
                 activeCalls.remove(call);
                 actualizarChips();
+                mostrarErrorRed(t);
             }
         });
     }

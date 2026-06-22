@@ -66,6 +66,9 @@ public class PomodoroFragment extends Fragment {
 
         repository = new PomodoroRepository(requireContext());
 
+        binding.swipeRefresh.setOnRefreshListener(this::recargarTodo);
+        binding.swipeRefresh.setColorSchemeResources(R.color.light_accent, R.color.light_accent_secondary);
+
         if (savedInstanceState != null) {
             segundosRestantes = savedInstanceState.getInt(KEY_SEGUNDOS, 25 * 60);
             isRunning = savedInstanceState.getBoolean(KEY_IS_RUNNING, false);
@@ -93,10 +96,7 @@ public class PomodoroFragment extends Fragment {
             reanudarTimer();
         }
 
-        cargarConfiguracion();
-        cargarTipAleatorio();
-        cargarRacha();
-        verificarSesionActiva();
+        recargarTodo();
 
         return view;
     }
@@ -254,6 +254,14 @@ public class PomodoroFragment extends Fragment {
         });
     }
 
+    private void recargarTodo() {
+        binding.loadingView.setVisibility(View.VISIBLE);
+        cargarConfiguracion();
+        cargarTipAleatorio();
+        cargarRacha();
+        verificarSesionActiva();
+    }
+
     private void cargarTipAleatorio() {
         Call<RespuestaApi<PomodoroTipResponse>> call = repository.tipAleatorio();
         activeCalls.add(call);
@@ -277,6 +285,7 @@ public class PomodoroFragment extends Fragment {
             public void onFailure(Call<RespuestaApi<PomodoroTipResponse>> call, Throwable t) {
                 activeCalls.remove(call);
                 binding.tvTip.setText(R.string.pomodoro_tip_default);
+                mostrarErrorRed(t);
             }
         });
     }
@@ -288,6 +297,8 @@ public class PomodoroFragment extends Fragment {
             @Override
             public void onResponse(Call<RespuestaApi<PomodoroConfiguracionResponse>> call, Response<RespuestaApi<PomodoroConfiguracionResponse>> response) {
                 activeCalls.remove(call);
+                binding.loadingView.setVisibility(View.GONE);
+                binding.swipeRefresh.setRefreshing(false);
                 if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
                     PomodoroConfiguracionResponse cfg = response.body().getDatos();
                     tiempoFoco = cfg.getTiempoEstudio() * 60;
@@ -304,6 +315,9 @@ public class PomodoroFragment extends Fragment {
             @Override
             public void onFailure(Call<RespuestaApi<PomodoroConfiguracionResponse>> call, Throwable t) {
                 activeCalls.remove(call);
+                binding.loadingView.setVisibility(View.GONE);
+                binding.swipeRefresh.setRefreshing(false);
+                mostrarErrorRed(t);
             }
         });
     }
@@ -323,8 +337,15 @@ public class PomodoroFragment extends Fragment {
             @Override
             public void onFailure(Call<RespuestaApi<PomodoroRachaResponse>> call, Throwable t) {
                 activeCalls.remove(call);
+                mostrarErrorRed(t);
             }
         });
+    }
+
+    private void mostrarErrorRed(Throwable t) {
+        if (!isAdded()) return;
+        Snackbar.make(requireView(),
+                getString(NetworkUtils.getNetworkErrorResId(t)), Snackbar.LENGTH_SHORT).show();
     }
 
     private void verificarSesionActiva() {
@@ -350,6 +371,7 @@ public class PomodoroFragment extends Fragment {
             @Override
             public void onFailure(Call<RespuestaApi<PomodoroSesionActivaResponse>> call, Throwable t) {
                 activeCalls.remove(call);
+                mostrarErrorRed(t);
             }
         });
     }
