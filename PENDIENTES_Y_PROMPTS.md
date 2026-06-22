@@ -282,5 +282,5 @@ Verificar con: .\gradlew.bat assembleDebug
 - [x] 6. Misiones: dialogo crear con fecha, categorias, editar
 - [x] 7. Habitos: editar funcional
 - [x] 8. Diario: entrada de texto diaria
-- [ ] 9. Compila en debug y release
-- [ ] 10. Unit tests pasan
+- [x] 9. Compila en debug y release
+- [x] 10. Unit tests pasan
