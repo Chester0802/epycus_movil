@@ -1,0 +1,31 @@
+{
+  "exito": true,
+  "mensaje": null,
+  "datos": [
+    {
+      "id": 1,
+      "nombre": "Proyecto final de matemáticas",
+      "descripcion": "Completar la entrega del proyecto final",
+      "nombreCurso": "Matemáticas Avanzadas",
+      "fechaLimite": "2026-07-15",
+      "prioridad": "Alta",
+      "estado": "Pendiente",
+      "xpOtorgado": 200,
+      "fechaCreacion": "2026-06-01",
+      "categoriaId": 1
+    },
+    {
+      "id": 2,
+      "nombre": "Leer libro de historia",
+      "descripcion": null,
+      "nombreCurso": "Historia Universal",
+      "fechaLimite": "2026-07-30",
+      "prioridad": "Media",
+      "estado": "En progreso",
+      "xpOtorgado": 100,
+      "fechaCreacion": "2026-06-10",
+      "categoriaId": 2
+    }
+  ],
+  "errores": null
+}

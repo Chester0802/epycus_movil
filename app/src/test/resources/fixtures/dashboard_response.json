@@ -1,0 +1,17 @@
+{
+  "exito": true,
+  "mensaje": null,
+  "datos": {
+    "kpis": {
+      "habitosPendientes": 3,
+      "misionesPendientes": 2
+    },
+    "habitosPendientes": 3,
+    "misionesPendientes": 2,
+    "frase": {
+      "frase": "El éxito es la suma de pequeños esfuerzos repetidos día tras día.",
+      "autor": "Robert Collier"
+    }
+  },
+  "errores": null
+}

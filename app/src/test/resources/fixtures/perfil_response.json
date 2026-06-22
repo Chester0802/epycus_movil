@@ -1,0 +1,20 @@
+{
+  "exito": true,
+  "mensaje": null,
+  "datos": {
+    "perfil": {
+      "nombre": "Juan Pérez",
+      "correoElectronico": "juan@epycus.es",
+      "codigoUnico": "EP-001",
+      "genero": "Masculino",
+      "carreraNombre": "Ingeniería Informática",
+      "nivelActual": 5,
+      "xpTotal": 1250,
+      "rachaActual": 7,
+      "rachaMaxima": 30,
+      "fechaRegistro": "2025-09-01"
+    },
+    "imagenPersonaje": "https://app.epycus.es/img/personajes/avatar5.png"
+  },
+  "errores": null
+}

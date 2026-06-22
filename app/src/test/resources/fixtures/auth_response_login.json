@@ -1,0 +1,10 @@
+{
+  "exito": true,
+  "mensaje": "Inicio de sesión exitoso",
+  "datos": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZWlkIjoiMSIsIm5hbWUiOiJKdWFuIFBlcmV6IiwiZW1haWwiOiJqdWFuQGVweWN1cy5lcyIsImV4cCI6MTk5OTk5OTk5OX0.test",
+    "refreshToken": "dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4=",
+    "mensaje": "Inicio de sesión exitoso"
+  },
+  "errores": null
+}

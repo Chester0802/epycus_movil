@@ -1,0 +1,10 @@
+{
+  "exito": true,
+  "mensaje": "Token renovado",
+  "datos": {
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibmFtZWlkIjoiMSJ9.newtoken",
+    "refreshToken": "bmV3IHJlZnJlc2ggdG9rZW4=",
+    "mensaje": "Token renovado exitosamente"
+  },
+  "errores": null
+}

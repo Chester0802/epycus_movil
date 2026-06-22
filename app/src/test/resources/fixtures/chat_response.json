@@ -1,0 +1,9 @@
+{
+  "exito": true,
+  "mensaje": null,
+  "datos": {
+    "respuesta": "¡Hola! Claro, puedo ayudarte con tu plan de estudios. ¿Qué materia te gustaría repasar hoy?",
+    "conversacionId": "conv-abc-123"
+  },
+  "errores": null
+}

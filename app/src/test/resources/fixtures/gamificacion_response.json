@@ -1,0 +1,14 @@
+{
+  "exito": true,
+  "mensaje": null,
+  "datos": {
+    "xpTotal": 1250,
+    "nivel": 5,
+    "titulo": "Estudiante Constante",
+    "rachaActual": 7,
+    "xpParaSiguienteNivel": 250,
+    "porcentajeProgreso": 75.0,
+    "imagenPersonaje": "https://app.epycus.es/img/personajes/5.png"
+  },
+  "errores": null
+}

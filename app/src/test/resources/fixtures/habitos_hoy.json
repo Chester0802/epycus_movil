@@ -1,0 +1,28 @@
+{
+  "exito": true,
+  "mensaje": null,
+  "datos": [
+    {
+      "id": 1,
+      "nombre": "Leer 30 minutos",
+      "estadoHoy": "Pendiente",
+      "xpPotencial": 50,
+      "categoria": "Estudio"
+    },
+    {
+      "id": 2,
+      "nombre": "Ejercicio matutino",
+      "estadoHoy": "Completado",
+      "xpPotencial": 30,
+      "categoria": "Salud"
+    },
+    {
+      "id": 3,
+      "nombre": "Meditar 10 min",
+      "estadoHoy": "Fallado",
+      "xpPotencial": 20,
+      "categoria": "Bienestar"
+    }
+  ],
+  "errores": null
+}
