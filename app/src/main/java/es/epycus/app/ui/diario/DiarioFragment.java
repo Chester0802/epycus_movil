@@ -25,6 +25,7 @@ import java.util.List;
 
 import es.epycus.app.R;
 import es.epycus.app.api.RetrofitClient;
+import es.epycus.app.data.local.entity.DiarioEntradaEntity;
 import es.epycus.app.databinding.FragmentDiarioBinding;
 import es.epycus.app.util.CacheManager;
 import es.epycus.app.model.RespuestaApi;
@@ -161,6 +162,14 @@ public class DiarioFragment extends Fragment {
     }
 
     private void cargarEntradaHoy() {
+        String hoy = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+                .format(new java.util.Date());
+
+        DiarioEntradaEntity cached = diarioRepository.getCachedEntrada(hoy);
+        if (cached != null) {
+            mostrarEntradaHoy(cached);
+        }
+
         Call<RespuestaApi<DiarioEntradaResponse>> call = diarioRepository.hoy();
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
@@ -172,48 +181,40 @@ public class DiarioFragment extends Fragment {
                 try {
                     if (response.isSuccessful() && response.body() != null && response.body().isExito()
                             && response.body().getDatos() != null) {
-                        Gson gson = new Gson();
-                        String json = gson.toJson(response.body().getDatos());
-                        JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
-
-                        String estado = "";
-                        String nota = "";
-
-                        if (obj.has("entrada") && !obj.get("entrada").isJsonNull()) {
-                            JsonObject entrada = obj.getAsJsonObject("entrada");
-                            if (entrada.has("estado") && !entrada.get("estado").isJsonNull()) {
-                                estado = entrada.get("estado").getAsString();
-                            }
-                            if (entrada.has("nota") && !entrada.get("nota").isJsonNull()) {
-                                nota = entrada.get("nota").getAsString();
-                            }
-                        }
-
-                        String resumen;
-                        if (!estado.isEmpty()) {
-                            resumen = getString(R.string.entrada_hoy_formato, estado);
-                            if (!nota.isEmpty()) {
-                                resumen += "\n\"" + nota + "\"";
-                            }
-                        } else {
-                            resumen = getString(R.string.sin_entrada_hoy);
-                        }
-                        binding.tvEntradaHoy.setText(resumen);
-                    } else {
+                        DiarioEntradaEntity entity = diarioRepository.toEntity(response.body().getDatos());
+                        diarioRepository.cacheEntrada(entity);
+                        mostrarEntradaHoy(entity);
+                    } else if (cached == null) {
                         binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Error parsing entrada hoy", e);
-                    if (isAlive()) binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
+                    if (isAlive() && cached == null) binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<RespuestaApi<DiarioEntradaResponse>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
-                if (isAlive()) binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
+                if (isAlive() && cached == null) binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
             }
         });
+    }
+
+    private void mostrarEntradaHoy(DiarioEntradaEntity entity) {
+        String estado = entity.getEstado() != null ? entity.getEstado() : "";
+        String nota = entity.getNota() != null ? entity.getNota() : "";
+
+        String resumen;
+        if (!estado.isEmpty()) {
+            resumen = getString(R.string.entrada_hoy_formato, estado);
+            if (!nota.isEmpty()) {
+                resumen += "\n\"" + nota + "\"";
+            }
+        } else {
+            resumen = getString(R.string.sin_entrada_hoy);
+        }
+        binding.tvEntradaHoy.setText(resumen);
     }
 
     private void cargarPreguntaGuia() {

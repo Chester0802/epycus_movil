@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.epycus.app.R;
+import es.epycus.app.data.local.entity.MisionEntity;
 import es.epycus.app.databinding.FragmentMisionesBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.MisionCompletarResponse;
@@ -100,6 +101,8 @@ public class MisionesFragment extends Fragment {
     }
 
     private void cargarMisiones() {
+        mostrarCacheMisiones();
+
         Call<RespuestaApi<List<MisionDto>>> call = repository.listar();
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
@@ -111,6 +114,13 @@ public class MisionesFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null
                         && response.body().isExito() && response.body().getDatos() != null) {
                     List<MisionDto> misiones = response.body().getDatos();
+
+                    List<MisionEntity> entities = new ArrayList<>();
+                    for (MisionDto dto : misiones) {
+                        entities.add(repository.toEntity(dto));
+                    }
+                    repository.cacheMisiones(entities);
+
                     if (misiones.isEmpty()) {
                         mostrarEmpty();
                     } else {
@@ -118,6 +128,8 @@ public class MisionesFragment extends Fragment {
                         binding.layoutEmpty.setVisibility(View.GONE);
                         adapter.setMisiones(misiones);
                     }
+                } else if (adapter.getItemCount() > 0) {
+                    mostrarError(getString(R.string.error_conexion));
                 } else {
                     mostrarEmpty();
                 }
@@ -127,10 +139,29 @@ public class MisionesFragment extends Fragment {
             public void onFailure(@NonNull Call<RespuestaApi<List<MisionDto>>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
                 binding.swipeRefresh.setRefreshing(false);
-                mostrarEmpty();
+                if (adapter.getItemCount() == 0) {
+                    mostrarEmpty();
+                }
                 mostrarErrorRed(t);
             }
         });
+    }
+
+    private void mostrarCacheMisiones() {
+        List<MisionEntity> cached = repository.getCachedMisiones();
+        if (cached != null && !cached.isEmpty()) {
+            List<MisionDto> misiones = new ArrayList<>();
+            for (MisionEntity entity : cached) {
+                misiones.add(repository.toDto(entity));
+            }
+            binding.rvMisiones.setVisibility(View.VISIBLE);
+            binding.layoutEmpty.setVisibility(View.GONE);
+            adapter.setMisiones(misiones);
+        }
+    }
+
+    private void mostrarError(String msg) {
+        Snackbar.make(requireView(), msg, Snackbar.LENGTH_SHORT).show();
     }
 
     private void mostrarEmpty() {

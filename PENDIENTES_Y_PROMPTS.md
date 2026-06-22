@@ -274,7 +274,7 @@ Verificar con: .\gradlew.bat assembleDebug
 
 ## Checklist final para beta
 
-- [ ] 1. Offline cache: Misiones y Diario en Room
+- [x] 1. Offline cache: Misiones y Diario en Room
 - [ ] 2. Estados de carga/vacio/error/reintento estandarizados
 - [ ] 3. Endpoints Object tipados donde sea posible (listar habitos, dashboard, categorias)
 - [ ] 4. Pruebas de contrato JSON (backend + Android)
