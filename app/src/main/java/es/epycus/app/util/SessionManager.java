@@ -71,7 +71,31 @@ public class SessionManager {
     }
 
     public boolean isLoggedIn() {
-        return getToken() != null;
+        return getToken() != null && !isTokenExpired();
+    }
+
+    public boolean isTokenExpired() {
+        String token = getToken();
+        if (token == null) return true;
+        try {
+            String json = decodeJwtPayload(token);
+            if (json == null) return true;
+            com.google.gson.JsonObject obj = com.google.gson.JsonParser.parseString(json).getAsJsonObject();
+            if (obj.has("exp")) {
+                long exp = obj.get("exp").getAsLong();
+                return System.currentTimeMillis() / 1000 > exp;
+            }
+        } catch (Exception ignored) { }
+        return false;
+    }
+
+    public void saveUserIdFromToken() {
+        String token = getToken();
+        if (token == null) return;
+        int id = extractIdFromToken(token);
+        if (id > 0) {
+            prefs.edit().putInt(KEY_USER_ID, id).apply();
+        }
     }
 
     public void logout() {

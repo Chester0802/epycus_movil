@@ -660,6 +660,7 @@ public class PerfilFragment extends Fragment {
             public void onResponse(@NonNull Call<RespuestaApi<MensajeResponseDto>> call,
                                    @NonNull retrofit2.Response<RespuestaApi<MensajeResponseDto>> response) {
                 activeCalls.remove(call);
+                authRepository.logoutAndClean();
                 logoutAndRedirect();
             }
 
@@ -681,7 +682,7 @@ public class PerfilFragment extends Fragment {
     }
 
     private void logoutAndRedirect() {
-        sessionManager.logout();
+        if (getActivity() == null) return;
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

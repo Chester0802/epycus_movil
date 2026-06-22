@@ -24,6 +24,7 @@ public class AuthInterceptor implements Interceptor {
     private final Context context;
     private final Object refreshLock = new Object();
     private volatile boolean refreshing = false;
+    private volatile boolean loggedOut = false;
 
     public AuthInterceptor(SessionManager sessionManager, Context context) {
         this.sessionManager = sessionManager;
@@ -56,7 +57,7 @@ public class AuthInterceptor implements Interceptor {
                             .header("X-Retry", "true");
                     return chain.proceed(retryBuilder.build());
                 }
-                forceLogout();
+                forceLogoutOnce();
                 throw new IOException("Refresh already in progress but token not updated");
             }
 
@@ -81,7 +82,7 @@ public class AuthInterceptor implements Interceptor {
         try {
             String refreshToken = sessionManager.getRefreshToken();
             if (refreshToken == null) {
-                forceLogout();
+                forceLogoutOnce();
                 throw new IOException("No refresh token available");
             }
 
@@ -106,16 +107,16 @@ public class AuthInterceptor implements Interceptor {
                 Response retryResponse = chain.proceed(retryBuilder.build());
                 if (retryResponse.code() == 401) {
                     retryResponse.close();
-                    forceLogout();
+                    forceLogoutOnce();
                     throw new IOException("Retry also failed with 401");
                 }
                 return retryResponse;
             } else {
-                forceLogout();
+                forceLogoutOnce();
                 throw new IOException("Refresh failed");
             }
         } catch (Exception e) {
-            forceLogout();
+            forceLogoutOnce();
             throw new IOException("Token refresh failed", e);
         } finally {
             synchronized (refreshLock) {
@@ -124,7 +125,9 @@ public class AuthInterceptor implements Interceptor {
         }
     }
 
-    private void forceLogout() {
+    private void forceLogoutOnce() {
+        if (loggedOut) return;
+        loggedOut = true;
         sessionManager.logout();
         new Handler(Looper.getMainLooper()).post(() -> {
             Intent intent = new Intent(context, LoginActivity.class);

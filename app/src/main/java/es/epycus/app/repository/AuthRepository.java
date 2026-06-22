@@ -54,6 +54,16 @@ public class AuthRepository {
         return api.getApiAuthService().obtenerCarreras();
     }
 
+    public void logoutAndClean() {
+        sessionManager.logout();
+        AppDatabase.getWriteExecutor().execute(() -> {
+            database.usuarioDao().deleteAll();
+            database.cacheDao().deleteAll();
+            database.habitoDao().deleteAll();
+            database.misionDao().deleteAll();
+        });
+    }
+
     public Call<RespuestaApi<MensajeResponseDto>> logout() {
         return api.getApiAuthService().logout();
     }

@@ -12,6 +12,7 @@ import es.epycus.app.R;
 import es.epycus.app.repository.AuthRepository;
 import es.epycus.app.ui.MainContainerActivity;
 import es.epycus.app.ui.auth.LoginActivity;
+import es.epycus.app.util.SessionManager;
 import es.epycus.app.util.ThemeManager;
 
 public class SplashActivity extends AppCompatActivity {
@@ -25,13 +26,17 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         AuthRepository authRepository = new AuthRepository(this);
+        SessionManager sessionManager = SessionManager.getInstance(this);
 
         splashHandler = new Handler(Looper.getMainLooper());
         splashHandler.postDelayed(() -> {
             Intent intent;
-            if (authRepository.isLoggedIn()) {
+            if (authRepository.isLoggedIn() && !sessionManager.isTokenExpired()) {
                 intent = new Intent(SplashActivity.this, MainContainerActivity.class);
             } else {
+                if (authRepository.isLoggedIn()) {
+                    sessionManager.logout();
+                }
                 intent = new Intent(SplashActivity.this, LoginActivity.class);
             }
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

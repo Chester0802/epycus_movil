@@ -41,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     private AuthRepository authRepository;
     private GoogleSignInClient googleSignInClient;
     private Call activeCall;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,10 +51,15 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         authRepository = new AuthRepository(this);
+        sessionManager = SessionManager.getInstance(this);
 
         if (authRepository.isLoggedIn()) {
-            navegarAlHome();
-            return;
+            if (sessionManager.isTokenExpired()) {
+                sessionManager.logout();
+            } else {
+                navegarAlHome();
+                return;
+            }
         }
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -117,7 +123,8 @@ public class LoginActivity extends AppCompatActivity {
                     AuthResponse authData = ((RespuestaApi<AuthResponse>) response.body()).getDatos();
                     String userName = SessionManager.extractNameFromToken(authData.getToken());
                     if (userName == null) userName = nombre;
-                    authRepository.saveSession(authData, -1, userName, email);
+                    int userIdGoogle = SessionManager.extractIdFromToken(authData.getToken());
+                    authRepository.saveSession(authData, userIdGoogle > 0 ? userIdGoogle : -1, userName, email);
                     navegarAlHome();
                 } else {
                     String msg = NetworkUtils.getErrorMessage(LoginActivity.this, response);
@@ -177,7 +184,8 @@ public class LoginActivity extends AppCompatActivity {
                     AuthResponse authData = resp.getDatos();
                     String nombre = SessionManager.extractNameFromToken(authData.getToken());
                     if (nombre == null) nombre = correo;
-                    authRepository.saveSession(authData, -1, nombre, correo);
+                    int userIdLogin = SessionManager.extractIdFromToken(authData.getToken());
+                    authRepository.saveSession(authData, userIdLogin > 0 ? userIdLogin : -1, nombre, correo);
                     navegarAlHome();
                 } else {
                     String msg = NetworkUtils.getErrorMessage(LoginActivity.this, response);

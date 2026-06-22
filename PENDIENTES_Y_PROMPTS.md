@@ -278,7 +278,7 @@ Verificar con: .\gradlew.bat assembleDebug
 - [x] 2. Estados de carga/vacio/error/reintento estandarizados
 - [x] 3. Endpoints Object tipados donde sea posible (listar habitos, dashboard, categorias)
 - [x] 4. Pruebas de contrato JSON (backend + Android)
-- [ ] 5. Auth: userId desde JWT, refresh sin loop, logout completo, validar expiracion
+- [x] 5. Auth: userId desde JWT, refresh sin loop, logout completo, validar expiracion
 - [ ] 6. Misiones: dialogo crear con fecha, categorias, editar
 - [ ] 7. Habitos: editar funcional
 - [ ] 8. Diario: entrada de texto diaria
