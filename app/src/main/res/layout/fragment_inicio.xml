@@ -16,51 +16,88 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Header -->
-            <RelativeLayout
+            <!-- Header: Character + Greeting + Level RPG -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:strokeWidth="0dp"
+                android:background="@drawable/bg_header_card">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true">
+                    android:padding="16dp">
 
-                    <TextView
-                        android:id="@+id/tvBienvenida"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/hola_formato"
-                        android:textSize="22sp"
-                        android:textColor="?attr/epTextPrimary"
-                        android:textStyle="bold" />
+                        android:orientation="vertical"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true">
 
-                    <TextView
-                        android:id="@+id/tvNivelTitulo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/nivel_1"
-                        android:textSize="13sp"
-                        android:textColor="?attr/epAccentSecondary"
-                        android:layout_marginTop="2dp" />
-                </LinearLayout>
+                        <TextView
+                            android:id="@+id/tvBienvenida"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/hola_formato"
+                            android:textSize="22sp"
+                            android:textColor="?attr/epTextPrimary"
+                            android:textStyle="bold" />
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/ivPersonaje"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:padding="4dp"
-                    android:scaleType="fitCenter"
-                    android:adjustViewBounds="true"
-                    app:strokeWidth="3dp"
-                    app:strokeColor="?attr/epAccent"
-                    app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
-            </RelativeLayout>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginTop="4dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_level"
+                                app:tint="?attr/epAccent"
+                                android:layout_marginEnd="6dp"
+                                android:contentDescription="@null" />
+
+                            <TextView
+                                android:id="@+id/tvNivelTitulo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/nivel_1"
+                                android:textSize="14sp"
+                                android:textColor="?attr/epAccent"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Glow behind character -->
+                    <ImageView
+                        android:layout_width="148dp"
+                        android:layout_height="148dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/bg_character_glow"
+                        android:alpha="0.25"
+                        android:contentDescription="@null" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ivPersonaje"
+                        android:layout_width="140dp"
+                        android:layout_height="140dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:padding="4dp"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        app:strokeWidth="3dp"
+                        app:strokeColor="?attr/epAccent"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
+                </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Loading -->
             <FrameLayout
@@ -93,7 +130,7 @@
                 </LinearLayout>
             </FrameLayout>
 
-            <!-- Stats Cards Row (3 cards, 110dp) -->
+            <!-- Stats Cards Row (4 cards) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="110dp"
@@ -105,7 +142,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
+                    android:layout_marginEnd="4dp"
                     android:background="@drawable/bg_card_rounded"
                     android:gravity="center"
                     android:orientation="vertical"
@@ -123,16 +160,16 @@
                         android:id="@+id/tvHabitosPendientes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                    android:text="@string/cero"
-                    android:textSize="24sp"
-                    android:textColor="?attr/epTextPrimary"
-                    android:textStyle="bold" />
+                        android:text="@string/cero"
+                        android:textSize="22sp"
+                        android:textColor="?attr/epTextPrimary"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/habitos"
-                        android:textSize="12sp"
+                        android:textSize="11sp"
                         android:textColor="?attr/epTextSecondary" />
                 </LinearLayout>
 
@@ -141,7 +178,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginHorizontal="3dp"
+                    android:layout_marginHorizontal="2dp"
                     android:background="@drawable/bg_card_rounded"
                     android:gravity="center"
                     android:orientation="vertical"
@@ -159,16 +196,16 @@
                         android:id="@+id/tvRacha"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                    android:text="@string/cero"
-                    android:textSize="24sp"
-                    android:textColor="?attr/epTextPrimary"
-                    android:textStyle="bold" />
+                        android:text="@string/cero"
+                        android:textSize="22sp"
+                        android:textColor="?attr/epTextPrimary"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/racha"
-                        android:textSize="12sp"
+                        android:textSize="11sp"
                         android:textColor="?attr/epTextSecondary" />
                 </LinearLayout>
 
@@ -177,7 +214,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:layout_marginStart="6dp"
+                    android:layout_marginHorizontal="2dp"
                     android:background="@drawable/bg_card_rounded"
                     android:gravity="center"
                     android:orientation="vertical"
@@ -195,16 +232,52 @@
                         android:id="@+id/tvNivel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                    android:text="@string/nv_1"
-                    android:textSize="24sp"
-                    android:textColor="?attr/epTextPrimary"
-                    android:textStyle="bold" />
+                        android:text="@string/nv_1"
+                        android:textSize="22sp"
+                        android:textColor="?attr/epTextPrimary"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/nivel"
-                        android:textSize="12sp"
+                        android:textSize="11sp"
+                        android:textColor="?attr/epTextSecondary" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/cardMisionesPendientes"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:background="@drawable/bg_card_rounded"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_mision"
+                        app:tint="?attr/epAccentSecondary"
+                        android:layout_marginBottom="4dp"
+                        android:contentDescription="@null" />
+
+                    <TextView
+                        android:id="@+id/tvMisionesPendientes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cero"
+                        android:textSize="22sp"
+                        android:textColor="?attr/epTextPrimary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/misiones_pendientes_label"
+                        android:textSize="11sp"
                         android:textColor="?attr/epTextSecondary" />
                 </LinearLayout>
             </LinearLayout>
@@ -237,30 +310,50 @@
                         android:id="@+id/tvXpText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                    android:text="@string/cero_xp_text"
-                    android:textSize="13sp"
-                    android:textColor="?attr/epAccent"
-                    android:textStyle="bold" />
+                        android:text="@string/cero_xp_text"
+                        android:textSize="13sp"
+                        android:textColor="?attr/epAccent"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <ProgressBar
                     android:id="@+id/pbXp"
                     android:layout_width="match_parent"
-                    android:layout_height="12dp"
+                    android:layout_height="14dp"
                     android:progress="0"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:progressTint="?attr/epAccent"
                     android:progressBackgroundTint="?attr/epSurfaceBorder"
-                    android:layout_marginTop="8dp" />
+                    android:layout_marginTop="10dp" />
 
-                <TextView
-                    android:id="@+id/tvXpPorcentaje"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/porcentaje_siguiente_nivel_text"
-                    android:textSize="11sp"
-                    android:textColor="?attr/epTextSecondary"
-                    android:layout_marginTop="4dp" />
+                    android:orientation="horizontal"
+                    android:layout_marginTop="6dp">
+
+                    <TextView
+                        android:id="@+id/tvXpPorcentaje"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/porcentaje_siguiente_nivel_text"
+                        android:textSize="11sp"
+                        android:textColor="?attr/epTextSecondary" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/tvSiguienteHito"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="11sp"
+                        android:textColor="?attr/epAccentSecondary"
+                        android:textStyle="bold" />
+                </LinearLayout>
             </LinearLayout>
 
             <!-- Motivational Quote -->
@@ -292,11 +385,12 @@
                     android:layout_gravity="end" />
             </LinearLayout>
 
-            <!-- Quick Actions -->
+            <!-- Quick Actions: "Tus habilidades" -->
             <TextView
+                android:id="@+id/tvHabilidadesLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/acciones_rapidas"
+                android:text="@string/menu_habilidades"
                 android:textSize="16sp"
                 android:textColor="?attr/epTextPrimary"
                 android:textStyle="bold"
@@ -304,7 +398,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="130dp"
+                android:layout_height="120dp"
                 android:orientation="horizontal">
 
                 <com.google.android.material.card.MaterialCardView
@@ -328,8 +422,8 @@
                         android:padding="8dp">
 
                         <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
                             android:src="@drawable/ic_habits"
                             app:tint="?attr/epAccent"
                             android:layout_marginBottom="8dp"
@@ -367,8 +461,8 @@
                         android:padding="8dp">
 
                         <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
                             android:src="@drawable/shape_dot"
                             app:tint="?attr/epAccentSecondary"
                             android:layout_marginBottom="8dp"
@@ -406,8 +500,8 @@
                         android:padding="8dp">
 
                         <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
                             android:src="@drawable/ic_pomodoro"
                             app:tint="?attr/epAccent"
                             android:layout_marginBottom="8dp"

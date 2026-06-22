@@ -251,6 +251,11 @@
     <string name="notif_pomodoro_escritorio">Notificaciones de escritorio</string>
     <string name="preferencias_guardadas">Preferencias guardadas</string>
 
+    <!-- Dashboard gamer -->
+    <string name="misiones_pendientes_label">Misiones</string>
+    <string name="siguiente_nivel_xp">A %d XP del siguiente nivel</string>
+    <string name="menu_habilidades">Tus habilidades</string>
+
     <!-- Inicio placeholders -->
     <string name="nivel_1">Nivel 1</string>
     <string name="nv_1">Nv.1</string>

@@ -1,16 +1,26 @@
 package es.epycus.app.ui.home;
 
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.graphics.drawable.ClipDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
@@ -39,6 +49,8 @@ public class InicioFragment extends Fragment {
     private CacheManager cacheManager;
     private boolean dashboardDataLoaded = false;
     private boolean progresoDataLoaded = false;
+    private boolean animationsStarted = false;
+    private int xpTargetProgress = 0;
     private final List<Call<?>> activeCalls = new ArrayList<>();
 
     @Nullable
@@ -55,16 +67,52 @@ public class InicioFragment extends Fragment {
         binding.tvBienvenida.setText(getString(R.string.hola_formato, nombre != null ? nombre : "Epycus"));
 
         binding.swipeRefresh.setOnRefreshListener(() -> {
+            animationsStarted = false;
+            binding.pbXp.setProgress(0);
             cargarDashboard();
             cargarProgreso();
         });
         binding.swipeRefresh.setColorSchemeResources(R.color.light_accent, R.color.light_accent_secondary);
 
+        setupXpGradient();
         cargarDashboard();
         cargarProgreso();
         setupClickListeners();
 
         return view;
+    }
+
+    private void setupXpGradient() {
+        TypedValue tvAccent = new TypedValue();
+        TypedValue tvAccentSecondary = new TypedValue();
+        TypedValue tvBorder = new TypedValue();
+        requireContext().getTheme().resolveAttribute(R.attr.epAccent, tvAccent, true);
+        requireContext().getTheme().resolveAttribute(R.attr.epAccentSecondary, tvAccentSecondary, true);
+        requireContext().getTheme().resolveAttribute(R.attr.epSurfaceBorder, tvBorder, true);
+
+        int accentColor = tvAccent.resourceId != 0
+                ? ContextCompat.getColor(requireContext(), tvAccent.resourceId) : tvAccent.data;
+        int accentSecondaryColor = tvAccentSecondary.resourceId != 0
+                ? ContextCompat.getColor(requireContext(), tvAccentSecondary.resourceId) : tvAccentSecondary.data;
+        int borderColor = tvBorder.resourceId != 0
+                ? ContextCompat.getColor(requireContext(), tvBorder.resourceId) : tvBorder.data;
+
+        GradientDrawable trackBg = new GradientDrawable();
+        trackBg.setShape(GradientDrawable.RECTANGLE);
+        trackBg.setCornerRadius(7);
+        trackBg.setColor(borderColor);
+
+        GradientDrawable progressFg = new GradientDrawable(
+                GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[]{accentColor, accentSecondaryColor}
+        );
+        progressFg.setCornerRadius(7);
+
+        ClipDrawable progressClip = new ClipDrawable(progressFg, Gravity.START, ClipDrawable.HORIZONTAL);
+        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{trackBg, progressClip});
+
+        binding.pbXp.setProgressDrawable(layerDrawable);
+        binding.pbXp.setProgress(0);
     }
 
     private void setupClickListeners() {
@@ -119,6 +167,8 @@ public class InicioFragment extends Fragment {
 
                         binding.tvHabitosPendientes.setText(
                                 String.valueOf(data.getHabitosPendientes()));
+                        binding.tvMisionesPendientes.setText(
+                                String.valueOf(data.getMisionesPendientes()));
 
                         if (data.getFrase() != null) {
                             binding.tvFrase.setText(data.getFrase().getFrase());
@@ -127,6 +177,7 @@ public class InicioFragment extends Fragment {
                     } catch (Exception e) {
                         Log.e(TAG, "Error parsing dashboard", e);
                         binding.tvHabitosPendientes.setText(String.valueOf(0));
+                        binding.tvMisionesPendientes.setText(String.valueOf(0));
                     }
                 }
                 verificarCargaCompleta();
@@ -154,6 +205,8 @@ public class InicioFragment extends Fragment {
                 DashboardResponse data = gson.fromJson(json, DashboardResponse.class);
                 binding.tvHabitosPendientes.setText(
                         String.valueOf(data.getHabitosPendientes()));
+                binding.tvMisionesPendientes.setText(
+                        String.valueOf(data.getMisionesPendientes()));
                 if (data.getFrase() != null) {
                     binding.tvFrase.setText(data.getFrase().getFrase());
                     binding.tvFraseAutor.setText(getString(R.string.autor_formato, data.getFrase().getAutor()));
@@ -184,18 +237,27 @@ public class InicioFragment extends Fragment {
                         String json = gson.toJson(data);
                         cacheManager.put("progreso", json, CacheManager.TTL_PROGRESO);
                         progresoDataLoaded = true;
+                        xpTargetProgress = (int) data.getPorcentajeProgreso();
 
                         binding.tvRacha.setText(String.valueOf(data.getRachaActual()));
                         binding.tvNivel.setText(getString(R.string.nv_formato, data.getNivel()));
                         binding.tvNivelTitulo.setText(getString(R.string.nivel_formato, data.getNivel())
                                 + (data.getTitulo() != null ? " - " + data.getTitulo() : ""));
-                        binding.pbXp.setProgress((int) data.getPorcentajeProgreso());
                         binding.tvXpText.setText(getString(R.string.xp_formato, data.getXpTotal()));
                         binding.tvXpPorcentaje.setText(getString(R.string.porcentaje_nivel, (int) data.getPorcentajeProgreso()));
+
+                        int xpRestante = data.getXpParaSiguienteNivel();
+                        if (xpRestante > 0) {
+                            binding.tvSiguienteHito.setText(getString(R.string.siguiente_nivel_xp, xpRestante));
+                            binding.tvSiguienteHito.setVisibility(View.VISIBLE);
+                        } else {
+                            binding.tvSiguienteHito.setVisibility(View.GONE);
+                        }
 
                         if (data.getImagenPersonaje() != null && !data.getImagenPersonaje().isEmpty()) {
                             Glide.with(InicioFragment.this)
                                     .load(data.getImagenPersonaje())
+                                    .transition(DrawableTransitionOptions.withCrossFade())
                                     .error(R.drawable.ic_profile)
                                     .into(binding.ivPersonaje);
                         } else {
@@ -227,17 +289,65 @@ public class InicioFragment extends Fragment {
             try {
                 Gson gson = new Gson();
                 GamificacionResponse data = gson.fromJson(json, GamificacionResponse.class);
+                progresoDataLoaded = true;
+                xpTargetProgress = (int) data.getPorcentajeProgreso();
+
                 binding.tvRacha.setText(String.valueOf(data.getRachaActual()));
                 binding.tvNivel.setText(getString(R.string.nv_formato, data.getNivel()));
-                binding.pbXp.setProgress((int) data.getPorcentajeProgreso());
+                binding.tvNivelTitulo.setText(getString(R.string.nivel_formato, data.getNivel())
+                        + (data.getTitulo() != null ? " - " + data.getTitulo() : ""));
                 binding.tvXpText.setText(getString(R.string.xp_formato, data.getXpTotal()));
                 binding.tvXpPorcentaje.setText(getString(R.string.porcentaje_nivel, (int) data.getPorcentajeProgreso()));
+
+                int xpRestante = data.getXpParaSiguienteNivel();
+                if (xpRestante > 0) {
+                    binding.tvSiguienteHito.setText(getString(R.string.siguiente_nivel_xp, xpRestante));
+                    binding.tvSiguienteHito.setVisibility(View.VISIBLE);
+                } else {
+                    binding.tvSiguienteHito.setVisibility(View.GONE);
+                }
                 return true;
             } catch (Exception e) {
                 Log.e(TAG, "Error loading cached progreso", e);
             }
         }
         return false;
+    }
+
+    private void animarEntrada() {
+        if (!isAdded() || animationsStarted) return;
+        animationsStarted = true;
+
+        binding.pbXp.animate().cancel();
+        ObjectAnimator xpAnimator = ObjectAnimator.ofInt(binding.pbXp, "progress", 0, xpTargetProgress);
+        xpAnimator.setDuration(500);
+        xpAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        xpAnimator.start();
+
+        View[] cards = {
+                binding.cardHabitosPendientes,
+                binding.cardRacha,
+                binding.cardNivel,
+                binding.cardMisionesPendientes,
+                (View) binding.pbXp.getParent(),
+                (View) binding.tvFrase.getParent(),
+                binding.tvHabilidadesLabel,
+                binding.cardAddHabit,
+                binding.cardMision,
+                binding.cardFocus,
+        };
+
+        for (int i = 0; i < cards.length; i++) {
+            View card = cards[i];
+            card.setAlpha(0f);
+            card.setTranslationY(30f);
+            card.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setDuration(300)
+                    .setStartDelay(i * 80)
+                    .start();
+        }
     }
 
     private void verificarCargaCompleta() {
@@ -249,6 +359,7 @@ public class InicioFragment extends Fragment {
             }
         } else {
             binding.emptyView.setVisibility(View.GONE);
+            animarEntrada();
         }
     }
 
