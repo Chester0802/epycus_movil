@@ -1,15 +1,14 @@
 package es.epycus.app.ui.misiones;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +19,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import es.epycus.app.R;
@@ -44,6 +44,7 @@ public class MisionesFragment extends Fragment {
     private MisionesRepository repository;
     private MisionAdapter adapter;
     private final List<Call<?>> activeCalls = new ArrayList<>();
+    private List<CategoriaDto> categorias = new ArrayList<>();
     private int defaultCategoriaId = -1;
 
     @Nullable
@@ -55,7 +56,17 @@ public class MisionesFragment extends Fragment {
 
         repository = new MisionesRepository(requireContext());
 
-        adapter = new MisionAdapter(id -> completarMision(id));
+        adapter = new MisionAdapter(new MisionAdapter.OnMisionListener() {
+            @Override
+            public void onCompletar(int id) {
+                completarMision(id);
+            }
+
+            @Override
+            public void onEditar(MisionDto mision) {
+                mostrarDialogoEditarMision(mision);
+            }
+        });
         binding.rvMisiones.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvMisiones.setAdapter(adapter);
 
@@ -80,9 +91,9 @@ public class MisionesFragment extends Fragment {
                 activeCalls.remove(call);
                 if (response.isSuccessful() && response.body() != null
                         && response.body().isExito() && response.body().getDatos() != null) {
-                    List<CategoriaDto> cats = response.body().getDatos();
-                    if (!cats.isEmpty()) {
-                        defaultCategoriaId = cats.get(0).getId();
+                    categorias = response.body().getDatos();
+                    if (!categorias.isEmpty()) {
+                        defaultCategoriaId = categorias.get(0).getId();
                     }
                 }
             }
@@ -187,51 +198,119 @@ public class MisionesFragment extends Fragment {
     }
 
     private void mostrarDialogoNuevaMision() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle(getString(R.string.nueva_mision));
-
-        LinearLayout layout = new LinearLayout(requireContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(48, 16, 48, 16);
-
-        EditText etNombre = new EditText(requireContext());
-        etNombre.setHint(getString(R.string.mision_nombre_hint));
-        layout.addView(etNombre);
-
-        EditText etDescripcion = new EditText(requireContext());
-        etDescripcion.setHint(getString(R.string.mision_descripcion_hint));
-        layout.addView(etDescripcion);
-
-        Spinner spPrioridad = new Spinner(requireContext());
-        ArrayAdapter<String> prioridadAdapter = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_spinner_item,
-                new String[]{getString(R.string.prioridad_alta), getString(R.string.prioridad_media), getString(R.string.prioridad_baja)});
-        prioridadAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spPrioridad.setAdapter(prioridadAdapter);
-        layout.addView(spPrioridad);
-
-        builder.setView(layout);
-        builder.setPositiveButton(getString(R.string.crear), (dialog, which) -> {
-            String nombre = etNombre.getText().toString().trim();
-            if (nombre.isEmpty()) {
-                Snackbar.make(requireView(), getString(R.string.completa_campos), Snackbar.LENGTH_SHORT).show();
-                return;
-            }
-            crearMision(nombre, etDescripcion.getText().toString().trim(), spPrioridad.getSelectedItem().toString());
-        });
-        builder.setNegativeButton(getString(R.string.cancelar), null);
-        builder.show();
+        mostrarDialogoMision(null);
     }
 
-    private void crearMision(String nombre, String descripcion, String prioridad) {
-        JsonObject body = new JsonObject();
-        body.addProperty("nombre", nombre);
-        if (!descripcion.isEmpty()) body.addProperty("descripcion", descripcion);
-        body.addProperty("prioridad", prioridad);
-        if (defaultCategoriaId > 0) {
-            body.addProperty("categoriaId", defaultCategoriaId);
+    private void mostrarDialogoEditarMision(MisionDto mision) {
+        mostrarDialogoMision(mision);
+    }
+
+    private void mostrarDialogoMision(MisionDto existing) {
+        View view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_nueva_mision, null);
+        com.google.android.material.textfield.TextInputEditText etNombre = view.findViewById(R.id.etMisionNombre);
+        com.google.android.material.textfield.TextInputEditText etDescripcion = view.findViewById(R.id.etMisionDescripcion);
+        Spinner spPrioridad = view.findViewById(R.id.spMisionPrioridad);
+        Spinner spCategoria = view.findViewById(R.id.spMisionCategoria);
+        View layoutFecha = view.findViewById(R.id.layoutFecha);
+        TextView tvFecha = view.findViewById(R.id.tvFechaSeleccionada);
+
+        String[] prioridades = {
+                getString(R.string.prioridad_alta),
+                getString(R.string.prioridad_media),
+                getString(R.string.prioridad_baja)
+        };
+        ArrayAdapter<String> prioridadAdapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item, prioridades);
+        prioridadAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spPrioridad.setAdapter(prioridadAdapter);
+
+        List<String> nombresCategoria = new ArrayList<>();
+        for (CategoriaDto c : categorias) {
+            nombresCategoria.add(c.getNombre());
+        }
+        ArrayAdapter<String> catAdapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item, nombresCategoria);
+        catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spCategoria.setAdapter(catAdapter);
+
+        final String[] selectedDate = {""};
+
+        if (existing != null) {
+            etNombre.setText(existing.getNombre());
+            if (existing.getDescripcion() != null) etDescripcion.setText(existing.getDescripcion());
+            for (int i = 0; i < prioridades.length; i++) {
+                if (prioridades[i].equals(existing.getPrioridad())) {
+                    spPrioridad.setSelection(i);
+                    break;
+                }
+            }
+            for (int i = 0; i < categorias.size(); i++) {
+                if (categorias.get(i).getId() == existing.getCategoriaId()) {
+                    spCategoria.setSelection(i);
+                    break;
+                }
+            }
+            if (existing.getFechaLimite() != null && !existing.getFechaLimite().isEmpty()) {
+                selectedDate[0] = existing.getFechaLimite();
+                tvFecha.setText(existing.getFechaLimite());
+            }
         }
 
+        layoutFecha.setOnClickListener(v -> {
+            Calendar cal = Calendar.getInstance();
+            if (!selectedDate[0].isEmpty()) {
+                try {
+                    String[] parts = selectedDate[0].split("-");
+                    cal.set(Calendar.YEAR, Integer.parseInt(parts[0]));
+                    cal.set(Calendar.MONTH, Integer.parseInt(parts[1]) - 1);
+                    cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(parts[2]));
+                } catch (Exception ignored) {}
+            }
+            DatePickerDialog dpd = new DatePickerDialog(requireContext(), (view1, year, month, dayOfMonth) -> {
+                selectedDate[0] = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth);
+                tvFecha.setText(selectedDate[0]);
+            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+            dpd.show();
+        });
+
+        boolean isEditing = existing != null;
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle(isEditing ? getString(R.string.editar_mision) : getString(R.string.nueva_mision));
+        builder.setView(view);
+        builder.setPositiveButton(isEditing ? getString(R.string.guardar) : getString(R.string.crear), null);
+        builder.setNegativeButton(getString(R.string.cancelar), null);
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(d -> {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                String nombre = etNombre.getText().toString().trim();
+                if (nombre.isEmpty()) {
+                    Snackbar.make(requireView(), getString(R.string.completa_campos), Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+                String desc = etDescripcion.getText().toString().trim();
+                String prioridad = spPrioridad.getSelectedItem().toString();
+                int catId = spCategoria.getSelectedItemPosition() >= 0 && spCategoria.getSelectedItemPosition() < categorias.size()
+                        ? categorias.get(spCategoria.getSelectedItemPosition()).getId() : defaultCategoriaId;
+                String fecha = selectedDate[0];
+
+                JsonObject body = new JsonObject();
+                body.addProperty("nombre", nombre);
+                if (!desc.isEmpty()) body.addProperty("descripcion", desc);
+                body.addProperty("prioridad", prioridad);
+                if (catId > 0) body.addProperty("categoriaId", catId);
+                if (!fecha.isEmpty()) body.addProperty("fechaLimite", fecha);
+
+                if (isEditing) {
+                    actualizarMision(existing.getId(), body, dialog);
+                } else {
+                    crearMision(body, dialog);
+                }
+            });
+        });
+        dialog.show();
+    }
+
+    private void crearMision(JsonObject body, AlertDialog dialog) {
         Call<RespuestaApi<SuccessResponseDto>> call = repository.crear(body);
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
@@ -240,7 +319,35 @@ public class MisionesFragment extends Fragment {
                                    @NonNull Response<RespuestaApi<SuccessResponseDto>> response) {
                 activeCalls.remove(call);
                 if (response.isSuccessful()) {
+                    dialog.dismiss();
                     Snackbar.make(requireView(), getString(R.string.mision_creada),
+                            Snackbar.LENGTH_SHORT).show();
+                    cargarMisiones();
+                } else {
+                    String msg = NetworkUtils.getErrorMessage(requireContext(), response);
+                    Snackbar.make(requireView(), msg, Snackbar.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<RespuestaApi<SuccessResponseDto>> call, @NonNull Throwable t) {
+                activeCalls.remove(call);
+                mostrarErrorRed(t);
+            }
+        });
+    }
+
+    private void actualizarMision(int id, JsonObject body, AlertDialog dialog) {
+        Call<RespuestaApi<SuccessResponseDto>> call = repository.actualizar(id, body);
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<RespuestaApi<SuccessResponseDto>> call,
+                                   @NonNull Response<RespuestaApi<SuccessResponseDto>> response) {
+                activeCalls.remove(call);
+                if (response.isSuccessful()) {
+                    dialog.dismiss();
+                    Snackbar.make(requireView(), getString(R.string.mision_actualizada),
                             Snackbar.LENGTH_SHORT).show();
                     cargarMisiones();
                 } else {

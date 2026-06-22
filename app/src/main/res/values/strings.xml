@@ -176,6 +176,10 @@
     <string name="mision_prioridad_hint">Prioridad</string>
     <string name="mision_creada">Misión creada</string>
     <string name="mision_completada">¡Misión completada!</string>
+    <string name="mision_sin_fecha">Sin fecha</string>
+    <string name="mision_fecha_hint">Fecha límite</string>
+    <string name="mision_actualizada">Misión actualizada</string>
+    <string name="editar_mision">Editar misión</string>
     <string name="sin_misiones">No tienes misiones pendientes.</string>
 
     <!-- Theme -->

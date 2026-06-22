@@ -38,6 +38,10 @@ public class MisionesRepository {
         return api.getApiMisionesService().crear(body);
     }
 
+    public Call<RespuestaApi<SuccessResponseDto>> actualizar(int id, Object body) {
+        return api.getApiMisionesService().actualizar(id, body);
+    }
+
     public Call<RespuestaApi<SuccessResponseDto>> eliminar(int id) {
         return api.getApiMisionesService().eliminar(id);
     }
