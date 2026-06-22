@@ -8,7 +8,10 @@ import es.epycus.app.api.RetrofitClient;
 import es.epycus.app.data.local.AppDatabase;
 import es.epycus.app.data.local.entity.HabitoEntity;
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.CompletarHabitoResponse;
+import es.epycus.app.model.dto.FallarHabitoResponse;
 import es.epycus.app.model.dto.HabitoHoyDto;
+import es.epycus.app.model.dto.RegistroSemanaDto;
 import es.epycus.app.model.dto.SuccessResponseDto;
 import es.epycus.app.util.CacheManager;
 import retrofit2.Call;
@@ -28,12 +31,16 @@ public class HabitosRepository {
         return api.getApiHabitosService().hoy();
     }
 
-    public Call<RespuestaApi<Object>> completar(int id) {
+    public Call<RespuestaApi<CompletarHabitoResponse>> completar(int id) {
         return api.getApiHabitosService().completar(id);
     }
 
-    public Call<RespuestaApi<Object>> fallar(int id) {
+    public Call<RespuestaApi<FallarHabitoResponse>> fallar(int id) {
         return api.getApiHabitosService().fallar(id);
+    }
+
+    public Call<RespuestaApi<List<RegistroSemanaDto>>> semana(int id) {
+        return api.getApiHabitosService().semana(id);
     }
 
     public Call<RespuestaApi<Object>> listar() {

@@ -3,8 +3,11 @@ package es.epycus.app.api;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.ChatRequest;
 import es.epycus.app.model.dto.ChatResponse;
-import es.epycus.app.model.dto.SuccessResponseDto;
+import es.epycus.app.model.dto.IaConversacionesResponse;
+import es.epycus.app.model.dto.IaHistorialResponse;
 import es.epycus.app.model.dto.IaMensajesHoyResponse;
+import es.epycus.app.model.dto.IaSugerenciasResponse;
+import es.epycus.app.model.dto.SuccessResponseDto;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -17,13 +20,13 @@ public interface ApiIaService {
     Call<RespuestaApi<ChatResponse>> chat(@Body ChatRequest body);
 
     @GET("api/ia/historial")
-    Call<RespuestaApi<Object>> historial(@Query("conversacionId") String conversacionId);
+    Call<RespuestaApi<IaHistorialResponse>> historial(@Query("conversacionId") String conversacionId);
 
     @GET("api/ia/conversaciones")
-    Call<RespuestaApi<Object>> conversaciones();
+    Call<RespuestaApi<IaConversacionesResponse>> conversaciones();
 
     @GET("api/ia/sugerencias")
-    Call<RespuestaApi<Object>> sugerencias();
+    Call<RespuestaApi<IaSugerenciasResponse>> sugerencias();
 
     @GET("api/ia/contexto-bienestar")
     Call<RespuestaApi<Object>> contextoBienestar();

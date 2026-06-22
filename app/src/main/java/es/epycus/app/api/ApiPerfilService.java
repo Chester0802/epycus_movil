@@ -1,8 +1,10 @@
 package es.epycus.app.api;
 
 import es.epycus.app.model.RespuestaApi;
-import es.epycus.app.model.dto.PerfilResponse;
+import es.epycus.app.model.dto.LogroUsuarioItem;
 import es.epycus.app.model.dto.MensajeResponseDto;
+import es.epycus.app.model.dto.PerfilResponse;
+import es.epycus.app.model.dto.PersonajeItem;
 
 import java.util.List;
 
@@ -22,14 +24,14 @@ public interface ApiPerfilService {
     Call<RespuestaApi<MensajeResponseDto>> cambiarContrasena(@Body Object body);
 
     @PUT("api/perfil/personaje")
-    Call<RespuestaApi<Object>> cambiarPersonaje(@Body Object body);
+    Call<RespuestaApi<MensajeResponseDto>> cambiarPersonaje(@Body Object body);
 
     @PUT("api/perfil/tema")
     Call<RespuestaApi<MensajeResponseDto>> cambiarTema(@Body Object body);
 
     @GET("api/perfil/personajes")
-    Call<RespuestaApi<Object>> personajes();
+    Call<RespuestaApi<List<PersonajeItem>>> personajes();
 
     @GET("api/perfil/logros")
-    Call<RespuestaApi<Object>> logros();
+    Call<RespuestaApi<List<LogroUsuarioItem>>> logros();
 }

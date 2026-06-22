@@ -29,8 +29,10 @@ import es.epycus.app.data.local.entity.CacheEntity;
 import es.epycus.app.data.local.entity.UsuarioEntity;
 import es.epycus.app.databinding.FragmentPerfilBinding;
 import es.epycus.app.model.RespuestaApi;
-import es.epycus.app.model.dto.PerfilResponse;
+import es.epycus.app.model.dto.LogroUsuarioItem;
 import es.epycus.app.model.dto.MensajeResponseDto;
+import es.epycus.app.model.dto.PerfilResponse;
+import es.epycus.app.model.dto.PersonajeItem;
 import es.epycus.app.model.dto.PomodoroConfiguracionResponse;
 import es.epycus.app.model.dto.SuccessResponseDto;
 import es.epycus.app.repository.AuthRepository;
@@ -213,12 +215,12 @@ public class PerfilFragment extends Fragment {
     }
 
     private void cargarPersonajes() {
-        Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiPerfilService()
+        Call<RespuestaApi<List<PersonajeItem>>> call = RetrofitClient.getInstance(requireContext()).getApiPerfilService()
                 .personajes();
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<RespuestaApi<Object>> call, retrofit2.Response<RespuestaApi<Object>> response) {
+            public void onResponse(Call<RespuestaApi<List<PersonajeItem>>> call, retrofit2.Response<RespuestaApi<List<PersonajeItem>>> response) {
                 activeCalls.remove(call);
                 if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
                     try {
@@ -234,7 +236,7 @@ public class PerfilFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+            public void onFailure(Call<RespuestaApi<List<PersonajeItem>>> call, Throwable t) {
                 activeCalls.remove(call);
                 Toast.makeText(getContext(), R.string.error_conexion, Toast.LENGTH_SHORT).show();
             }
@@ -267,12 +269,12 @@ public class PerfilFragment extends Fragment {
             body.addProperty("personajeId", personaje.get("id").getAsInt());
         }
 
-        Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiPerfilService()
+        Call<RespuestaApi<MensajeResponseDto>> call = RetrofitClient.getInstance(requireContext()).getApiPerfilService()
                 .cambiarPersonaje(body);
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<RespuestaApi<Object>> call, retrofit2.Response<RespuestaApi<Object>> response) {
+            public void onResponse(Call<RespuestaApi<MensajeResponseDto>> call, retrofit2.Response<RespuestaApi<MensajeResponseDto>> response) {
                 activeCalls.remove(call);
                 if (response.isSuccessful()) {
                     Snackbar.make(binding.getRoot(), getString(R.string.personaje_actualizado), Snackbar.LENGTH_SHORT).show();
@@ -281,7 +283,7 @@ public class PerfilFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+            public void onFailure(Call<RespuestaApi<MensajeResponseDto>> call, Throwable t) {
                 activeCalls.remove(call);
                 mostrarErrorRed(t);
             }
@@ -289,12 +291,12 @@ public class PerfilFragment extends Fragment {
     }
 
     private void cargarLogros() {
-        Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiPerfilService()
+        Call<RespuestaApi<List<LogroUsuarioItem>>> call = RetrofitClient.getInstance(requireContext()).getApiPerfilService()
                 .logros();
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<RespuestaApi<Object>> call, retrofit2.Response<RespuestaApi<Object>> response) {
+            public void onResponse(Call<RespuestaApi<List<LogroUsuarioItem>>> call, retrofit2.Response<RespuestaApi<List<LogroUsuarioItem>>> response) {
                 activeCalls.remove(call);
                 if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
                     try {
@@ -310,7 +312,7 @@ public class PerfilFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+            public void onFailure(Call<RespuestaApi<List<LogroUsuarioItem>>> call, Throwable t) {
                 activeCalls.remove(call);
                 Toast.makeText(getContext(), R.string.error_conexion, Toast.LENGTH_SHORT).show();
             }

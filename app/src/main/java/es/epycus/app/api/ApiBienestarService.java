@@ -1,6 +1,7 @@
 package es.epycus.app.api;
 
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.HistorialAnimoResponse;
 import es.epycus.app.model.dto.PausaActivaDto;
 import es.epycus.app.model.dto.RecomendacionPausaDto;
 import es.epycus.app.model.dto.BienestarResumenResponse;
@@ -28,7 +29,7 @@ public interface ApiBienestarService {
     Call<RespuestaApi<EstadoHoyResponse>> estadoHoy();
 
     @GET("api/bienestar/historial-animo")
-    Call<RespuestaApi<Object>> historialAnimo(@Query("dias") int dias);
+    Call<RespuestaApi<HistorialAnimoResponse>> historialAnimo(@Query("dias") int dias);
 
     @GET("api/bienestar/habitos-pendientes")
     Call<RespuestaApi<CantidadResponse>> habitosPendientes();

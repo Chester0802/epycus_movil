@@ -28,6 +28,8 @@ import java.util.List;
 import es.epycus.app.R;
 import es.epycus.app.databinding.FragmentHabitosBinding;
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.CompletarHabitoResponse;
+import es.epycus.app.model.dto.FallarHabitoResponse;
 import es.epycus.app.model.dto.HabitoHoyDto;
 import es.epycus.app.model.dto.SuccessResponseDto;
 import es.epycus.app.repository.HabitosRepository;
@@ -347,12 +349,12 @@ public class HabitosFragment extends Fragment {
 
 
     private void completarHabito(int id) {
-        Call<RespuestaApi<Object>> call = repository.completar(id);
+        Call<RespuestaApi<CompletarHabitoResponse>> call = repository.completar(id);
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                   @NonNull Response<RespuestaApi<Object>> response) {
+            public void onResponse(@NonNull Call<RespuestaApi<CompletarHabitoResponse>> call,
+                                   @NonNull Response<RespuestaApi<CompletarHabitoResponse>> response) {
                 activeCalls.remove(call);
                 if (response.isSuccessful()) {
                     Snackbar.make(binding.rvHabitos, getString(R.string.habito_completado_xp),
@@ -362,7 +364,7 @@ public class HabitosFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<RespuestaApi<CompletarHabitoResponse>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
                 mostrarErrorRed(t);
             }
@@ -370,18 +372,18 @@ public class HabitosFragment extends Fragment {
     }
 
     private void fallarHabito(int id) {
-        Call<RespuestaApi<Object>> call = repository.fallar(id);
+        Call<RespuestaApi<FallarHabitoResponse>> call = repository.fallar(id);
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                   @NonNull Response<RespuestaApi<Object>> response) {
+            public void onResponse(@NonNull Call<RespuestaApi<FallarHabitoResponse>> call,
+                                   @NonNull Response<RespuestaApi<FallarHabitoResponse>> response) {
                 activeCalls.remove(call);
                 cargarHabitos();
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+            public void onFailure(Call<RespuestaApi<FallarHabitoResponse>> call, Throwable t) {
                 activeCalls.remove(call);
                 cargarHabitos();
             }

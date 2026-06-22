@@ -1,7 +1,10 @@
 package es.epycus.app.api;
 
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.CompletarHabitoResponse;
+import es.epycus.app.model.dto.FallarHabitoResponse;
 import es.epycus.app.model.dto.HabitoHoyDto;
+import es.epycus.app.model.dto.RegistroSemanaDto;
 import es.epycus.app.model.dto.SuccessResponseDto;
 
 import java.util.List;
@@ -22,13 +25,13 @@ public interface ApiHabitosService {
     Call<RespuestaApi<List<HabitoHoyDto>>> hoy();
 
     @POST("api/habitos/{id}/completar")
-    Call<RespuestaApi<Object>> completar(@Path("id") int id);
+    Call<RespuestaApi<CompletarHabitoResponse>> completar(@Path("id") int id);
 
     @POST("api/habitos/{id}/fallar")
-    Call<RespuestaApi<Object>> fallar(@Path("id") int id);
+    Call<RespuestaApi<FallarHabitoResponse>> fallar(@Path("id") int id);
 
     @GET("api/habitos/{id}/semana")
-    Call<RespuestaApi<Object>> semana(@Path("id") int id);
+    Call<RespuestaApi<List<RegistroSemanaDto>>> semana(@Path("id") int id);
 
     @GET("api/habitos/{id}")
     Call<RespuestaApi<Object>> obtener(@Path("id") int id);

@@ -28,6 +28,7 @@ import es.epycus.app.api.RetrofitClient;
 import es.epycus.app.databinding.FragmentDiarioBinding;
 import es.epycus.app.util.CacheManager;
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.DiarioEntradaResponse;
 import es.epycus.app.model.dto.PreguntaGuiaResponse;
 import es.epycus.app.repository.DiarioRepository;
 import es.epycus.app.ui.ia.IaChatActivity;
@@ -160,12 +161,12 @@ public class DiarioFragment extends Fragment {
     }
 
     private void cargarEntradaHoy() {
-        Call<RespuestaApi<Object>> call = diarioRepository.hoy();
+        Call<RespuestaApi<DiarioEntradaResponse>> call = diarioRepository.hoy();
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                   @NonNull Response<RespuestaApi<Object>> response) {
+            public void onResponse(@NonNull Call<RespuestaApi<DiarioEntradaResponse>> call,
+                                   @NonNull Response<RespuestaApi<DiarioEntradaResponse>> response) {
                 activeCalls.remove(call);
                 if (!isAlive()) return;
                 try {
@@ -208,7 +209,7 @@ public class DiarioFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<RespuestaApi<DiarioEntradaResponse>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
                 if (isAlive()) binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
             }

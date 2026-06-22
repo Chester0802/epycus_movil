@@ -1,6 +1,8 @@
 package es.epycus.app.api;
 
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.AdminLoginResponseDto;
+import es.epycus.app.model.dto.SuccessResponseDto;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -11,7 +13,7 @@ import retrofit2.http.Path;
 
 public interface ApiAdminService {
     @POST("api/admin/login")
-    Call<RespuestaApi<Object>> login(@Body Object body);
+    Call<RespuestaApi<AdminLoginResponseDto>> login(@Body Object body);
 
     @GET("api/admin/usuarios")
     Call<RespuestaApi<Object>> usuarios();
@@ -20,17 +22,17 @@ public interface ApiAdminService {
     Call<RespuestaApi<Object>> usuario(@Path("id") int id);
 
     @POST("api/admin/usuarios/{usuarioId}/suscripcion/activar")
-    Call<RespuestaApi<Object>> activarSuscripcion(@Path("usuarioId") int usuarioId);
+    Call<RespuestaApi<SuccessResponseDto>> activarSuscripcion(@Path("usuarioId") int usuarioId);
 
     @POST("api/admin/usuarios/{usuarioId}/suscripcion/desactivar")
-    Call<RespuestaApi<Object>> desactivarSuscripcion(@Path("usuarioId") int usuarioId);
+    Call<RespuestaApi<SuccessResponseDto>> desactivarSuscripcion(@Path("usuarioId") int usuarioId);
 
     @GET("api/admin/frases")
     Call<RespuestaApi<Object>> frases();
 
     @POST("api/admin/frases")
-    Call<RespuestaApi<Object>> crearFrase(@Body Object body);
+    Call<RespuestaApi<SuccessResponseDto>> crearFrase(@Body Object body);
 
     @DELETE("api/admin/frases/{id}")
-    Call<RespuestaApi<Object>> eliminarFrase(@Path("id") int id);
+    Call<RespuestaApi<SuccessResponseDto>> eliminarFrase(@Path("id") int id);
 }

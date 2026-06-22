@@ -4,6 +4,8 @@ import android.content.Context;
 
 import es.epycus.app.api.RetrofitClient;
 import es.epycus.app.model.RespuestaApi;
+import es.epycus.app.model.dto.DiarioEntradaResponse;
+import es.epycus.app.model.dto.DiarioEntradasResponse;
 import es.epycus.app.model.dto.PreguntaGuiaResponse;
 import es.epycus.app.model.dto.DiarioRachaResponse;
 import es.epycus.app.util.CacheManager;
@@ -18,16 +20,24 @@ public class DiarioRepository {
         this.cacheManager = CacheManager.getInstance(context);
     }
 
-    public Call<RespuestaApi<Object>> hoy() {
+    public Call<RespuestaApi<DiarioEntradaResponse>> hoy() {
         return api.getApiDiarioService().hoy();
     }
 
-    public Call<RespuestaApi<Object>> porFecha(String fecha) {
+    public Call<RespuestaApi<DiarioEntradaResponse>> porFecha(String fecha) {
         return api.getApiDiarioService().porFecha(fecha);
     }
 
-    public Call<RespuestaApi<Object>> crear(Object body) {
+    public Call<RespuestaApi<DiarioEntradaResponse>> crear(Object body) {
         return api.getApiDiarioService().crear(body);
+    }
+
+    public Call<RespuestaApi<DiarioEntradasResponse>> porMes(int anio, int mes) {
+        return api.getApiDiarioService().porMes(anio, mes);
+    }
+
+    public Call<RespuestaApi<DiarioEntradaResponse>> actualizar(String fecha, Object body) {
+        return api.getApiDiarioService().actualizar(fecha, body);
     }
 
     public Call<RespuestaApi<DiarioRachaResponse>> racha() {
