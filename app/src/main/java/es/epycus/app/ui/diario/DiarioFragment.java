@@ -18,8 +18,11 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import es.epycus.app.R;
 import es.epycus.app.api.RetrofitClient;
@@ -117,31 +120,42 @@ public class DiarioFragment extends Fragment {
     }
 
     private void guardarAnimo(String estado) {
+        int estadoAnimo = mapMoodToInt(estado);
+        String diarioTexto = binding.etDiarioTexto.getText().toString().trim();
+
         JsonObject body = new JsonObject();
-        body.addProperty("estado", estado);
-        String nota = binding.etNotas.getText().toString().trim();
-        if (!nota.isEmpty()) {
-            body.addProperty("nota", nota);
+        body.addProperty("estadoAnimo", estadoAnimo);
+        body.addProperty("nivelEnergia", 2);
+        if (!diarioTexto.isEmpty()) {
+            body.addProperty("diarioTexto", diarioTexto);
         }
 
-        Call<RespuestaApi<Object>> call = RetrofitClient.getInstance(requireContext()).getApiEstadoAnimoService()
-                .registrar(body);
+        String hoy = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+        Call<RespuestaApi<DiarioEntradaResponse>> call;
+        boolean exists = diarioRepository.getCachedEntrada(hoy) != null;
+        if (exists) {
+            call = diarioRepository.actualizar(hoy, body);
+        } else {
+            call = diarioRepository.crear(body);
+        }
+
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<RespuestaApi<Object>> call,
-                                   @NonNull Response<RespuestaApi<Object>> response) {
+            public void onResponse(@NonNull Call<RespuestaApi<DiarioEntradaResponse>> call,
+                                   @NonNull Response<RespuestaApi<DiarioEntradaResponse>> response) {
                 activeCalls.remove(call);
                 if (!isAlive()) return;
                 if (response.isSuccessful()) {
-                    Snackbar.make(requireView(), getString(R.string.estado_animo_guardado),
+                    Snackbar.make(requireView(), getString(R.string.entrada_diario_guardada),
                             Snackbar.LENGTH_SHORT).show();
                     if (selectedMood != null) {
                         selectedMood.setBackgroundResource(R.drawable.bg_card_rounded);
                         selectedMood = null;
                         selectedMoodText = "";
                     }
-                    binding.etNotas.setText("");
+                    binding.etDiarioTexto.setText("");
                     cargarEntradaHoy();
                     cargarHistorialAnimo();
                 } else {
@@ -151,12 +165,23 @@ public class DiarioFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<RespuestaApi<Object>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<RespuestaApi<DiarioEntradaResponse>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
                 if (!isAlive()) return;
                 mostrarErrorRed(t);
             }
         });
+    }
+
+    private int mapMoodToInt(String mood) {
+        switch (mood) {
+            case "Genial": return 4;
+            case "Bien": return 3;
+            case "Normal": return 2;
+            case "Cansado": return 1;
+            case "Estresado": return 0;
+            default: return 2;
+        }
     }
 
     private void cargarEntradaHoy() {
@@ -210,23 +235,15 @@ public class DiarioFragment extends Fragment {
     }
 
     private void mostrarEntradaHoy(DiarioEntradaEntity entity) {
-        String estado = entity.getEstado() != null ? entity.getEstado() : "";
-        String nota = entity.getNota() != null ? entity.getNota() : "";
+        String diarioTexto = entity.getDiarioTexto() != null ? entity.getDiarioTexto() : "";
 
-        if (!estado.isEmpty() || !nota.isEmpty()) {
+        if (!diarioTexto.isEmpty()) {
             binding.layoutEmptyDiario.setVisibility(View.GONE);
-        }
-
-        String resumen;
-        if (!estado.isEmpty()) {
-            resumen = getString(R.string.entrada_hoy_formato, estado);
-            if (!nota.isEmpty()) {
-                resumen += "\n\"" + nota + "\"";
-            }
+            binding.tvEntradaHoy.setText(diarioTexto);
+            binding.etDiarioTexto.setText(diarioTexto);
         } else {
-            resumen = getString(R.string.sin_entrada_hoy);
+            binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
         }
-        binding.tvEntradaHoy.setText(resumen);
     }
 
     private void cargarPreguntaGuia() {

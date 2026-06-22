@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class DiarioEntradaResponse {
     @SerializedName("entrada")
-    private Object entrada;
+    private EntradaDiarioDto entrada;
 
-    public Object getEntrada() { return entrada; }
+    public EntradaDiarioDto getEntrada() { return entrada; }
 }

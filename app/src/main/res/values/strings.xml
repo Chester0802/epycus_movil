@@ -83,11 +83,14 @@
     <string name="estresado">Estresado</string>
     <string name="notas_hint">¿Qué más quieres compartir? (opcional)</string>
     <string name="guardar_estado_animo">Guardar estado de ánimo</string>
+    <string name="escribe_tu_dia">Escribe algo sobre tu día...</string>
+    <string name="guardar_entrada_diario">Guardar entrada del diario</string>
     <string name="tu_entrada_hoy">Tu entrada de hoy</string>
     <string name="entrada_hoy_formato">Hoy te sientes: %s</string>
     <string name="sin_entrada_hoy">Aún no has registrado tu estado de ánimo hoy.</string>
     <string name="selecciona_como_te_sientes">Selecciona cómo te sientes</string>
     <string name="estado_animo_guardado">Estado de ánimo guardado</string>
+    <string name="entrada_diario_guardada">Entrada del diario guardada</string>
     <string name="habla_con_edy">Habla con Edy IA</string>
     <string name="asistente_bienestar">Tu asistente personal de bienestar</string>
     <string name="edy_letra">E</string>

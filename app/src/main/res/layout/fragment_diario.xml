@@ -221,28 +221,29 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Notes -->
+            <!-- Daily journal entry -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layoutDiarioTexto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
                 style="@style/Widget.Epycus.Input">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etNotas"
+                    android:id="@+id/etDiarioTexto"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/notas_hint"
+                    android:hint="@string/escribe_tu_dia"
                     android:inputType="textMultiLine"
-                    android:maxLines="3"
-                    android:minLines="2" />
+                    android:maxLines="8"
+                    android:minLines="4" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnGuardarAnimo"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:text="@string/guardar_estado_animo"
+                android:text="@string/guardar_entrada_diario"
                 android:textAllCaps="false"
                 android:textSize="16sp"
                 android:backgroundTint="?attr/epAccent"

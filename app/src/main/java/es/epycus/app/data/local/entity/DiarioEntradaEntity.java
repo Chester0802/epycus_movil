@@ -13,19 +13,19 @@ public class DiarioEntradaEntity {
     @ColumnInfo(name = "fecha")
     private String fecha;
 
-    @ColumnInfo(name = "estado")
-    private String estado;
+    @ColumnInfo(name = "estado_animo")
+    private int estadoAnimo;
 
-    @ColumnInfo(name = "nota")
-    private String nota;
+    @ColumnInfo(name = "diario_texto")
+    private String diarioTexto;
 
-    public DiarioEntradaEntity(@NonNull String fecha, String estado, String nota) {
+    public DiarioEntradaEntity(@NonNull String fecha, int estadoAnimo, String diarioTexto) {
         this.fecha = fecha;
-        this.estado = estado;
-        this.nota = nota;
+        this.estadoAnimo = estadoAnimo;
+        this.diarioTexto = diarioTexto;
     }
 
     public String getFecha() { return fecha; }
-    public String getEstado() { return estado; }
-    public String getNota() { return nota; }
+    public int getEstadoAnimo() { return estadoAnimo; }
+    public String getDiarioTexto() { return diarioTexto; }
 }

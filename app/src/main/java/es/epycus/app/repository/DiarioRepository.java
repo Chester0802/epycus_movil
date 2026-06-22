@@ -8,6 +8,7 @@ import es.epycus.app.data.local.entity.DiarioEntradaEntity;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.DiarioEntradaResponse;
 import es.epycus.app.model.dto.DiarioEntradasResponse;
+import es.epycus.app.model.dto.EntradaDiarioDto;
 import es.epycus.app.model.dto.PreguntaGuiaResponse;
 import es.epycus.app.model.dto.DiarioRachaResponse;
 import es.epycus.app.util.CacheManager;
@@ -73,16 +74,11 @@ public class DiarioRepository {
     }
 
     public DiarioEntradaEntity toEntity(DiarioEntradaResponse response) {
-        com.google.gson.Gson gson = new com.google.gson.Gson();
-        String json = gson.toJson(response.getEntrada());
-        com.google.gson.JsonObject obj = com.google.gson.JsonParser.parseString(json).getAsJsonObject();
+        EntradaDiarioDto dto = response.getEntrada();
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
-        String fecha = obj.has("fecha") && !obj.get("fecha").isJsonNull()
-                ? obj.get("fecha").getAsString() : sdf.format(new java.util.Date());
-        String estado = obj.has("estado") && !obj.get("estado").isJsonNull()
-                ? obj.get("estado").getAsString() : "";
-        String nota = obj.has("nota") && !obj.get("nota").isJsonNull()
-                ? obj.get("nota").getAsString() : "";
-        return new DiarioEntradaEntity(fecha, estado, nota);
+        String fecha = dto.getFecha() != null ? dto.getFecha() : sdf.format(new java.util.Date());
+        int estadoAnimo = dto.getEstadoAnimo();
+        String diarioTexto = dto.getDiarioTexto() != null ? dto.getDiarioTexto() : "";
+        return new DiarioEntradaEntity(fecha, estadoAnimo, diarioTexto);
     }
 }

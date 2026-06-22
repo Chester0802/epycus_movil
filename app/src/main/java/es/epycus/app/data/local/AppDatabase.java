@@ -24,7 +24,7 @@ import es.epycus.app.data.local.entity.UsuarioEntity;
 
 @Database(entities = {UsuarioEntity.class, HabitoEntity.class, ProgresoEntity.class,
         CacheEntity.class, MisionEntity.class, DiarioEntradaEntity.class},
-        version = 2, exportSchema = false)
+        version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase instance;
