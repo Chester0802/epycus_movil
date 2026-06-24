@@ -34,6 +34,7 @@
   - `HabitosFragment.java`: `R.style.Widget.Epycus.Chip.Filter` → `R.style.Widget_Epycus_Chip_Filter` (dots → underscores)
   - `styles_epycus.xml`: `checkedChipBackgroundColor` no encontrado → atributo eliminado
   - `scale_in.xml`: `@android:anim/fast_out_slow_in_interpolator` no encontrado → reemplazado por `accelerate_decelerate_interpolator`
+- **Sistema de color M3 completo**: 12 nuevos colores (containers, surface/outline variants), 18 nuevos attrs ep*, 23 M3 roles mapeados en ambos temas (light Kawaii + dark Solo Leveling)
 
 ### In Progress
 - (ninguno)
@@ -57,4 +58,7 @@
 - app/src/main/res/anim/: 5 animaciones como recursos
 - app/src/main/res/drawable/: 7 nuevos drawables vector
 - app/src/main/res/layout/item_historial_animo.xml: layout inflado por MoodHistoryAdapter
+- app/src/main/res/values/themes.xml + values-night/themes.xml: mapa M3 completo (23 roles)
+- app/src/main/res/values/colors.xml: 12 nuevos colores M3 (containers, surface/outline variants)
+- app/src/main/res/values/attrs.xml: 18 nuevos attrs ep* (onPrimaryContainer, secondaryContainer, tertiary, etc.)
 - AuditoriaUX.md: documento de auditoría actualizado con todos los cambios

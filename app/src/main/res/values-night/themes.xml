@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.Epycus" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- M3 Primary -->
         <item name="colorPrimary">@color/dark_accent</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorPrimaryContainer">@color/dark_accent_light</item>
+        <item name="colorOnPrimaryContainer">@color/dark_text_primary</item>
+
+        <!-- M3 Secondary -->
         <item name="colorSecondary">@color/dark_accent_secondary</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/dark_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/dark_on_secondary_container</item>
+
+        <!-- M3 Tertiary -->
+        <item name="colorTertiary">@color/dark_info</item>
+        <item name="colorOnTertiary">@color/white</item>
+        <item name="colorTertiaryContainer">@color/dark_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/dark_on_tertiary_container</item>
+
+        <!-- M3 Error -->
         <item name="colorError">@color/dark_error</item>
+        <item name="colorOnError">@color/white</item>
+        <item name="colorErrorContainer">@color/dark_error_container</item>
+        <item name="colorOnErrorContainer">@color/dark_on_error_container</item>
+
+        <!-- M3 Background / Surface -->
+        <item name="android:colorBackground">@color/dark_bg_primary</item>
+        <item name="colorOnBackground">@color/dark_text_primary</item>
+        <item name="colorSurface">@color/dark_surface</item>
+        <item name="colorOnSurface">@color/dark_text_primary</item>
+        <item name="colorSurfaceVariant">@color/dark_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/dark_text_secondary</item>
+
+        <!-- M3 Outline -->
+        <item name="colorOutline">@color/dark_text_tertiary</item>
+        <item name="colorOutlineVariant">@color/dark_outline_variant</item>
+
         <item name="android:statusBarColor">@color/dark_bg_primary</item>
         <item name="android:windowBackground">@color/dark_bg_primary</item>
 
@@ -24,8 +55,23 @@
         <item name="epSuccess">@color/dark_success</item>
         <item name="epWarning">@color/dark_warning</item>
         <item name="epError">@color/dark_error</item>
+        <item name="epErrorContainer">@color/dark_error_container</item>
+        <item name="epOnErrorContainer">@color/dark_on_error_container</item>
         <item name="epInfo">@color/dark_info</item>
         <item name="epTextOnPrimary">@color/dark_text_on_primary</item>
+        <item name="epOnPrimaryContainer">@color/dark_text_primary</item>
+        <item name="epSecondaryContainer">@color/dark_secondary_container</item>
+        <item name="epOnSecondaryContainer">@color/dark_on_secondary_container</item>
+        <item name="epTertiary">@color/dark_info</item>
+        <item name="epOnTertiary">@color/white</item>
+        <item name="epTertiaryContainer">@color/dark_tertiary_container</item>
+        <item name="epOnTertiaryContainer">@color/dark_on_tertiary_container</item>
+        <item name="epOnBackground">@color/dark_text_primary</item>
+        <item name="epOnSurface">@color/dark_text_primary</item>
+        <item name="epSurfaceVariant">@color/dark_surface_variant</item>
+        <item name="epOnSurfaceVariant">@color/dark_text_secondary</item>
+        <item name="epOutline">@color/dark_text_tertiary</item>
+        <item name="epOutlineVariant">@color/dark_outline_variant</item>
         <item name="epRoundedSm">2dp</item>
         <item name="epRoundedMd">4dp</item>
         <item name="epRoundedLg">8dp</item>

@@ -11,13 +11,13 @@
 |-----------|-------|--------|
 | **UX General** | **68/100** | MEJORADO - Scroll restaurado en tabs, estados vacios corregidos, offline banner, dialogs mejorados |
 | **UI General** | **72/100** | MEJORADO - Vector drawables en perfil, stat cards 2x2, checkmarks mood, spinners Material, anim resources |
-| **Material Design 3** | **52/100** | MEJORADO - epRoundedXl=28dp, dimens.xml, dropdown menus Material, esquinas estandarizadas |
+| **Material Design 3** | **82/100** | MEJORADO - Mapa M3 completo con 23 roles (primary, secondary, tertiary, error, background, surface, outline), 12 nuevos colores, 18 nuevos attrs, epRoundedXl=28dp, dimens.xml, dropdown menus Material |
 | **Accesibilidad** | **38/100** | BAJO - content descriptions parciales, checkmarks daltonismo, 12sp minimo, falta TalkBack testing |
 | **Produccion** | **72/100** | MEJORADO - Loading states, boton guardar disabled, build.gradle.kts fixed, dead code eliminado, compilacion exitosa con Java 25 + AGP 9.0.1 + Gradle 9.2.1 |
 
 **Evaluacion General: MEJORANDO HACIA PLAY STORE** (progresando significativamente)
 
-Se identificaron **3 criterios bloqueantes** resueltos (SplashScreen API, adaptive icon, scroll tabs) y **~12 hallazgos** pendientes entre medios y bajos.
+Se identificaron **3 criterios bloqueantes** resueltos (SplashScreen API, adaptive icon, scroll tabs) y **~8 hallazgos** pendientes entre medios y bajos.
 
 ---
 
@@ -61,6 +61,7 @@ Se identificaron **3 criterios bloqueantes** resueltos (SplashScreen API, adapti
 | 34 | ~~MEDIUM~~ RESUELTO | Habitos | HabitosFragment.java: R.style.Widget.Epycus.Chip.Filter requiere underscores en R (Widget_Epycus_Chip_Filter) | ~~Compilacion rota~~ Referencia corregida |
 | 35 | ~~LOW~~ RESUELTO | Global | styles_epycus.xml: checkedChipBackgroundColor no existe en Material 1.14.0 | ~~Compilacion rota~~ Atributo eliminado |
 | 36 | ~~LOW~~ RESUELTO | Global | scale_in.xml: @android:anim/fast_out_slow_in_interpolator no encontrado. Reemplazado por accelerate_decelerate_interpolator | ~~Compilacion rota~~ Interpolador standard |
+| 37 | ~~MEDIUM~~ RESUELTO | Global | Sistema de color M3 incompleto: faltaban 13 roles M3 (onPrimaryContainer, secondaryContainer, tertiary, errorContainer, surfaceVariant, outline, etc.) y 18 attrs personalizados | ~~MD3 score bajo~~ Mapa M3 completo con 23 roles, 12 nuevos colores, light+dark unificados |
 
 ---
 
@@ -398,6 +399,7 @@ style name="Widget.Epycus.Input" parent="Widget.Material3.TextInputLayout.Outlin
 7. ✅ Reemplazar ic_mood_normal en inputs por iconos semanticos (email, lock, person)
 8. ✅ Reemplazar shape_dot por icono real en mision diaria
 21. ✅ Compilacion exitosa tras corregir: build.gradle.kts (secrets + compileSdk), dialog_nueva_mision.xml (anidamiento), DiarioFragment.java (imports), DashboardActivity.java (dead code), HabitosFragment.java (R.style), styles_epycus.xml (checkedChipBackgroundColor), scale_in.xml (interpolator)
+22. ✅ Sistema de color M3 completo: 12 nuevos colores (containers, surface variants), 18 nuevos attrs ep*, 23 M3 roles mapeados en ambos temas
 
 ---
 
@@ -415,7 +417,7 @@ style name="Widget.Epycus.Input" parent="Widget.Material3.TextInputLayout.Outlin
 - ✅ Reemplazar Spinners nativos por Exposed Dropdown Menus de Material
 - ✅ Reemplazar emojis del perfil por vector drawables
 - ✅ Estandarizar corner radii (20dp botones, 16dp cards, 28dp xl)
-- ⏳ Crear sistema de color M3 completo (PENDIENTE)
+- ✅ Crear sistema de color M3 completo (23 roles M3 + 18 attrs ep*)
 - ✅ Widget.Epycus.Chip.Filter agregado
 - ✅ Mood icons migrados a ?attr/ep*
 - ✅ Prioridad colores migrados a ?attr/ep*

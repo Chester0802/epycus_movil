@@ -15,8 +15,23 @@
         <attr name="epSuccess" format="color" />
         <attr name="epWarning" format="color" />
         <attr name="epError" format="color" />
+        <attr name="epErrorContainer" format="color" />
+        <attr name="epOnErrorContainer" format="color" />
         <attr name="epInfo" format="color" />
         <attr name="epTextOnPrimary" format="color" />
+        <attr name="epOnPrimaryContainer" format="color" />
+        <attr name="epSecondaryContainer" format="color" />
+        <attr name="epOnSecondaryContainer" format="color" />
+        <attr name="epTertiary" format="color" />
+        <attr name="epOnTertiary" format="color" />
+        <attr name="epTertiaryContainer" format="color" />
+        <attr name="epOnTertiaryContainer" format="color" />
+        <attr name="epOnBackground" format="color" />
+        <attr name="epOnSurface" format="color" />
+        <attr name="epSurfaceVariant" format="color" />
+        <attr name="epOnSurfaceVariant" format="color" />
+        <attr name="epOutline" format="color" />
+        <attr name="epOutlineVariant" format="color" />
         <attr name="epRoundedSm" format="dimension" />
         <attr name="epRoundedMd" format="dimension" />
         <attr name="epRoundedLg" format="dimension" />

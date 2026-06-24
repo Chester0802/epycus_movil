@@ -2,11 +2,42 @@
 <resources>
     <!-- Base Epycus Theme -->
     <style name="Theme.Epycus" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- M3 Primary -->
         <item name="colorPrimary">@color/light_accent</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorPrimaryContainer">@color/light_accent_light</item>
+        <item name="colorOnPrimaryContainer">@color/light_text_primary</item>
+
+        <!-- M3 Secondary -->
         <item name="colorSecondary">@color/light_accent_secondary</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/light_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/light_on_secondary_container</item>
+
+        <!-- M3 Tertiary -->
+        <item name="colorTertiary">@color/light_info</item>
+        <item name="colorOnTertiary">@color/white</item>
+        <item name="colorTertiaryContainer">@color/light_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/light_on_tertiary_container</item>
+
+        <!-- M3 Error -->
         <item name="colorError">@color/light_error</item>
+        <item name="colorOnError">@color/white</item>
+        <item name="colorErrorContainer">@color/light_error_container</item>
+        <item name="colorOnErrorContainer">@color/light_on_error_container</item>
+
+        <!-- M3 Background / Surface -->
+        <item name="android:colorBackground">@color/light_bg_primary</item>
+        <item name="colorOnBackground">@color/light_text_primary</item>
+        <item name="colorSurface">@color/light_surface</item>
+        <item name="colorOnSurface">@color/light_text_primary</item>
+        <item name="colorSurfaceVariant">@color/light_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/light_text_secondary</item>
+
+        <!-- M3 Outline -->
+        <item name="colorOutline">@color/light_text_tertiary</item>
+        <item name="colorOutlineVariant">@color/light_outline_variant</item>
+
         <item name="android:statusBarColor">@color/light_bg_primary</item>
         <item name="android:windowBackground">@color/light_bg_primary</item>
 
@@ -25,8 +56,23 @@
         <item name="epSuccess">@color/light_success</item>
         <item name="epWarning">@color/light_warning</item>
         <item name="epError">@color/light_error</item>
+        <item name="epErrorContainer">@color/light_error_container</item>
+        <item name="epOnErrorContainer">@color/light_on_error_container</item>
         <item name="epInfo">@color/light_info</item>
         <item name="epTextOnPrimary">@color/light_text_on_primary</item>
+        <item name="epOnPrimaryContainer">@color/light_text_primary</item>
+        <item name="epSecondaryContainer">@color/light_secondary_container</item>
+        <item name="epOnSecondaryContainer">@color/light_on_secondary_container</item>
+        <item name="epTertiary">@color/light_info</item>
+        <item name="epOnTertiary">@color/white</item>
+        <item name="epTertiaryContainer">@color/light_tertiary_container</item>
+        <item name="epOnTertiaryContainer">@color/light_on_tertiary_container</item>
+        <item name="epOnBackground">@color/light_text_primary</item>
+        <item name="epOnSurface">@color/light_text_primary</item>
+        <item name="epSurfaceVariant">@color/light_surface_variant</item>
+        <item name="epOnSurfaceVariant">@color/light_text_secondary</item>
+        <item name="epOutline">@color/light_text_tertiary</item>
+        <item name="epOutlineVariant">@color/light_outline_variant</item>
         <item name="epRoundedSm">2dp</item>
         <item name="epRoundedMd">4dp</item>
         <item name="epRoundedLg">8dp</item>
