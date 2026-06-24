@@ -96,6 +96,6 @@
             android:layout_height="36dp"
             android:indeterminateTint="?attr/epAccent" />
     </FrameLayout>
-</FrameLayout>
-
 </LinearLayout>
+
+</FrameLayout>

@@ -54,7 +54,6 @@
         <item name="chipStrokeWidth">1dp</item>
         <item name="chipStrokeColor">?attr/epAccent</item>
         <item name="chipBackgroundColor">?attr/epSurface</item>
-        <item name="checkedChipBackgroundColor">?attr/epAccent</item>
     </style>
 
     <!-- Epycus Bottom Navigation -->

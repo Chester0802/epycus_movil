@@ -261,7 +261,7 @@ public class HabitosFragment extends Fragment {
                 : tvAccent.data;
         ColorStateList accentStroke = ColorStateList.valueOf(accentColor);
 
-        ContextThemeWrapper themedContext = new ContextThemeWrapper(requireContext(), R.style.Widget.Epycus.Chip.Filter);
+        ContextThemeWrapper themedContext = new ContextThemeWrapper(requireContext(), R.style.Widget_Epycus_Chip_Filter);
 
         Chip chipTodas = new Chip(themedContext);
         chipTodas.setText(getString(R.string.todas));

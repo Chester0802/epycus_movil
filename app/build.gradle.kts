@@ -12,15 +12,15 @@ plugins {
 // EPYCUS_KEY_ALIAS, EPYCUS_KEY_PASSWORD.
 
 val secretsFile = rootProject.file("secrets.properties")
-val secrets = if (secretsFile.exists()) {
-    val props = java.util.Properties()
-    props.load(secretsFile.inputStream())
-    props
+val googleClientId = if (secretsFile.exists()) {
+    secretsFile.readLines()
+        .firstOrNull { it.startsWith("googleClientId=") }
+        ?.substringAfter("=")
+        ?.trim()
+        ?: "621141066064-vtm8tf4bv7bl3oubq3eesaha0205e6gr.apps.googleusercontent.com"
 } else {
-    null
+    "621141066064-vtm8tf4bv7bl3oubq3eesaha0205e6gr.apps.googleusercontent.com"
 }
-val googleClientId = secrets?.getProperty("googleClientId")
-    ?: "621141066064-vtm8tf4bv7bl3oubq3eesaha0205e6gr.apps.googleusercontent.com"
 
 android {
     signingConfigs {
@@ -36,11 +36,7 @@ android {
     }
 
     namespace = "es.epycus.app"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "es.epycus.app"

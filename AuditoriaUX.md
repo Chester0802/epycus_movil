@@ -13,7 +13,7 @@
 | **UI General** | **72/100** | MEJORADO - Vector drawables en perfil, stat cards 2x2, checkmarks mood, spinners Material, anim resources |
 | **Material Design 3** | **52/100** | MEJORADO - epRoundedXl=28dp, dimens.xml, dropdown menus Material, esquinas estandarizadas |
 | **Accesibilidad** | **38/100** | BAJO - content descriptions parciales, checkmarks daltonismo, 12sp minimo, falta TalkBack testing |
-| **Produccion** | **62/100** | MEJORADO - Loading states, boton guardar disabled, build.gradle.kts fixed, dead code eliminado |
+| **Produccion** | **72/100** | MEJORADO - Loading states, boton guardar disabled, build.gradle.kts fixed, dead code eliminado, compilacion exitosa con Java 25 + AGP 9.0.1 + Gradle 9.2.1 |
 
 **Evaluacion General: MEJORANDO HACIA PLAY STORE** (progresando significativamente)
 
@@ -53,6 +53,14 @@ Se identificaron **3 criterios bloqueantes** resueltos (SplashScreen API, adapti
 | 26 | ~~LOW~~ RESUELTO | Global | Dead code eliminado: MainActivity.java, activity_main.xml, activity_dashboard.xml borrados + manifest limpiado | ~~APK size~~ Sin codigo muerto |
 | 27 | ~~LOW~~ RESUELTO | Login | Boton Google ahora usa el SignInButton oficial con icono SVG de Google | ~~Apariencia amateur~~ Boton profesional |
 | 28 | ~~LOW~~ RESUELTO | Bottom Nav | nav_bottom.xml actualizado a @string/nav_* con recursos agregados a strings.xml | ~~Sin localizacion~~ Soporta localizacion |
+| 29 | ~~HIGH~~ RESUELTO | Global | build.gradle.kts: java.util.Properties no resuelto en Java 25. Parseo manual de secrets.properties | ~~Compilacion rota~~ Build script compatible con Java 25 |
+| 30 | ~~HIGH~~ RESUELTO | Global | build.gradle.kts: compileSdk { version = release(36) } invalido. Cambiado a compileSdk = 36 | ~~Compilacion rota~~ Sintaxis estandar de AGP |
+| 31 | ~~HIGH~~ RESUELTO | Misiones | dialog_nueva_mision.xml: etiquetas </FrameLayout> y </LinearLayout> invertidas | ~~Layout mal formado~~ Anidamiento corregido |
+| 32 | ~~MEDIUM~~ RESUELTO | Diario | DiarioFragment.java: falta import android.widget.TextView en ViewHolder | ~~Compilacion rota~~ Import agregado |
+| 33 | ~~LOW~~ RESUELTO | Global | DashboardActivity.java: dead code referenciaba ActivityDashboardBinding (layout ya eliminado) | ~~Compilacion rota~~ Archivo eliminado |
+| 34 | ~~MEDIUM~~ RESUELTO | Habitos | HabitosFragment.java: R.style.Widget.Epycus.Chip.Filter requiere underscores en R (Widget_Epycus_Chip_Filter) | ~~Compilacion rota~~ Referencia corregida |
+| 35 | ~~LOW~~ RESUELTO | Global | styles_epycus.xml: checkedChipBackgroundColor no existe en Material 1.14.0 | ~~Compilacion rota~~ Atributo eliminado |
+| 36 | ~~LOW~~ RESUELTO | Global | scale_in.xml: @android:anim/fast_out_slow_in_interpolator no encontrado. Reemplazado por accelerate_decelerate_interpolator | ~~Compilacion rota~~ Interpolador standard |
 
 ---
 
@@ -389,6 +397,7 @@ style name="Widget.Epycus.Input" parent="Widget.Material3.TextInputLayout.Outlin
 6. ✅ Cambiar nav_bottom.xml a usar @string references
 7. ✅ Reemplazar ic_mood_normal en inputs por iconos semanticos (email, lock, person)
 8. ✅ Reemplazar shape_dot por icono real en mision diaria
+21. ✅ Compilacion exitosa tras corregir: build.gradle.kts (secrets + compileSdk), dialog_nueva_mision.xml (anidamiento), DiarioFragment.java (imports), DashboardActivity.java (dead code), HabitosFragment.java (R.style), styles_epycus.xml (checkedChipBackgroundColor), scale_in.xml (interpolator)
 
 ---
 

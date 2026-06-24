@@ -25,6 +25,15 @@
 - build.gradle.kts: error sintaxis corregido en secrets.properties
 - Creados 7 drawables vector + múltiples strings
 - AuditoriaUX.md: actualizada con todos los RESUELTOs
+- **Compilación exitosa**: 5 errores corregidos:
+  - `app/build.gradle.kts`: `java.util.Properties` no resuelto → parseo manual de secrets.properties
+  - `app/build.gradle.kts`: `compileSdk { version = release(36) }` inválido → `compileSdk = 36`
+  - `dialog_nueva_mision.xml`: etiquetas `</FrameLayout>` y `</LinearLayout>` invertidas → corregido anidamiento
+  - `DiarioFragment.java`: falta `import android.widget.TextView` en ViewHolder → agregado
+  - `DashboardActivity.java`: dead code que referenciaba `ActivityDashboardBinding` (layout eliminado) → archivo eliminado
+  - `HabitosFragment.java`: `R.style.Widget.Epycus.Chip.Filter` → `R.style.Widget_Epycus_Chip_Filter` (dots → underscores)
+  - `styles_epycus.xml`: `checkedChipBackgroundColor` no encontrado → atributo eliminado
+  - `scale_in.xml`: `@android:anim/fast_out_slow_in_interpolator` no encontrado → reemplazado por `accelerate_decelerate_interpolator`
 
 ### In Progress
 - (ninguno)
@@ -40,7 +49,7 @@
 - mostrarCargandoMision recibe el overlay View directamente (no dialog.findViewById) para evitar problemas de compatibilidad
 
 ## Next Steps
-- Verificar que el proyecto compile
+- ~~Verificar que el proyecto compile~~ ✅ COMPILACIÓN EXITOSA
 - Hacer commit de todos los cambios
 
 ## Relevant Files
