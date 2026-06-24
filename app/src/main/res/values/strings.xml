@@ -192,6 +192,7 @@
     <!-- Network errors -->
     <string name="error_timeout">El servidor no responde (tiempo de espera agotado)</string>
     <string name="error_sin_conexion">Sin conexión a internet. Verifica tu red.</string>
+    <string name="error_servidor_no_disponible">Servidor no disponible. ¿El backend está iniciado?</string>
     <string name="error_http_403">Acceso denegado. No tienes permiso para esta acción.</string>
     <string name="error_http_422">Error de validación. Revisa los datos ingresados.</string>
     <string name="error_http_500">Error interno del servidor. Intenta más tarde.</string>

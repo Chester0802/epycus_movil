@@ -23,8 +23,9 @@ public class NetworkUtils {
     public static int getNetworkErrorResId(Throwable t) {
         if (t instanceof java.net.SocketTimeoutException) {
             return R.string.error_timeout;
-        } else if (t instanceof java.net.UnknownHostException
-                || t instanceof java.net.ConnectException) {
+        } else if (t instanceof java.net.ConnectException) {
+            return R.string.error_servidor_no_disponible;
+        } else if (t instanceof java.net.UnknownHostException) {
             return R.string.error_sin_conexion;
         } else {
             return R.string.error_conexion;
