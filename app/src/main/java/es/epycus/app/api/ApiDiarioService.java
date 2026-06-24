@@ -16,27 +16,27 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiDiarioService {
-    @GET("api/diario/hoy")
+    @GET("api/v1/diario/hoy")
     Call<RespuestaApi<DiarioEntradaResponse>> hoy();
 
-    @GET("api/diario/fecha")
+    @GET("api/v1/diario/fecha")
     Call<RespuestaApi<DiarioEntradaResponse>> porFecha(@Query("fecha") String fecha);
 
-    @GET("api/diario/mes")
+    @GET("api/v1/diario/mes")
     Call<RespuestaApi<DiarioEntradasResponse>> porMes(@Query("anio") int anio, @Query("mes") int mes);
 
-    @POST("api/diario")
+    @POST("api/v1/diario")
     Call<RespuestaApi<DiarioEntradaResponse>> crear(@Body Object body);
 
-    @PUT("api/diario/{fecha}")
+    @PUT("api/v1/diario/{fecha}")
     Call<RespuestaApi<DiarioEntradaResponse>> actualizar(@Path("fecha") String fecha, @Body Object body);
 
-    @GET("api/diario/racha")
+    @GET("api/v1/diario/racha")
     Call<RespuestaApi<DiarioRachaResponse>> racha();
 
-    @GET("api/diario/promedio-mes")
+    @GET("api/v1/diario/promedio-mes")
     Call<RespuestaApi<DiarioPromedioMesResponse>> promedioMes(@Query("anio") int anio, @Query("mes") int mes);
 
-    @GET("api/diario/pregunta-guia")
+    @GET("api/v1/diario/pregunta-guia")
     Call<RespuestaApi<PreguntaGuiaResponse>> preguntaGuia();
 }

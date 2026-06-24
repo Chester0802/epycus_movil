@@ -10,9 +10,9 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 
 public interface ApiGamificacionService {
-    @GET("api/gamificacion/mi-progreso")
+    @GET("api/v1/gamificacion/mi-progreso")
     Call<RespuestaApi<GamificacionResponse>> miProgreso();
 
-    @GET("api/gamificacion/logros")
+    @GET("api/v1/gamificacion/logros")
     Call<RespuestaApi<List<LogroConProgresoResponse>>> logros();
 }

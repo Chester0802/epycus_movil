@@ -19,27 +19,27 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface ApiMisionesService {
-    @GET("api/misiones")
+    @GET("api/v1/misiones")
     Call<RespuestaApi<List<MisionDto>>> listar();
 
-    @GET("api/misiones/{id}")
+    @GET("api/v1/misiones/{id}")
     Call<RespuestaApi<MisionDto>> obtener(@Path("id") int id);
 
-    @POST("api/misiones")
+    @POST("api/v1/misiones")
     Call<RespuestaApi<SuccessResponseDto>> crear(@Body Object body);
 
-    @PUT("api/misiones/{id}")
+    @PUT("api/v1/misiones/{id}")
     Call<RespuestaApi<SuccessResponseDto>> actualizar(@Path("id") int id, @Body Object body);
 
-    @DELETE("api/misiones/{id}")
+    @DELETE("api/v1/misiones/{id}")
     Call<RespuestaApi<SuccessResponseDto>> eliminar(@Path("id") int id);
 
-    @POST("api/misiones/{id}/completar")
+    @POST("api/v1/misiones/{id}/completar")
     Call<RespuestaApi<MisionCompletarResponse>> completar(@Path("id") int id);
 
-    @POST("api/misiones/{id}/estado")
+    @POST("api/v1/misiones/{id}/estado")
     Call<RespuestaApi<SuccessResponseDto>> cambiarEstado(@Path("id") int id, @Body Object body);
 
-    @GET("api/misiones/categorias")
+    @GET("api/v1/misiones/categorias")
     Call<RespuestaApi<List<CategoriaDto>>> categorias();
 }

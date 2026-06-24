@@ -27,11 +27,13 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import es.epycus.app.model.dto.PomodoroHistorialResponse.SesionHistorial;
 
@@ -618,8 +620,9 @@ public class PomodoroFragment extends Fragment {
                     if (historial != null && !historial.isEmpty()) {
                         StringBuilder sb = new StringBuilder();
                         for (SesionHistorial item : historial) {
-                            String fecha = item.getFecha() != null ? item.getFecha() : "—";
-                            String linea = getString(R.string.historial_formato, fecha, item.getCiclos(), item.getDuracionMinutos());
+                            String fecha = item.getFechaInicio() != null ? item.getFechaInicio().substring(0, 10) : "—";
+                            int minutos = calcularDuracionMinutos(item.getFechaInicio(), item.getFechaFin());
+                            String linea = getString(R.string.historial_formato, fecha, item.getCiclosCompletados(), minutos);
                             sb.append(linea).append("\n");
                         }
                         builder.setMessage(sb.toString().trim());
@@ -640,6 +643,18 @@ public class PomodoroFragment extends Fragment {
                 mostrarErrorRed(t);
             }
         });
+    }
+
+    private int calcularDuracionMinutos(String inicio, String fin) {
+        if (inicio == null || fin == null) return 0;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+            Date fechaInicio = sdf.parse(inicio.length() > 19 ? inicio.substring(0, 19) : inicio);
+            Date fechaFin = sdf.parse(fin.length() > 19 ? fin.substring(0, 19) : fin);
+            return (int) TimeUnit.MILLISECONDS.toMinutes(fechaFin.getTime() - fechaInicio.getTime());
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     private void verificarSesionActiva() {

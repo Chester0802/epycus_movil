@@ -36,8 +36,8 @@ public class PomodoroConfiguracionResponse {
     @SerializedName("metaDiariaCiclos")
     private int metaDiariaCiclos;
 
-    @SerializedName("modoPersonalizadoMinutos")
-    private Integer modoPersonalizadoMinutos;
+    @SerializedName("modoPersonalizadoMin")
+    private Integer modoPersonalizadoMin;
 
     @SerializedName("vibracionActiva")
     private boolean vibracionActiva;
@@ -56,7 +56,7 @@ public class PomodoroConfiguracionResponse {
     public boolean isAutoIniciarEnfoque() { return autoIniciarEnfoque; }
     public boolean isTicTacActivo() { return ticTacActivo; }
     public int getMetaDiariaCiclos() { return metaDiariaCiclos; }
-    public Integer getModoPersonalizadoMinutos() { return modoPersonalizadoMinutos; }
+    public Integer getModoPersonalizadoMin() { return modoPersonalizadoMin; }
     public boolean isVibracionActiva() { return vibracionActiva; }
     public boolean isNotificacionDesktop() { return notificacionDesktop; }
 }

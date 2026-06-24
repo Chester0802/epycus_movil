@@ -16,27 +16,27 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface ApiBienestarService {
-    @GET("api/bienestar/resumen")
+    @GET("api/v1/bienestar/resumen")
     Call<RespuestaApi<BienestarResumenResponse>> resumen();
 
-    @GET("api/bienestar/alertas")
+    @GET("api/v1/bienestar/alertas")
     Call<RespuestaApi<AlertasResponse>> alertas();
 
-    @GET("api/bienestar/frase")
+    @GET("api/v1/bienestar/frase")
     Call<RespuestaApi<Object>> frase();
 
-    @GET("api/bienestar/estado-hoy")
+    @GET("api/v1/bienestar/estado-hoy")
     Call<RespuestaApi<EstadoHoyResponse>> estadoHoy();
 
-    @GET("api/bienestar/historial-animo")
+    @GET("api/v1/bienestar/historial-animo")
     Call<RespuestaApi<HistorialAnimoResponse>> historialAnimo(@Query("dias") int dias);
 
-    @GET("api/bienestar/habitos-pendientes")
+    @GET("api/v1/bienestar/habitos-pendientes")
     Call<RespuestaApi<CantidadResponse>> habitosPendientes();
 
-    @GET("api/bienestar/misiones-pendientes")
+    @GET("api/v1/bienestar/misiones-pendientes")
     Call<RespuestaApi<CantidadResponse>> misionesPendientes();
 
-    @POST("api/bienestar/pausa-activa")
+    @POST("api/v1/bienestar/pausa-activa")
     Call<RespuestaApi<RecomendacionPausaDto>> pausaActiva(@Body PausaActivaDto body);
 }

@@ -19,36 +19,36 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface ApiHabitosService {
-    @GET("api/habitos")
+    @GET("api/v1/habitos")
     Call<RespuestaApi<Object>> listar();
 
-    @GET("api/habitos/hoy")
+    @GET("api/v1/habitos/hoy")
     Call<RespuestaApi<List<HabitoHoyDto>>> hoy();
 
-    @POST("api/habitos/{id}/completar")
+    @POST("api/v1/habitos/{id}/completar")
     Call<RespuestaApi<CompletarHabitoResponse>> completar(@Path("id") int id);
 
-    @POST("api/habitos/{id}/fallar")
+    @POST("api/v1/habitos/{id}/fallar")
     Call<RespuestaApi<FallarHabitoResponse>> fallar(@Path("id") int id);
 
-    @GET("api/habitos/{id}/semana")
+    @GET("api/v1/habitos/{id}/semana")
     Call<RespuestaApi<List<RegistroSemanaDto>>> semana(@Path("id") int id);
 
-    @GET("api/habitos/{id}")
+    @GET("api/v1/habitos/{id}")
     Call<RespuestaApi<Habito>> obtener(@Path("id") int id);
 
-    @POST("api/habitos")
+    @POST("api/v1/habitos")
     Call<RespuestaApi<SuccessResponseDto>> crear(@Body Object body);
 
-    @PUT("api/habitos/{id}")
+    @PUT("api/v1/habitos/{id}")
     Call<RespuestaApi<SuccessResponseDto>> actualizar(@Path("id") int id, @Body Object body);
 
-    @DELETE("api/habitos/{id}")
+    @DELETE("api/v1/habitos/{id}")
     Call<RespuestaApi<SuccessResponseDto>> eliminar(@Path("id") int id);
 
-    @GET("api/habitos/dashboard")
+    @GET("api/v1/habitos/dashboard")
     Call<RespuestaApi<Object>> dashboard();
 
-    @GET("api/habitos/categorias")
+    @GET("api/v1/habitos/categorias")
     Call<RespuestaApi<Object>> categorias();
 }

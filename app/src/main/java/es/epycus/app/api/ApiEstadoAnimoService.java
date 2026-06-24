@@ -11,9 +11,9 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 public interface ApiEstadoAnimoService {
-    @POST("api/estado-animo")
+    @POST("api/v1/estado-animo")
     Call<RespuestaApi<Object>> registrar(@Body Object body);
 
-    @GET("api/estado-animo/historial")
+    @GET("api/v1/estado-animo/historial")
     Call<RespuestaApi<List<EstadoAnimoEntry>>> historial();
 }

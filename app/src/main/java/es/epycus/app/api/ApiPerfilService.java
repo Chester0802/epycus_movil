@@ -14,24 +14,24 @@ import retrofit2.http.GET;
 import retrofit2.http.PUT;
 
 public interface ApiPerfilService {
-    @GET("api/perfil")
+    @GET("api/v1/perfil")
     Call<RespuestaApi<PerfilResponse>> obtenerPerfil();
 
-    @PUT("api/perfil")
+    @PUT("api/v1/perfil")
     Call<RespuestaApi<MensajeResponseDto>> actualizar(@Body Object body);
 
-    @PUT("api/perfil/cambiar-contrasena")
+    @PUT("api/v1/perfil/cambiar-contrasena")
     Call<RespuestaApi<MensajeResponseDto>> cambiarContrasena(@Body Object body);
 
-    @PUT("api/perfil/personaje")
+    @PUT("api/v1/perfil/personaje")
     Call<RespuestaApi<MensajeResponseDto>> cambiarPersonaje(@Body Object body);
 
-    @PUT("api/perfil/tema")
+    @PUT("api/v1/perfil/tema")
     Call<RespuestaApi<MensajeResponseDto>> cambiarTema(@Body Object body);
 
-    @GET("api/perfil/personajes")
+    @GET("api/v1/perfil/personajes")
     Call<RespuestaApi<List<PersonajeItem>>> personajes();
 
-    @GET("api/perfil/logros")
+    @GET("api/v1/perfil/logros")
     Call<RespuestaApi<List<LogroUsuarioItem>>> logros();
 }

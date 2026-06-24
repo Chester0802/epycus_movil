@@ -7,9 +7,9 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 
 public interface ApiDashboardService {
-    @GET("api/dashboard/resumen")
+    @GET("api/v1/dashboard/resumen")
     Call<RespuestaApi<DashboardResponse>> resumen();
 
-    @GET("api/dashboard/frase-del-dia")
+    @GET("api/v1/dashboard/frase-del-dia")
     Call<RespuestaApi<Object>> fraseDelDia();
 }

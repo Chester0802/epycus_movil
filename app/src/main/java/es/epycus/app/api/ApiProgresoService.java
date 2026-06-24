@@ -7,12 +7,12 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 
 public interface ApiProgresoService {
-    @GET("api/progreso")
+    @GET("api/v1/progreso")
     Call<RespuestaApi<ProgresoResponseDto>> progreso();
 
-    @GET("api/progreso/logros")
+    @GET("api/v1/progreso/logros")
     Call<RespuestaApi<Object>> logros();
 
-    @GET("api/progreso/historial-animo")
+    @GET("api/v1/progreso/historial-animo")
     Call<RespuestaApi<Object>> historialAnimo();
 }

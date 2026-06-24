@@ -21,36 +21,36 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiPomodoroService {
-    @POST("api/pomodoro/iniciar")
+    @POST("api/v1/pomodoro/iniciar")
     Call<RespuestaApi<PomodoroIniciarResponse>> iniciar(@Body Object body);
 
-    @POST("api/pomodoro/{sesionId}/ciclo-completado")
+    @POST("api/v1/pomodoro/{sesionId}/ciclo-completado")
     Call<RespuestaApi<PomodoroCicloCompletadoResponse>> cicloCompletado(@Path("sesionId") int sesionId, @Body Object body);
 
-    @POST("api/pomodoro/{sesionId}/finalizar")
+    @POST("api/v1/pomodoro/{sesionId}/finalizar")
     Call<RespuestaApi<PomodoroFinalizarResponse>> finalizar(@Path("sesionId") int sesionId, @Body Object body);
 
-    @POST("api/pomodoro/{sesionId}/cancelar")
+    @POST("api/v1/pomodoro/{sesionId}/cancelar")
     Call<RespuestaApi<SuccessResponseDto>> cancelar(@Path("sesionId") int sesionId);
 
-    @GET("api/pomodoro/configuracion")
+    @GET("api/v1/pomodoro/configuracion")
     Call<RespuestaApi<PomodoroConfiguracionResponse>> configuracion();
 
-    @PUT("api/pomodoro/configuracion")
+    @PUT("api/v1/pomodoro/configuracion")
     Call<RespuestaApi<SuccessResponseDto>> actualizarConfiguracion(@Body Object body);
 
-    @GET("api/pomodoro/tip-aleatorio")
+    @GET("api/v1/pomodoro/tip-aleatorio")
     Call<RespuestaApi<PomodoroTipResponse>> tipAleatorio();
 
-    @GET("api/pomodoro/sesion-activa")
+    @GET("api/v1/pomodoro/sesion-activa")
     Call<RespuestaApi<PomodoroSesionActivaResponse>> sesionActiva();
 
-    @GET("api/pomodoro/historial")
+    @GET("api/v1/pomodoro/historial")
     Call<RespuestaApi<PomodoroHistorialResponse>> historial(@Query("desde") String desde, @Query("hasta") String hasta, @Query("pagina") int pagina, @Query("tamano") int tamano);
 
-    @GET("api/pomodoro/racha")
+    @GET("api/v1/pomodoro/racha")
     Call<RespuestaApi<PomodoroRachaResponse>> racha();
 
-    @GET("api/pomodoro/estadisticas")
+    @GET("api/v1/pomodoro/estadisticas")
     Call<RespuestaApi<PomodoroEstadisticasDto>> estadisticas(@Query("desde") String desde, @Query("hasta") String hasta);
 }

@@ -20,17 +20,33 @@ public class PomodoroHistorialResponse {
     public int getTamano() { return tamano; }
 
     public static class SesionHistorial {
-        @SerializedName("fecha")
-        private String fecha;
+        @SerializedName("id")
+        private int id;
 
-        @SerializedName("ciclos")
-        private int ciclos;
+        @SerializedName("fechaInicio")
+        private String fechaInicio;
 
-        @SerializedName("duracionMinutos")
-        private int duracionMinutos;
+        @SerializedName("fechaFin")
+        private String fechaFin;
 
-        public String getFecha() { return fecha; }
-        public int getCiclos() { return ciclos; }
-        public int getDuracionMinutos() { return duracionMinutos; }
+        @SerializedName("ciclosCompletados")
+        private int ciclosCompletados;
+
+        @SerializedName("xpOtorgado")
+        private int xpOtorgado;
+
+        @SerializedName("fueCompletada")
+        private boolean fueCompletada;
+
+        @SerializedName("tipo")
+        private String tipo;
+
+        public int getId() { return id; }
+        public String getFechaInicio() { return fechaInicio; }
+        public String getFechaFin() { return fechaFin; }
+        public int getCiclosCompletados() { return ciclosCompletados; }
+        public int getXpOtorgado() { return xpOtorgado; }
+        public boolean isFueCompletada() { return fueCompletada; }
+        public String getTipo() { return tipo; }
     }
 }

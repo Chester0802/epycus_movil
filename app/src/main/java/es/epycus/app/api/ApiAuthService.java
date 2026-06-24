@@ -21,33 +21,33 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface ApiAuthService {
-    @POST("api/auth/login")
+    @POST("api/v1/auth/login")
     Call<RespuestaApi<AuthResponse>> login(@Body LoginDto body);
 
-    @POST("api/auth/refresh")
+    @POST("api/v1/auth/refresh")
     Call<RespuestaApi<AuthResponse>> refresh(@Body RefreshDto body);
 
-    @POST("api/auth/logout")
+    @POST("api/v1/auth/logout")
     Call<RespuestaApi<MensajeResponseDto>> logout();
 
-    @POST("api/auth/registro")
+    @POST("api/v1/auth/registro")
     Call<RespuestaApi<AuthResponse>> registro(@Body RegistroRequestDto body);
 
-    @GET("api/auth/verificar-correo")
+    @GET("api/v1/auth/verificar-correo")
     Call<RespuestaApi<MensajeResponseDto>> verificarCorreo(@Query("token") String token);
 
-    @POST("api/auth/recuperar-contrasena")
+    @POST("api/v1/auth/recuperar-contrasena")
     Call<RespuestaApi<MensajeResponseDto>> recuperarContrasena(@Body RecuperarContrasenaDto body);
 
-    @POST("api/auth/restablecer-contrasena")
+    @POST("api/v1/auth/restablecer-contrasena")
     Call<RespuestaApi<MensajeResponseDto>> restablecerContrasena(@Body RestablecerContrasenaDto body);
 
-    @POST("api/auth/google")
+    @POST("api/v1/auth/google")
     Call<RespuestaApi<AuthResponse>> googleAuth(@Body GoogleAuthDto body);
 
-    @POST("api/auth/completar-registro-google")
+    @POST("api/v1/auth/completar-registro-google")
     Call<RespuestaApi<AuthResponse>> completarRegistroGoogle(@Body CompletarRegistroGoogleDto body);
 
-    @GET("api/auth/carreras")
+    @GET("api/v1/auth/carreras")
     Call<RespuestaApi<List<Carrera>>> obtenerCarreras();
 }

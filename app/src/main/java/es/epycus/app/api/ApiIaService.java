@@ -16,24 +16,24 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface ApiIaService {
-    @POST("api/ia/chat")
+    @POST("api/v1/ia/chat")
     Call<RespuestaApi<ChatResponse>> chat(@Body ChatRequest body);
 
-    @GET("api/ia/historial")
+    @GET("api/v1/ia/historial")
     Call<RespuestaApi<IaHistorialResponse>> historial(@Query("conversacionId") String conversacionId);
 
-    @GET("api/ia/conversaciones")
+    @GET("api/v1/ia/conversaciones")
     Call<RespuestaApi<IaConversacionesResponse>> conversaciones();
 
-    @GET("api/ia/sugerencias")
+    @GET("api/v1/ia/sugerencias")
     Call<RespuestaApi<IaSugerenciasResponse>> sugerencias();
 
-    @GET("api/ia/contexto-bienestar")
+    @GET("api/v1/ia/contexto-bienestar")
     Call<RespuestaApi<Object>> contextoBienestar();
 
-    @POST("api/ia/feedback")
+    @POST("api/v1/ia/feedback")
     Call<RespuestaApi<SuccessResponseDto>> feedback(@Body Object body);
 
-    @GET("api/ia/mensajes-hoy")
+    @GET("api/v1/ia/mensajes-hoy")
     Call<RespuestaApi<IaMensajesHoyResponse>> mensajesHoy();
 }
