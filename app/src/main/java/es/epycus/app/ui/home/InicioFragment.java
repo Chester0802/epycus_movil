@@ -391,19 +391,39 @@ public class InicioFragment extends Fragment {
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (!hidden && binding != null && savedScrollY > 0) {
+    public void onResume() {
+        super.onResume();
+        if (binding != null && savedScrollY > 0) {
             View scrollChild = binding.swipeRefresh.getChildAt(0);
             if (scrollChild instanceof android.widget.ScrollView) {
-                ((android.widget.ScrollView) scrollChild).scrollTo(0, savedScrollY);
+                ((android.widget.ScrollView) scrollChild).post(() ->
+                    ((android.widget.ScrollView) scrollChild).scrollTo(0, savedScrollY));
             }
         }
-        if (hidden && binding != null) {
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (binding != null) {
             View scrollChild = binding.swipeRefresh.getChildAt(0);
             if (scrollChild instanceof android.widget.ScrollView) {
                 savedScrollY = ((android.widget.ScrollView) scrollChild).getScrollY();
             }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("savedScrollY", savedScrollY);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            savedScrollY = savedInstanceState.getInt("savedScrollY", 0);
         }
     }
 

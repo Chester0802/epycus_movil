@@ -35,6 +35,8 @@
   - `styles_epycus.xml`: `checkedChipBackgroundColor` no encontrado → atributo eliminado
   - `scale_in.xml`: `@android:anim/fast_out_slow_in_interpolator` no encontrado → reemplazado por `accelerate_decelerate_interpolator`
 - **Sistema de color M3 completo**: 12 nuevos colores (containers, surface/outline variants), 18 nuevos attrs ep*, 23 M3 roles mapeados en ambos temas (light Kawaii + dark Solo Leveling)
+- **ViewPager2 + BottomNavigationView**: FragmentTransaction hide/show reemplazado por ViewPager2 con FragmentStateAdapter, swipe entre tabs, Pomodoro como overlay separado con back stack
+- **Edge-to-edge + insets**: WindowCompat.setDecorFitsSystemWindows(false), transparent status bar, inset padding para ViewPager y BottomAppBar
 
 ### In Progress
 - (ninguno)

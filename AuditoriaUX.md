@@ -9,7 +9,7 @@
 
 | Dimensión | Score | Estado |
 |-----------|-------|--------|
-| **UX General** | **68/100** | MEJORADO - Scroll restaurado en tabs, estados vacios corregidos, offline banner, dialogs mejorados |
+| **UX General** | **78/100** | MEJORADO - ViewPager2 con swipe entre tabs, edge-to-edge con insets, scroll restaurado en tabs, estados vacios corregidos, offline banner, dialogs mejorados |
 | **UI General** | **72/100** | MEJORADO - Vector drawables en perfil, stat cards 2x2, checkmarks mood, spinners Material, anim resources |
 | **Material Design 3** | **82/100** | MEJORADO - Mapa M3 completo con 23 roles (primary, secondary, tertiary, error, background, surface, outline), 12 nuevos colores, 18 nuevos attrs, epRoundedXl=28dp, dimens.xml, dropdown menus Material |
 | **Accesibilidad** | **38/100** | BAJO - content descriptions parciales, checkmarks daltonismo, 12sp minimo, falta TalkBack testing |
@@ -62,6 +62,7 @@ Se identificaron **3 criterios bloqueantes** resueltos (SplashScreen API, adapti
 | 35 | ~~LOW~~ RESUELTO | Global | styles_epycus.xml: checkedChipBackgroundColor no existe en Material 1.14.0 | ~~Compilacion rota~~ Atributo eliminado |
 | 36 | ~~LOW~~ RESUELTO | Global | scale_in.xml: @android:anim/fast_out_slow_in_interpolator no encontrado. Reemplazado por accelerate_decelerate_interpolator | ~~Compilacion rota~~ Interpolador standard |
 | 37 | ~~MEDIUM~~ RESUELTO | Global | Sistema de color M3 incompleto: faltaban 13 roles M3 (onPrimaryContainer, secondaryContainer, tertiary, errorContainer, surfaceVariant, outline, etc.) y 18 attrs personalizados | ~~MD3 score bajo~~ Mapa M3 completo con 23 roles, 12 nuevos colores, light+dark unificados |
+| 38 | ~~HIGH~~ RESUELTO | Global | FragmentTransaction hide/show manual sin swipe, sin edge-to-edge, fixed 80dp margin hack | ~~UX flow bajo~~ ViewPager2 con swipe entre tabs, edge-to-edge con WindowCompat + insets, overlay Pomodoro separado, status bar transparente |
 
 ---
 
@@ -400,6 +401,8 @@ style name="Widget.Epycus.Input" parent="Widget.Material3.TextInputLayout.Outlin
 8. ✅ Reemplazar shape_dot por icono real en mision diaria
 21. ✅ Compilacion exitosa tras corregir: build.gradle.kts (secrets + compileSdk), dialog_nueva_mision.xml (anidamiento), DiarioFragment.java (imports), DashboardActivity.java (dead code), HabitosFragment.java (R.style), styles_epycus.xml (checkedChipBackgroundColor), scale_in.xml (interpolator)
 22. ✅ Sistema de color M3 completo: 12 nuevos colores (containers, surface variants), 18 nuevos attrs ep*, 23 M3 roles mapeados en ambos temas
+23. ✅ ViewPager2 + BottomNavigationView (swipe entre tabs, FragmentStateAdapter, Pomodoro overlay separado)
+24. ✅ Edge-to-edge + window insets (WindowCompat.setDecorFitsSystemWindows, transparent status bar, inset padding)
 
 ---
 
@@ -422,10 +425,10 @@ style name="Widget.Epycus.Input" parent="Widget.Material3.TextInputLayout.Outlin
 - ✅ Mood icons migrados a ?attr/ep*
 - ✅ Prioridad colores migrados a ?attr/ep*
 
-### Semana 3 - UX Flow ✅ PARCIAL
-- ⏳ Reemplazar FragmentTransaction hide/show por Navigation Component o BottomNavigationView + ViewPager2
+### Semana 3 - UX Flow ✅ COMPLETED
+- ✅ Reemplazar FragmentTransaction hide/show por ViewPager2 + BottomNavigationView (swipe entre tabs, FragmentStateAdapter)
 - ✅ Separar theme toggle del dialogo de configuracion (boton independiente en perfil)
-- ⏳ Implementar edge-to-edge e insets
+- ✅ Implementar edge-to-edge con WindowCompat.setDecorFitsSystemWindows + windowInsets para statusBar + navigationBar
 - ✅ Agregar indicador offline en dashboard
 
 ### Semana 4 - Accesibilidad + Testing

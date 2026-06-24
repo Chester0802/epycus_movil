@@ -96,6 +96,7 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.glide)
     implementation(libs.core.splashscreen)
+    implementation(libs.viewpager2)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

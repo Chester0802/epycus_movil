@@ -3,104 +3,110 @@ package es.epycus.app.ui;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager2.widget.ViewPager2;
 
 import es.epycus.app.R;
 import es.epycus.app.databinding.ActivityMainContainerBinding;
-import es.epycus.app.ui.habitos.HabitosFragment;
-import es.epycus.app.util.ThemeManager;
-import es.epycus.app.ui.home.InicioFragment;
 import es.epycus.app.ui.pomodoro.PomodoroFragment;
-import es.epycus.app.ui.diario.DiarioFragment;
-import es.epycus.app.ui.perfil.PerfilFragment;
-import es.epycus.app.ui.misiones.MisionesFragment;
+import es.epycus.app.util.ThemeManager;
 
 public class MainContainerActivity extends AppCompatActivity {
 
     private ActivityMainContainerBinding binding;
     private FragmentManager fragmentManager;
-    private Fragment fragmentoActual;
+    private ViewPager2 viewPager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         ThemeManager.getInstance(this).applyTheme();
         super.onCreate(savedInstanceState);
+
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
         binding = ActivityMainContainerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         fragmentManager = getSupportFragmentManager();
+        viewPager = binding.viewPager;
 
-        if (savedInstanceState == null) {
-            fragmentoActual = new InicioFragment();
-            fragmentManager.beginTransaction()
-                    .add(R.id.fragmentContainer, fragmentoActual, "inicio")
-                    .commit();
-        } else {
-            fragmentoActual = fragmentManager.findFragmentById(R.id.fragmentContainer);
-        }
+        MainFragmentAdapter adapter = new MainFragmentAdapter(this);
+        viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(4);
+        viewPager.setUserInputEnabled(true);
 
-        fragmentManager.addOnBackStackChangedListener(() -> {
-            fragmentoActual = fragmentManager.findFragmentById(R.id.fragmentContainer);
-        });
+        binding.viewPager.post(() -> aplicarInsets());
 
         setupNavigation();
+    }
+
+    private void aplicarInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.viewPager, (v, insets) -> {
+            int topInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            int bottomInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+            int bottomAppBarHeight = binding.bottomAppBar.getHeight();
+            v.setPadding(0, topInset, 0, bottomInset + bottomAppBarHeight);
+            return insets;
+        });
+        binding.viewPager.requestApplyInsets();
     }
 
     private void setupNavigation() {
         binding.bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-            Fragment nuevo;
-            String tag;
-
-            if (id == R.id.nav_inicio) {
-                tag = "inicio";
-                nuevo = fragmentManager.findFragmentByTag(tag);
-                if (nuevo == null) nuevo = new InicioFragment();
-            } else if (id == R.id.nav_habitos) {
-                tag = "habitos";
-                nuevo = fragmentManager.findFragmentByTag(tag);
-                if (nuevo == null) nuevo = new HabitosFragment();
-            } else if (id == R.id.nav_misiones) {
-                tag = "misiones";
-                nuevo = fragmentManager.findFragmentByTag(tag);
-                if (nuevo == null) nuevo = new MisionesFragment();
-            } else if (id == R.id.nav_diario) {
-                tag = "diario";
-                nuevo = fragmentManager.findFragmentByTag(tag);
-                if (nuevo == null) nuevo = new DiarioFragment();
-            } else if (id == R.id.nav_perfil) {
-                tag = "perfil";
-                nuevo = fragmentManager.findFragmentByTag(tag);
-                if (nuevo == null) nuevo = new PerfilFragment();
-            } else {
-                return false;
-            }
-
-            if (nuevo != fragmentoActual) {
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                if (fragmentoActual != null) {
-                    transaction.hide(fragmentoActual);
-                }
-                if (nuevo.isAdded()) {
-                    transaction.show(nuevo);
-                } else {
-                    transaction.add(R.id.fragmentContainer, nuevo, tag);
-                }
-                transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-                transaction.commit();
-                fragmentoActual = nuevo;
+            int position = menuIdToPosition(id);
+            if (position >= 0) {
+                viewPager.setCurrentItem(position, true);
                 return true;
             }
             return false;
         });
+
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                int menuId = positionToMenuId(position);
+                if (menuId >= 0) {
+                    binding.bottomNav.setSelectedItemId(menuId);
+                }
+            }
+        });
+    }
+
+    private int menuIdToPosition(int menuId) {
+        if (menuId == R.id.nav_inicio) return 0;
+        if (menuId == R.id.nav_habitos) return 1;
+        if (menuId == R.id.nav_misiones) return 2;
+        if (menuId == R.id.nav_diario) return 3;
+        if (menuId == R.id.nav_perfil) return 4;
+        return -1;
+    }
+
+    private int positionToMenuId(int position) {
+        switch (position) {
+            case 0: return R.id.nav_inicio;
+            case 1: return R.id.nav_habitos;
+            case 2: return R.id.nav_misiones;
+            case 3: return R.id.nav_diario;
+            case 4: return R.id.nav_perfil;
+            default: return -1;
+        }
     }
 
     public void seleccionarTab(int itemId) {
-        binding.bottomNav.setSelectedItemId(itemId);
+        int position = menuIdToPosition(itemId);
+        if (position >= 0) {
+            viewPager.setCurrentItem(position, true);
+        }
     }
 
     public void navegarAIAChat() {
@@ -109,21 +115,35 @@ public class MainContainerActivity extends AppCompatActivity {
 
     public void navegarAPomodoro() {
         String tag = "pomodoro";
+        Fragment current = fragmentManager.findFragmentById(R.id.pomodoroContainer);
         PomodoroFragment pomodoro = (PomodoroFragment) fragmentManager.findFragmentByTag(tag);
         if (pomodoro == null) pomodoro = new PomodoroFragment();
 
+        binding.pomodoroContainer.setVisibility(android.view.View.VISIBLE);
+
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        if (fragmentoActual != null) {
-            transaction.hide(fragmentoActual);
+        if (current != null) {
+            transaction.hide(current);
         }
         if (pomodoro.isAdded()) {
             transaction.show(pomodoro);
         } else {
-            transaction.add(R.id.fragmentContainer, pomodoro, tag);
+            transaction.add(R.id.pomodoroContainer, pomodoro, tag);
         }
         transaction.addToBackStack("pomodoro");
         transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
         transaction.commit();
-        fragmentoActual = pomodoro;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStack();
+            if (fragmentManager.getBackStackEntryCount() == 0) {
+                binding.pomodoroContainer.setVisibility(android.view.View.GONE);
+            }
+        } else {
+            super.onBackPressed();
+        }
     }
 }

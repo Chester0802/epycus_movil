@@ -37,7 +37,7 @@
         <item name="colorOutline">@color/dark_text_tertiary</item>
         <item name="colorOutlineVariant">@color/dark_outline_variant</item>
 
-        <item name="android:statusBarColor">@color/dark_bg_primary</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowBackground">@color/dark_bg_primary</item>
 
         <!-- Custom attributes -->
