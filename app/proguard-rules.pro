@@ -22,6 +22,9 @@
 -keepclassmembers class es.epycus.app.model.dto.** { *; }
 -keepclassmembers class es.epycus.app.model.entidades.** { *; }
 
+# Room
+-keep class es.epycus.app.data.local.** { *; }
+
 # OkHttp
 -dontwarn okhttp3.**
 -dontwarn okio.**
