@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.res.ColorStateList;
 import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -252,12 +253,10 @@ public class HabitosFragment extends Fragment {
                 : tvAccent.data;
         ColorStateList accentStroke = ColorStateList.valueOf(accentColor);
 
-        Chip chipTodas = new Chip(requireContext());
+        ContextThemeWrapper themedContext = new ContextThemeWrapper(requireContext(), R.style.Widget.Epycus.Chip.Filter);
+
+        Chip chipTodas = new Chip(themedContext);
         chipTodas.setText(getString(R.string.todas));
-        chipTodas.setChipBackgroundColorResource(android.R.color.transparent);
-        chipTodas.setChipStrokeColor(accentStroke);
-        chipTodas.setChipStrokeWidth(1f);
-        chipTodas.setChipCornerRadius(18f);
         chipTodas.setCheckedIconVisible(false);
         chipTodas.setCheckable(true);
         chipTodas.setChecked(true);
@@ -270,12 +269,8 @@ public class HabitosFragment extends Fragment {
         binding.chipGroupCategorias.addView(chipTodas);
 
         for (String cat : categorias) {
-            Chip chip = new Chip(requireContext());
+            Chip chip = new Chip(themedContext);
             chip.setText(cat);
-            chip.setChipBackgroundColorResource(android.R.color.transparent);
-            chip.setChipStrokeColor(accentStroke);
-            chip.setChipStrokeWidth(1f);
-            chip.setChipCornerRadius(18f);
             chip.setCheckedIconVisible(false);
             chip.setCheckable(true);
             chip.setOnCheckedChangeListener((buttonView, isChecked) -> {

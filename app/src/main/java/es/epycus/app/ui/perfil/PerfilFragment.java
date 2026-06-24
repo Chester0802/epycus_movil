@@ -80,7 +80,6 @@ public class PerfilFragment extends Fragment {
         binding.btnConfiguracion.setOnClickListener(v -> mostrarDialogoConfiguracion());
         binding.btnToggleTheme.setOnClickListener(v -> {
             ThemeManager.getInstance(requireContext()).toggle();
-            requireActivity().recreate();
         });
         actualizarTextoTema();
 
@@ -402,7 +401,6 @@ public class PerfilFragment extends Fragment {
                     break;
                 case 1:
                     ThemeManager.getInstance(requireContext()).toggle();
-                    requireActivity().recreate();
                     break;
                 case 2:
                     mostrarDialogoCambiarContrasena();

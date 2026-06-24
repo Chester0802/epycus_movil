@@ -1,6 +1,7 @@
 package es.epycus.app.ui.adapters;
 
 import android.content.res.TypedArray;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -90,18 +91,20 @@ public class MisionAdapter extends RecyclerView.Adapter<MisionAdapter.ViewHolder
             holder.itemView.setAlpha(1.0f);
         }
 
-        int color;
+        int colorAttr;
         switch (mision.getPrioridad()) {
             case "Alta":
-                color = ContextCompat.getColor(holder.itemView.getContext(), R.color.priority_alta);
+                colorAttr = R.attr.epError;
                 break;
             case "Media":
-                color = ContextCompat.getColor(holder.itemView.getContext(), R.color.priority_media);
+                colorAttr = R.attr.epWarning;
                 break;
             default:
-                color = ContextCompat.getColor(holder.itemView.getContext(), R.color.priority_baja);
+                colorAttr = R.attr.epSuccess;
         }
-        holder.binding.tvMisionPrioridad.setTextColor(color);
+        TypedValue tv = new TypedValue();
+        holder.itemView.getContext().getTheme().resolveAttribute(colorAttr, tv, true);
+        holder.binding.tvMisionPrioridad.setTextColor(tv.data);
 
         holder.binding.cbCompletada.setOnClickListener(v -> {
             if (listener != null && !mision.isCompletada()) {

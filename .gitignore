@@ -15,6 +15,7 @@
 local.properties
 /informe/
 keystore.properties
+secrets.properties
 *.aab
 *.apk
 *.jks

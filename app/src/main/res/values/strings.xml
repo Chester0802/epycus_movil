@@ -267,6 +267,13 @@
     <!-- Dashboard activity -->
     <string name="bienvenido">Bienvenido</string>
 
+    <!-- Bottom nav -->
+    <string name="nav_inicio">Inicio</string>
+    <string name="nav_habitos">Hábitos</string>
+    <string name="nav_misiones">Misiones</string>
+    <string name="nav_diario">Diario</string>
+    <string name="nav_perfil">Perfil</string>
+
     <!-- Habitos empty state btn -->
     <string name="crear_primer_habito_btn">¡Crear mi primer hábito!</string>
 

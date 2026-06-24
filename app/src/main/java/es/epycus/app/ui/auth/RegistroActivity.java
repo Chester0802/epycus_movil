@@ -1,12 +1,17 @@
 package es.epycus.app.ui.auth;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -70,6 +75,25 @@ public class RegistroActivity extends AppCompatActivity {
         });
 
         binding.btnRegistrar.setOnClickListener(v -> registrar());
+
+        SpannableString termsText = new SpannableString(getString(R.string.acepto_terminos));
+        String fullText = getString(R.string.acepto_terminos);
+        int start = fullText.indexOf("términos");
+        if (start == -1) start = fullText.indexOf("terminos");
+        if (start == -1) start = fullText.indexOf("Terminos");
+        int end = start + 9;
+        if (start >= 0) {
+            termsText.setSpan(new ClickableSpan() {
+                @Override
+                public void onClick(@NonNull View widget) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("https://epycus.es/terminos"));
+                    startActivity(browserIntent);
+                }
+            }, start, end, 0);
+        }
+        binding.cbTerminos.setText(termsText);
+        binding.cbTerminos.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
     }
 
     private void mostrarDatePicker() {

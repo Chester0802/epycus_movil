@@ -7,6 +7,7 @@
         <item name="colorSecondary">@color/dark_accent_secondary</item>
         <item name="colorError">@color/dark_error</item>
         <item name="android:statusBarColor">@color/dark_bg_primary</item>
+        <item name="android:windowBackground">@color/dark_bg_primary</item>
 
         <!-- Custom attributes -->
         <item name="epBgPrimary">@color/dark_bg_primary</item>

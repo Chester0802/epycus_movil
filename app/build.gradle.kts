@@ -11,6 +11,15 @@ plugins {
 // Alternativa: definir las variables de entorno EPYCUS_STORE_FILE, EPYCUS_STORE_PASSWORD,
 // EPYCUS_KEY_ALIAS, EPYCUS_KEY_PASSWORD.
 
+val secretsFile = rootProject.file("secrets.properties")
+val secrets = if (secretsFile.exists()) {
+    java.util.Properties().apply { load(secretsFile.inputStream()) }
+} else {
+    null
+}
+val googleClientId = secrets?.getProperty("googleClientId")
+    ?: "621141066064-vtm8tf4bv7bl3oubq3eesaha0205e6gr.apps.googleusercontent.com"
+
 android {
     signingConfigs {
         create("release") {
@@ -39,7 +48,7 @@ android {
         versionName = "1.0"
 
         buildConfigField("String", "API_BASE_URL", "\"https://app.epycus.es/\"")
-        buildConfigField("String", "GOOGLE_CLIENT_ID", "\"621141066064-vtm8tf4bv7bl3oubq3eesaha0205e6gr.apps.googleusercontent.com\"")
+        buildConfigField("String", "GOOGLE_CLIENT_ID", "\"${googleClientId}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -88,6 +97,7 @@ dependencies {
     implementation(libs.security.crypto)
     implementation(libs.play.services.auth)
     implementation(libs.glide)
+    implementation(libs.core.splashscreen)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

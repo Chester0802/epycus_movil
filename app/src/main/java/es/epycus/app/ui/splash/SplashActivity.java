@@ -2,13 +2,11 @@ package es.epycus.app.ui.splash;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.splashscreen.SplashScreen;
 
-import es.epycus.app.R;
 import es.epycus.app.repository.AuthRepository;
 import es.epycus.app.ui.MainContainerActivity;
 import es.epycus.app.ui.auth.LoginActivity;
@@ -17,19 +15,16 @@ import es.epycus.app.util.ThemeManager;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private Handler splashHandler;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         ThemeManager.getInstance(this).applyTheme();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
 
-        AuthRepository authRepository = new AuthRepository(this);
-        SessionManager sessionManager = SessionManager.getInstance(this);
+        splashScreen.setKeepOnScreenCondition(() -> {
+            AuthRepository authRepository = new AuthRepository(this);
+            SessionManager sessionManager = SessionManager.getInstance(this);
 
-        splashHandler = new Handler(Looper.getMainLooper());
-        splashHandler.postDelayed(() -> {
             Intent intent;
             if (authRepository.isLoggedIn() && !sessionManager.isTokenExpired()) {
                 intent = new Intent(SplashActivity.this, MainContainerActivity.class);
@@ -42,14 +37,7 @@ public class SplashActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
-        }, 1500);
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (splashHandler != null) {
-            splashHandler.removeCallbacksAndMessages(null);
-        }
-        super.onDestroy();
+            return false;
+        });
     }
 }

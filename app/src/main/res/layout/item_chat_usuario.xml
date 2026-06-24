@@ -15,7 +15,6 @@
         android:text="@string/mensaje_usuario_ejemplo"
         android:textSize="14sp"
         android:textColor="?attr/epTextOnPrimary"
-        android:background="@drawable/bg_chat_message_sent"
-        android:theme="@style/Theme.Epycus" />
+        android:background="@drawable/bg_chat_message_sent" />
 
 </LinearLayout>

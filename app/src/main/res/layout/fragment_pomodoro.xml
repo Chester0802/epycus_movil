@@ -54,7 +54,7 @@
                 android:indeterminate="false"
                 app:indicatorSize="220dp"
                 app:trackThickness="5dp"
-                app:trackColor="#33FFFFFF"
+                app:trackColor="?attr/epSurfaceBorder"
                 app:indicatorColor="?attr/epAccentSecondary" />
 
             <LinearLayout
@@ -151,7 +151,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/ciclos_label"
-                    android:textSize="10sp"
+                    android:textSize="12sp"
                     android:textColor="?attr/epTextTertiary" />
             </LinearLayout>
 
@@ -184,7 +184,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/hoy_label"
-                    android:textSize="10sp"
+                    android:textSize="12sp"
                     android:textColor="?attr/epTextTertiary" />
             </LinearLayout>
 
@@ -218,7 +218,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/racha_label"
-                    android:textSize="10sp"
+                    android:textSize="12sp"
                     android:textColor="?attr/epTextTertiary" />
             </LinearLayout>
         </LinearLayout>

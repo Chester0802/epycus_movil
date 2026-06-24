@@ -68,9 +68,11 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
+        binding.btnGoogleAuth.setSize(com.google.android.gms.common.SignInButton.SIZE_WIDE);
+        binding.btnGoogleAuth.setColorScheme(com.google.android.gms.common.SignInButton.COLOR_LIGHT);
+
         binding.btnToggleTheme.setOnClickListener(v -> {
             ThemeManager.getInstance(this).toggle();
-            recreate();
         });
         actualizarIconoTema();
 

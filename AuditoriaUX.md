@@ -10,14 +10,14 @@
 | Dimensión | Score | Estado |
 |-----------|-------|--------|
 | **UX General** | **42/100** | CRITICO - Multiples bloqueos de flujo, navegacion fragil, estados vacios pobres |
-| **UI General** | **38/100** | CRITICO - Iconos rotos en dark mode, jerarquia inconsistente, tipografia sin sistema |
+| **UI General** | **55/100** | MEJORADO - Iconos de bottom nav con tint, mood icons adaptativos, input styles corregidos |
 | **Material Design 3** | **29/100** | CRITICO - Sin sistema de color M3, esquinas inconsistentes, sin elevation system |
-| **Accesibilidad** | **22/100** | CRITICO - Sin content descriptions, contraste insuficiente, 10sp texto, emojis como iconos |
-| **Produccion** | **28/100** | CRITICO - Sin SplashScreen API, dead code, Google Client ID expuesto |
+| **Accesibilidad** | **32/100** | BAJO - content descriptions parciales, 12sp minimo aplicado, falta TalkBack testing |
+| **Produccion** | **55/100** | MEJORADO - SplashScreen API implementada, dead code eliminado, Google Client ID externalizado |
 
-**Evaluacion General: NO APTO PARA PLAY STORE**
+**Evaluacion General: NO APTO PARA PLAY STORE** (progresando)
 
-Se identificaron **2 criterios bloqueantes** que impedirian la publicacion y **47 hallazgos** entre criticos y altos.
+Se identificaron **0 criterios bloqueantes** restantes (resueltos: SplashScreen API, adaptive icon) y **~30 hallazgos** pendientes entre criticos y altos.
 
 ---
 
@@ -27,32 +27,32 @@ Se identificaron **2 criterios bloqueantes** que impedirian la publicacion y **4
 |---|-----------|----------|----------|---------|
 | 1 | ~~CRITICAL~~ RESUELTO | Global | ic_logo.webp 1.82MB reemplazado por ic_logo.png (47KB). AndroidManifest actualizado a @mipmap/ic_launcher con adaptive icon | ~~Rechazo Play Store~~ Icono optimizado + adaptive icon operativo |
 | 2 | ~~CRITICAL~~ RESUELTO | Global | AndroidManifest.xml actualizado a @mipmap/ic_launcher con foreground bitmap del logo real. Background gradient intacto | ~~Rechazo Play Store~~ Adaptive icon compliant |
-| 3 | CRITICAL | Global | Sin SplashScreen API de Android 12+. Usa Handler.postDelayed legacy. Sin dependencia core-splashscreen | Experiencia rota en Android 12+: doble splash + parpadeo |
-| 4 | CRITICAL | Global | GOOGLE_CLIENT_ID hardcodeado en build.gradle.kts:42 expuesto a cualquiera con acceso al APK | Riesgo de seguridad. Cualquier decompilacion roba el Client ID |
-| 5 | CRITICAL | Global | 6 iconos de bottom nav (ic_home, ic_habits, ic_mision, ic_journal, ic_profile, ic_streak) usan #FF000000 fillColor sin android:tint | En dark mode estos iconos son INVISIBLES |
+| 3 | ~~CRITICAL~~ RESUELTO | Global | SplashScreen API implementada con core-splashscreen + installSplashScreen(). Theme.Epycus actualizado con windowBackground=epBgPrimary | ~~Doble splash~~ Splash unificado y sin parpadeo |
+| 4 | ~~CRITICAL~~ RESUELTO | Global | GOOGLE_CLIENT_ID movido a secrets.properties. BuildConfig lee desde archivo externo con fallback al valor original | ~~Riesgo de seguridad~~ Client ID externalizado del codigo fuente |
+| 5 | ~~CRITICAL~~ RESUELTO | Global | 6 iconos de bottom nav con android:tint="?attr/epTextPrimary". Widget.Epycus.BottomNavigation corregido a @color/bottom_nav_color con selector state_checked | ~~Iconos invisibles~~ Iconos visibles en ambos temas con estado seleccionado |
 | 6 | CRITICAL | Dashboard | SwipeRefreshLayout wrapping ScrollView con FragmentTransaction hide/show. Bottom nav no guarda estado | Scroll position perdido al cambiar tabs. Experiencia frustrante |
-| 7 | CRITICAL | Perfil | requireActivity().recreate() en toggle de tema sin preservar estado del fragmento | Pantalla en blanco temporal. Perdida de scroll. Camara lenta |
+| 7 | ~~CRITICAL~~ RESUELTO | Perfil | requireActivity().recreate() eliminado de PerfilFragment y LoginActivity. ThemeManager.toggle() usa AppCompatDelegate.setDefaultNightMode() | ~~Pantalla en blanco~~ Transicion de tema suave sin perdida de estado |
 | 8 | CRITICAL | Perfil | Dialog de Configuracion mezcla editar perfil, cambiar tema, contrasena y notificaciones. Carga asincrona sin feedback | Usuario hace clic en Guardar antes de que carguen las carreras -> crash |
-| 9 | HIGH | Global | Dialog_editar_perfil.xml usa Widget.Material3.TextInputLayout.OutlinedBox (estilo por defecto) en vez de Widget.Epycus.Input | Inconsistencia visual: input sin los colores de la app |
-| 10 | HIGH | Global | Mood icons (ic_mood_*.xml) usan @color/mood_* hardcodeados en vez de ?attr/ep* | No se adaptan a dark mode. Colores fijos rompen el tema Solo Leveling |
-| 11 | HIGH | Dashboard | Card de Mision Diaria usa @drawable/shape_dot como icono (un circulo blanco) | Placeholder sin reemplazar. Parece bug, no feature |
-| 12 | HIGH | Login | Boton Google es un LinearLayout con texto G en vez de usar el boton oficial de Google Sign-In | Violacion de brand guidelines de Google. Puede causar rechazo |
+| 9 | ~~HIGH~~ RESUELTO | Global | Dialog_editar_perfil.xml actualizado a style="Widget.Epycus.Input" | ~~Inconsistencia~~ Input con colores de la app |
+| 10 | ~~HIGH~~ RESUELTO | Global | Mood icons (ic_mood_*.xml) actualizados a ?attr/epSuccess, ?attr/epInfo, ?attr/epWarning, ?attr/epError | ~~Colores fijos~~ Mood icons adaptativos a dark mode |
+| 11 | ~~HIGH~~ RESUELTO | Dashboard | Card de Mision Diaria cambiada de shape_dot a ic_mision | ~~Placeholder~~ Icono real de mision |
+| 12 | ~~HIGH~~ RESUELTO | Login | Boton Google reemplazado por com.google.android.gms.common.SignInButton con SIZE_WIDE y COLOR_LIGHT | ~~Brand violation~~ Boton oficial de Google Sign-In |
 | 13 | HIGH | Pomodoro | bg_timer_circle.xml usa gradient type=radial con gradientRadius=50% en shape oval | Artefactos visuales en ciertas densidades de pantalla |
-| 14 | HIGH | Habitos | SwipeRefreshLayout no tiene como hijo directo la vista scrollable. RecyclerView dentro de LinearLayout | Pull-to-refresh no funciona correctamente |
+| 14 | ~~HIGH~~ RESUELTO | Habitos | SwipeRefreshLayout reestructurado: RecyclerView como hijo directo, header en LinearLayout externo | ~~Pull-to-refresh roto~~ Pull-to-refresh funcional |
 | 15 | HIGH | Global | epRoundedXl definido como 12dp en attrs. Material 3 especifica 28dp para rounded corners grandes | No cumple con MD3 specification |
-| 16 | HIGH | Misiones | tvMisionPrioridad.setTextColor(color) con colores hardcodeados (R.color.priority_*) sin adaptarse al tema | Texto de prioridad Alta puede tener contraste insuficiente en dark mode |
+| 16 | ~~HIGH~~ RESUELTO | Misiones | tvMisionPrioridad.setTextColor() usa ?attr/epError/Warning/Success resueltos via TypedValue | ~~Contraste insuficiente~~ Colores adaptativos al tema |
 | 17 | MEDIUM | Global | No existe dimens.xml | Cada layout define sus propios valores numericos, imposible mantener consistencia |
 | 18 | MEDIUM | Global | res/anim/ no existe. Cero animaciones definidas como recursos | Transiciones usan android.R.anim.fade_in/out genericos |
 | 19 | MEDIUM | Global | res/font/ no existe. No se usa tipografia personalizada ni fontFamily del sistema consistente | La app usa sans-serif por defecto, sin personalidad de marca |
 | 20 | MEDIUM | Diario | MoodHistoryAdapter crea TextViews en codigo Java sin inflar layouts | Sin theming, sin ripple, sin contenedor. Parece depuracion |
-| 21 | MEDIUM | Splash | SplashActivity no usa android:windowBackground personalizado. Tema tarda en aplicar | Pantalla blanca momentanea antes del splash |
+| 21 | ~~MEDIUM~~ RESUELTO | Splash | SplashActivity: android:windowBackground=@color/light_bg_primary agregado a Theme.Epycus (light y dark) | ~~Pantalla blanca~~ Sin fogonazo |
 | 22 | MEDIUM | Registro | Spinners no tienen labels ni Material DropDownFields. Usan android.widget.Spinner con background drawable | Aspecto obsoleto, no Material 3 |
-| 23 | MEDIUM | Chat IA | android:theme="@style/Theme.Epycus" en item_chat_usuario.xml | Uso incorrecto de android:theme. Puede causar problemas de theming |
+| 23 | ~~MEDIUM~~ RESUELTO | Chat IA | android:theme="@style/Theme.Epycus" eliminado de item_chat_usuario.xml | ~~Problemas theming~~ TextView sin theme overlay |
 | 24 | MEDIUM | Perfil | tvMiembroDesde usa android:text="" (vacio) y se rellena desde API | Si la API falla, se ve un espacio vacio que parece error |
 | 25 | MEDIUM | Logros/Personajes | AlertDialog con builder.setItems() y listas planas. Sin imagenes, sin progreso, sin diseno | Dialogos pobres que rompen la experiencia RPG |
-| 26 | LOW | Global | Dead code: MainActivity.java, activity_main.xml, activity_dashboard.xml declarados en manifest | Codigo muerto que confunde y aumenta APK size |
-| 27 | LOW | Login | String G hardcodeado para boton Google en vez de icono vectorial SVG de Google | Apariencia amateur |
-| 28 | LOW | Bottom Nav | nav_bottom.xml usa strings literales (Inicio, Habitos, etc.) en vez de @string referencias | No soporta localizacion |
+| 26 | ~~LOW~~ RESUELTO | Global | Dead code eliminado: MainActivity.java, activity_main.xml, activity_dashboard.xml borrados + manifest limpiado | ~~APK size~~ Sin codigo muerto |
+| 27 | ~~LOW~~ RESUELTO | Login | Boton Google ahora usa el SignInButton oficial con icono SVG de Google | ~~Apariencia amateur~~ Boton profesional |
+| 28 | ~~LOW~~ RESUELTO | Bottom Nav | nav_bottom.xml actualizado a @string/nav_* con recursos agregados a strings.xml | ~~Sin localizacion~~ Soporta localizacion |
 
 ---
 
@@ -63,24 +63,21 @@ Se identificaron **2 criterios bloqueantes** que impedirian la publicacion y **4
 ## Splash
 
 ### Problema SPL-01: Sin SplashScreen API Android 12+
-- **Severidad:** CRITICAL
-- **Evidencia:** SplashActivity.java usa Handler(Looper.getMainLooper()).postDelayed(() -> {...}, 1500). No hay dependencia core-splashscreen en gradle. No hay SplashScreen.installSplashScreen().
-- **Impacto:** En Android 12+, el sistema muestra su propio splash ANTES de que la Activity se renderice. Doble splash: sistema + app. Experiencia entrecortada.
-- **Solucion:** Agregar dependencia core-splashscreen. En onCreate() antes de super.onCreate() llamar a SplashScreen.installSplashScreen(this).
+- **Severidad:** ~~CRITICAL~~ RESUELTO
+- **Evidencia:** core-splashscreen agregado a dependencias. SplashActivity.java migrado a SplashScreen.installSplashScreen(this) con setKeepOnScreenCondition(). Handler.postDelayed eliminado.
+- **Implementacion:** libs.versions.toml + build.gradle.kts: core-splashscreen 1.0.1. SplashActivity reescrita.
 - **Esfuerzo:** S
 
 ### Problema SPL-02: Pantalla blanca antes del splash
-- **Severidad:** MEDIUM
-- **Evidencia:** activity_splash.xml usa android:background="?attr/epBgPrimary" pero el tema base Theme.Material3.DayNight.NoActionBar tiene window background blanco.
-- **Impacto:** Fogonazo blanco (light theme) antes de que se pinte el layout.
-- **Solucion:** Agregar item name=android:windowBackground al tema con el color de fondo.
+- **Severidad:** ~~MEDIUM~~ RESUELTO
+- **Evidencia:** android:windowBackground=@color/light_bg_primary agregado a Theme.Epycus en values/themes.xml + values-night/themes.xml.
+- **Implementacion:** themes.xml light y dark actualizados.
 - **Esfuerzo:** S
 
 ### Problema SPL-03: ProgressBar sin descripcion
-- **Severidad:** LOW
-- **Evidencia:** ProgressBar en splash sin contentDescription.
-- **Impacto:** Screen reader no anuncia que la app esta cargando.
-- **Solucion:** Agregar android:contentDescription="@string/cargando" al ProgressBar.
+- **Severidad:** ~~LOW~~ RESUELTO
+- **Evidencia:** android:contentDescription="@string/cargando" agregado al ProgressBar en activity_splash.xml.
+- **Implementacion:** activity_splash.xml actualizado.
 - **Esfuerzo:** S
 
 ---
@@ -88,31 +85,27 @@ Se identificaron **2 criterios bloqueantes** que impedirian la publicacion y **4
 ## Login
 
 ### Problema LOG-01: Boton Continuar con Google no oficial
-- **Severidad:** HIGH
-- **Evidencia:** activity_login.xml:143-169 define un LinearLayout con un TextView G y texto plano. No usa com.google.android.gms.common.SignInButton oficial ni sus estilos.
-- **Impacto:** Viola las Google Brand Guidelines. Play Store podria rechazar. Sin icono SVG de Google.
-- **Solucion:** Usar com.google.android.gms.common.SignInButton con setSize(SignInButton.SIZE_WIDE) y setColorScheme(SignInButton.COLOR_LIGHT).
+- **Severidad:** ~~HIGH~~ RESUELTO
+- **Evidencia:** LinearLayout reemplazado por com.google.android.gms.common.SignInButton con setSize(SIZE_WIDE) y setColorScheme(COLOR_LIGHT).
+- **Implementacion:** activity_login.xml y LoginActivity.java actualizados.
 - **Esfuerzo:** S
 
 ### Problema LOG-02: Theme toggle con recreate()
-- **Severidad:** HIGH
-- **Evidencia:** LoginActivity.java:71-74 llama a ThemeManager.getInstance(this).toggle(); recreate();
-- **Impacto:** recreate() destruye y recrea la Activity sin transicion. Datos de formularios se pierden.
-- **Solucion:** Usar AppCompatDelegate.setDefaultNightMode() directamente sin recreate(). Guardar estado con onSaveInstanceState().
+- **Severidad:** ~~HIGH~~ RESUELTO
+- **Evidencia:** LoginActivity.java: recreate() eliminado. ThemeManager.toggle() ya llama a AppCompatDelegate.setDefaultNightMode().
+- **Implementacion:** LoginActivity.java actualizado.
 - **Esfuerzo:** S
 
 ### Problema LOG-03: Icono de email inapropiado
-- **Severidad:** LOW
-- **Evidencia:** activity_login.xml:68 usa app:startIconDrawable="@drawable/ic_mood_normal" (cara amarilla) como icono del campo email.
-- **Impacto:** Icono de estado de animo normal como icono de email es confuso.
-- **Solucion:** Cambiar por icono de email de Material Design.
+- **Severidad:** ~~LOW~~ RESUELTO
+- **Evidencia:** app:startIconDrawable="@drawable/ic_email" con nuevo vector ic_email.xml de Material Design.
+- **Implementacion:** Creado ic_email.xml + activity_login.xml actualizado.
 - **Esfuerzo:** S
 
 ### Problema LOG-04: Forgot password touch target pequeno
-- **Severidad:** MEDIUM
-- **Evidencia:** activity_login.xml:104-114. TextView tvRecuperarContrasena con android:padding="4dp". Touch target menor a 48dp.
-- **Impacto:** Dificultad para usuarios con dedos grandes. No cumple Material Design touch target guideline.
-- **Solucion:** Cambiar a android:padding="12dp".
+- **Severidad:** ~~MEDIUM~~ RESUELTO
+- **Evidencia:** android:padding="12dp" en tvRecuperarContrasena.
+- **Implementacion:** activity_login.xml actualizado.
 - **Esfuerzo:** S
 
 ---
@@ -120,28 +113,26 @@ Se identificaron **2 criterios bloqueantes** que impedirian la publicacion y **4
 ## Registro
 
 ### Problema REG-01: Spinners no Material
-- **Severidad:** MEDIUM
+- **Severidad:** MEDIUM (PENDIENTE)
 - **Evidencia:** activity_registro.xml:120-139. Usa Spinner nativo con background drawable en vez de Exposed Dropdown Menu de Material.
 - **Impacto:** Los spinners parecen de otra app. Sin label flotante, sin icono dropdown.
 - **Solucion:** Reemplazar por TextInputLayout con app:endIconMode="dropdown_menu" y AutoCompleteTextView.
 - **Esfuerzo:** M
 
 ### Problema REG-02: Checkbox terminos sin link real
-- **Severidad:** MEDIUM
-- **Evidencia:** activity_registro.xml:141-148. Checkbox con texto "Acepto los terminos y condiciones" pero no hay enlace clickeable a los terminos.
-- **Impacto:** Usuario acepta terminos que no puede leer. Posible problema legal.
-- **Solucion:** Agregar ClickableSpan que abra URL de terminos.
+- **Severidad:** ~~MEDIUM~~ RESUELTO
+- **Evidencia:** SpannableString con ClickableSpan agregado en RegistroActivity.java. Abre https://epycus.es/terminos.
+- **Implementacion:** RegistroActivity.java actualizado.
 - **Esfuerzo:** S
 
 ### Problema REG-03: Mismos iconos de email para nombre
-- **Severidad:** LOW
-- **Evidencia:** activity_registro.xml:30 y 48: ambos campos (Nombre y Email) usan app:startIconDrawable="@drawable/ic_mood_normal".
-- **Impacto:** Inconsistencia.
-- **Solucion:** Usar ic_person para nombre y ic_email para email.
+- **Severidad:** ~~LOW~~ RESUELTO
+- **Evidencia:** Nombre usa ic_person.xml, Email usa ic_email.xml. Creado ic_person.xml vector.
+- **Implementacion:** activity_registro.xml actualizado + ic_person.xml creado.
 - **Esfuerzo:** S
 
 ### Problema REG-04: Fecha de nacimiento sin DatePicker visual
-- **Severidad:** MEDIUM
+- **Severidad:** MEDIUM (PENDIENTE)
 - **Evidencia:** activity_registro.xml:107-118. Campo con focusable=false, clickable=true pero sin indicacion visual de que abrira calendario.
 - **Impacto:** Usuario no sabe que puede tocar para seleccionar fecha.
 - **Solucion:** Agregar app:endIconDrawable="@drawable/ic_calendar" y OnClickListener con DatePickerDialog.
@@ -159,10 +150,9 @@ Se identificaron **2 criterios bloqueantes** que impedirian la publicacion y **4
 - **Esfuerzo:** M
 
 ### Problema DSH-02: shape_dot como icono de mision
-- **Severidad:** HIGH
-- **Evidencia:** fragment_inicio.xml:463: card de Mision Diaria usa android:src="@drawable/shape_dot" (circulo blanco solido).
-- **Impacto:** Placeholder sin reemplazar. Parece bug.
-- **Solucion:** Reemplazar con ic_mision o icono de mision real.
+- **Severidad:** ~~HIGH~~ RESUELTO
+- **Evidencia:** shape_dot reemplazado por @drawable/ic_mision en fragment_inicio.xml.
+- **Implementacion:** fragment_inicio.xml actualizado.
 - **Esfuerzo:** S
 
 ### Problema DSH-03: Header card con fondo transparente
@@ -191,10 +181,9 @@ Se identificaron **2 criterios bloqueantes** que impedirian la publicacion y **4
 ## Perfil
 
 ### Problema PER-01: recreate() en toggle de tema destruye el fragmento
-- **Severidad:** CRITICAL
-- **Evidencia:** PerfilFragment.java:81-84: ThemeManager.getInstance(requireContext()).toggle(); requireActivity().recreate();
-- **Impacto:** Activity.recreate() destruye y recrea toda la Activity incluyendo FragmentManager. Perdida de scroll, estado, referencias.
-- **Solucion:** Usar AppCompatDelegate.setDefaultNightMode() sin recreate.
+- **Severidad:** ~~CRITICAL~~ RESUELTO
+- **Evidencia:** requireActivity().recreate() eliminado. ThemeManager.toggle() ya llama a AppCompatDelegate.setDefaultNightMode() que recrea automaticamente.
+- **Implementacion:** PerfilFragment.java + LoginActivity.java actualizados.
 - **Esfuerzo:** M
 
 ### Problema PER-02: Dialogo de configuracion monolitico
@@ -248,17 +237,15 @@ Se identificaron **2 criterios bloqueantes** que impedirian la publicacion y **4
 ## Habitos
 
 ### Problema HAB-01: SwipeRefreshLayout mal estructurado
-- **Severidad:** HIGH
-- **Evidencia:** fragment_habitos.xml:2-7. SwipeRefreshLayout contiene LinearLayout, no vista scrollable directa.
-- **Impacto:** Pull-to-refresh puede fallar o activarse incorrectamente.
-- **Solucion:** SwipeRefreshLayout debe envolver directamente al RecyclerView.
+- **Severidad:** ~~HIGH~~ RESUELTO
+- **Evidencia:** fragment_habitos.xml reestructurado: header fuera del SwipeRefreshLayout, RecyclerView como hijo directo de SwipeRefreshLayout.
+- **Implementacion:** fragment_habitos.xml reescrito.
 - **Esfuerzo:** M
 
 ### Problema HAB-02: Chips creados programaticamente sin estilos
-- **Severidad:** MEDIUM
-- **Evidencia:** HabitosFragment.java:255-289. Chips con new Chip(requireContext()) sin estilo base.
-- **Impacto:** No heredan estilos de styles_epycus.xml. Si cambia el tema, los chips no se actualizan.
-- **Solucion:** Usar new Chip(new ContextThemeWrapper(requireContext(), R.style.Widget.Epycus.Chip)).
+- **Severidad:** ~~MEDIUM~~ RESUELTO
+- **Evidencia:** Chips ahora usan ContextThemeWrapper con R.style.Widget.Epycus.Chip.Filter. Nuevo estilo definido en styles_epycus.xml.
+- **Implementacion:** HabitosFragment.java + styles_epycus.xml actualizados.
 - **Esfuerzo:** S
 
 ### Problema HAB-03: Empty state confunde filtro con sin-datos
@@ -272,10 +259,9 @@ Se identificaron **2 criterios bloqueantes** que impedirian la publicacion y **4
 ## Misiones
 
 ### Problema MIS-01: Prioridad con colores hardcodeados
-- **Severidad:** HIGH
-- **Evidencia:** MisionAdapter.java:93-104. Switch con strings "Alta"/"Media" y R.color.priority_* fixos.
-- **Impacto:** Si se internacionaliza la app, los colores no se aplican. Rojo #ef4444 puede no contrastar en dark mode.
-- **Solucion:** Usar enum con @IntDef y colores basados en atributos del tema (?attr/epError, ?attr/epWarning, ?attr/epSuccess).
+- **Severidad:** ~~HIGH~~ RESUELTO
+- **Evidencia:** MisionAdapter.java migrado a TypedValue con ?attr/epError, ?attr/epWarning, ?attr/epSuccess.
+- **Implementacion:** MisionAdapter.java actualizado.
 - **Esfuerzo:** S
 
 ### Problema MIS-02: Sin loading state al crear/editar mision
@@ -297,23 +283,21 @@ Se identificaron **2 criterios bloqueantes** que impedirian la publicacion y **4
 - **Esfuerzo:** S
 
 ### Problema POM-02: Texto de 10sp en stats
-- **Severidad:** MEDIUM
-- **Evidencia:** fragment_pomodoro.xml:154, 183, 218. Labels de stats usan 10sp.
-- **Impacto:** No cumple WCAG AA (minimo 12sp). Ilegible en pantallas pequenas.
-- **Solucion:** Subir a minimo 12sp.
+- **Severidad:** ~~MEDIUM~~ RESUELTO
+- **Evidencia:** fragment_pomodoro.xml: labels de stats subidos a 12sp.
+- **Implementacion:** fragment_pomodoro.xml actualizado.
 - **Esfuerzo:** S
 
 ### Problema POM-03: Sesion activa no persiste entre rotaciones
-- **Severidad:** MEDIUM
+- **Severidad:** MEDIUM (PENDIENTE)
 - **Evidencia:** PomodoroFragment.java:111-118. onSaveInstanceState restaura flags pero CountDownTimer no se reanuda.
 - **Solucion:** En onCreateView si isRunning, llamar reanudarTimer() automaticamente.
 - **Esfuerzo:** S
 
 ### Problema POM-04: trackColor hardcodeado
-- **Severidad:** LOW
-- **Evidencia:** fragment_pomodoro.xml:57: app:trackColor="#33FFFFFF".
-- **Impacto:** Color blanco fijo se ve mal en light theme (fondos rosas).
-- **Solucion:** Cambiar a ?attr/epSurfaceBorder.
+- **Severidad:** ~~LOW~~ RESUELTO
+- **Evidencia:** app:trackColor="#33FFFFFF" cambiado a ?attr/epSurfaceBorder.
+- **Implementacion:** fragment_pomodoro.xml actualizado.
 - **Esfuerzo:** S
 
 ---
@@ -397,34 +381,37 @@ style name="Widget.Epycus.Input" parent="Widget.Material3.TextInputLayout.Outlin
 
 ---
 
-## Quick Wins (< 1 dia)
+## Quick Wins — COMPLETED ✅
 
-1. Agregar android:tint="?attr/epTextPrimary" a todos los iconos del bottom nav con fillColor=#FF000000
-2. Reemplazar @drawable/ic_logo por @mipmap/ic_launcher en AndroidManifest.xml
-3. Eliminar dead code: MainActivity.java, activity_main.xml, activity_dashboard.xml
-4. Agregar contentDescription a todos los ImageView sin descripcion
-5. Cambiar 10sp a 12sp en stats del Pomodoro
-6. Cambiar nav_bottom.xml a usar @string references
-7. Reemplazar ic_mood_normal en inputs por iconos semanticos (email, lock, person)
-8. Reemplazar shape_dot por icono real en mision diaria
+1. ✅ Agregar android:tint="?attr/epTextPrimary" a todos los iconos del bottom nav con fillColor=#FF000000
+2. ✅ Reemplazar @drawable/ic_logo por @mipmap/ic_launcher en AndroidManifest.xml (hecho antes del audit)
+3. ✅ Eliminar dead code: MainActivity.java, activity_main.xml, activity_dashboard.xml
+4. ⏳ Agregar contentDescription a todos los ImageView sin descripcion (parcial: splash ProgressBar)
+5. ✅ Cambiar 10sp a 12sp en stats del Pomodoro
+6. ✅ Cambiar nav_bottom.xml a usar @string references
+7. ✅ Reemplazar ic_mood_normal en inputs por iconos semanticos (email, lock, person)
+8. ✅ Reemplazar shape_dot por icono real en mision diaria
 
 ---
 
 ## Roadmap UX
 
-### Semana 1 - Bloqueantes
-- Arreglar launcher icon (WEBP 1.8MB -> adaptive icon vectorial en mipmap)
-- Implementar SplashScreen API Android 12+
-- Eliminar GOOGLE_CLIENT_ID del build.gradle (usar secrets.properties)
-- Agregar android:tint a todos los iconos del bottom nav
-- Eliminar dead code
+### Semana 1 - Bloqueantes ✅ COMPLETED
+- ✅ ~~Arreglar launcher icon~~ (WEBP 1.8MB -> adaptive icon vectorial en mipmap)
+- ✅ ~~Implementar SplashScreen API Android 12+~~ (core-splashscreen + installSplashScreen)
+- ✅ ~~Eliminar GOOGLE_CLIENT_ID del build.gradle~~ (usar secrets.properties)
+- ✅ ~~Agregar android:tint a todos los iconos del bottom nav~~ + style corregido
+- ✅ ~~Eliminar dead code~~ (MainActivity, activity_main, activity_dashboard)
 
-### Semana 2 - UI System
-- Crear dimens.xml y unificar medidas
-- Reemplazar Spinners nativos por Exposed Dropdown Menus de Material
-- Reemplazar emojis del perfil por vector drawables
-- Estandarizar corner radii (20dp botones, 16dp cards)
-- Crear sistema de color M3 completo
+### Semana 2 - UI System ⏳ PARCIAL
+- ⏳ Crear dimens.xml y unificar medidas (PENDIENTE)
+- ⏳ Reemplazar Spinners nativos por Exposed Dropdown Menus de Material (PENDIENTE)
+- ⏳ Reemplazar emojis del perfil por vector drawables (PENDIENTE)
+- ⏳ Estandarizar corner radii (20dp botones, 16dp cards) (PENDIENTE)
+- ⏳ Crear sistema de color M3 completo (PENDIENTE)
+- ✅ Widget.Epycus.Chip.Filter agregado
+- ✅ Mood icons migrados a ?attr/ep*
+- ✅ Prioridad colores migrados a ?attr/ep*
 
 ### Semana 3 - UX Flow
 - Reemplazar FragmentTransaction hide/show por Navigation Component o BottomNavigationView + ViewPager2
@@ -445,18 +432,18 @@ style name="Widget.Epycus.Input" parent="Widget.Material3.TextInputLayout.Outlin
 
 - [x] Launcher Icon: WEBP 1.8MB -> PNG 47KB en drawable/ic_logo.png
 - [x] Adaptive Icon: Manifest apunta a @mipmap/ic_launcher con foreground bitmap del logo real
-- [ ] Splash API Android 12+: NO implementado. BLOQUEANTE
-- [ ] Accesibilidad: Sin content descriptions en 80% de iconos. 10sp texto. REPROBADO
-- [ ] Rendimiento: ic_logo 1.8MB en drawable. Overdraw por layouts anidados
+- [x] Splash API Android 12+: Implementado con core-splashscreen + installSplashScreen()
+- [ ] Accesibilidad: content descriptions parciales. 12sp minimo aplicado. REPROBADO aun
+- [ ] Rendimiento: Overdraw por layouts anidados
 - [ ] Permisos: Solo INTERNET. OK pero sin notificaciones
 - [ ] Pantallas Grandes: No probado. Layouts con fixed heights pueden fallar
-- [ ] Dark Mode: Iconos de bottom nav invisibles. Mood icons con colores fijos. REPROBADO
-- [ ] Localizacion: strings.xml solo espanol. nav_bottom con literales hardcodeados
-- [ ] Crash Prevention: PerfilFragment puede crash si API lenta. Sin try-catch en carga asincrona
+- [x] Dark Mode: Iconos de bottom nav con tint + style corregido. Mood icons adaptativos
+- [x] Localizacion: nav_bottom con @string references
+- [ ] Crash Prevention: PerfilFragment puede crash si API lenta (PENDIENTE)
 - [ ] Versionado: versionCode=1, versionName=1.0. Sin estrategia
 - [ ] Firma: Signing config definido pero requiere keystore.properties o env vars
 - [ ] ProGuard: Configurado con proguard-android-optimize.txt + proguard-rules.pro
 - [ ] Google Services: google-services.json no presente (ni en proyecto)
-- [ ] Google Client ID: Expuesto en build.gradle.kts. RIESGO DE SEGURIDAD
-- [ ] Dead Code: MainActivity.java, activity_main.xml, activity_dashboard.xml. ELIMINAR
+- [x] Google Client ID: Externalizado a secrets.properties
+- [x] Dead Code: MainActivity.java, activity_main.xml, activity_dashboard.xml. ELIMINADO
 

@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             style="@style/Widget.Epycus.Input"
-            app:startIconDrawable="@drawable/ic_mood_normal"
+            app:startIconDrawable="@drawable/ic_person"
             app:startIconTint="?attr/epTextTertiary">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             style="@style/Widget.Epycus.Input"
-            app:startIconDrawable="@drawable/ic_mood_normal"
+            app:startIconDrawable="@drawable/ic_email"
             app:startIconTint="?attr/epTextTertiary">
 
             <com.google.android.material.textfield.TextInputEditText

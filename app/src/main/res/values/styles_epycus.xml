@@ -48,10 +48,19 @@
         <item name="hintTextColor">?attr/epTextTertiary</item>
     </style>
 
+    <!-- Epycus Chip Filter -->
+    <style name="Widget.Epycus.Chip.Filter" parent="Widget.Material3.Chip.Filter">
+        <item name="chipCornerRadius">20dp</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipStrokeColor">?attr/epAccent</item>
+        <item name="chipBackgroundColor">?attr/epSurface</item>
+        <item name="checkedChipBackgroundColor">?attr/epAccent</item>
+    </style>
+
     <!-- Epycus Bottom Navigation -->
     <style name="Widget.Epycus.BottomNavigation" parent="Widget.Material3.BottomNavigationView">
-        <item name="itemIconTint">?attr/epTextTertiary</item>
-        <item name="itemTextColor">?attr/epTextTertiary</item>
+        <item name="itemIconTint">@color/bottom_nav_color</item>
+        <item name="itemTextColor">@color/bottom_nav_color</item>
         <item name="backgroundTint">?attr/epSurface</item>
     </style>
 </resources>

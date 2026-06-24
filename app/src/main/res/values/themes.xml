@@ -8,6 +8,7 @@
         <item name="colorSecondary">@color/light_accent_secondary</item>
         <item name="colorError">@color/light_error</item>
         <item name="android:statusBarColor">@color/light_bg_primary</item>
+        <item name="android:windowBackground">@color/light_bg_primary</item>
 
         <!-- Custom attributes -->
         <item name="epBgPrimary">@color/light_bg_primary</item>
