@@ -42,6 +42,10 @@ public class MainContainerActivity extends AppCompatActivity {
             fragmentoActual = fragmentManager.findFragmentById(R.id.fragmentContainer);
         }
 
+        fragmentManager.addOnBackStackChangedListener(() -> {
+            fragmentoActual = fragmentManager.findFragmentById(R.id.fragmentContainer);
+        });
+
         setupNavigation();
     }
 

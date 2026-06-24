@@ -98,7 +98,13 @@ public class PomodoroFragment extends Fragment {
 
         repository = new PomodoroRepository(requireContext());
 
-        binding.swipeRefresh.setOnRefreshListener(this::recargarTodo);
+        binding.swipeRefresh.setOnRefreshListener(() -> {
+            if (!isRunning) {
+                recargarTodo();
+            } else {
+                binding.swipeRefresh.setRefreshing(false);
+            }
+        });
         binding.swipeRefresh.setColorSchemeResources(R.color.light_accent, R.color.light_accent_secondary);
         binding.progressIndicator.setMax(1000);
 

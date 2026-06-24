@@ -171,7 +171,8 @@ public class CompletarRegistroGoogleActivity extends AppCompatActivity {
                     AuthResponse authData = resp.getDatos();
                     String userName = SessionManager.extractNameFromToken(authData.getToken());
                     if (userName == null) userName = nombre;
-                    authRepository.saveSession(authData, -1, userName, correo);
+                    int userId = SessionManager.extractIdFromToken(authData.getToken());
+                    authRepository.saveSession(authData, userId > 0 ? userId : -1, userName, correo);
                     navegarAlHome();
                 } else {
                     String msg = NetworkUtils.getErrorMessage(CompletarRegistroGoogleActivity.this, response);

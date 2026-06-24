@@ -127,14 +127,16 @@ public class SessionManager {
             String json = decodeJwtPayload(token);
             if (json == null) return -1;
             com.google.gson.JsonObject obj = com.google.gson.JsonParser.parseString(json).getAsJsonObject();
+            String idStr = null;
             if (obj.has("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")) {
-                return obj.get("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").getAsInt();
+                idStr = obj.get("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").getAsString();
+            } else if (obj.has("sub")) {
+                idStr = obj.get("sub").getAsString();
+            } else if (obj.has("nameid")) {
+                idStr = obj.get("nameid").getAsString();
             }
-            if (obj.has("sub")) {
-                return obj.get("sub").getAsInt();
-            }
-            if (obj.has("nameid")) {
-                return obj.get("nameid").getAsInt();
+            if (idStr != null) {
+                return Integer.parseInt(idStr);
             }
         } catch (Exception ignored) { }
         return -1;

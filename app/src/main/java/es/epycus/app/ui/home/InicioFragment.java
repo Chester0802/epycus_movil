@@ -124,7 +124,7 @@ public class InicioFragment extends Fragment {
 
         binding.cardMision.setOnClickListener(v -> {
             if (getActivity() instanceof MainContainerActivity) {
-                ((MainContainerActivity) getActivity()).seleccionarTab(R.id.nav_diario);
+                ((MainContainerActivity) getActivity()).seleccionarTab(R.id.nav_misiones);
             }
         });
 

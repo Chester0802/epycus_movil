@@ -16,6 +16,9 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.res.ColorStateList;
+import android.util.TypedValue;
+
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
@@ -242,10 +245,17 @@ public class HabitosFragment extends Fragment {
 
         binding.chipGroupCategorias.removeAllViews();
 
+        TypedValue tvAccent = new TypedValue();
+        requireContext().getTheme().resolveAttribute(R.attr.epAccent, tvAccent, true);
+        int accentColor = tvAccent.resourceId != 0
+                ? androidx.core.content.ContextCompat.getColor(requireContext(), tvAccent.resourceId)
+                : tvAccent.data;
+        ColorStateList accentStroke = ColorStateList.valueOf(accentColor);
+
         Chip chipTodas = new Chip(requireContext());
         chipTodas.setText(getString(R.string.todas));
         chipTodas.setChipBackgroundColorResource(android.R.color.transparent);
-        chipTodas.setChipStrokeColorResource(R.color.light_accent);
+        chipTodas.setChipStrokeColor(accentStroke);
         chipTodas.setChipStrokeWidth(1f);
         chipTodas.setChipCornerRadius(18f);
         chipTodas.setCheckedIconVisible(false);
@@ -263,7 +273,7 @@ public class HabitosFragment extends Fragment {
             Chip chip = new Chip(requireContext());
             chip.setText(cat);
             chip.setChipBackgroundColorResource(android.R.color.transparent);
-            chip.setChipStrokeColorResource(R.color.light_accent);
+            chip.setChipStrokeColor(accentStroke);
             chip.setChipStrokeWidth(1f);
             chip.setChipCornerRadius(18f);
             chip.setCheckedIconVisible(false);
