@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Spacing -->
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_sm">8dp</dimen>
+    <dimen name="spacing_md">12dp</dimen>
+    <dimen name="spacing_lg">16dp</dimen>
+    <dimen name="spacing_xl">24dp</dimen>
+    <dimen name="spacing_xxl">32dp</dimen>
+
+    <!-- Corner Radius -->
+    <dimen name="corner_sm">2dp</dimen>
+    <dimen name="corner_md">4dp</dimen>
+    <dimen name="corner_lg">8dp</dimen>
+    <dimen name="corner_xl">16dp</dimen>
+    <dimen name="corner_xxl">20dp</dimen>
+    <dimen name="corner_xxxl">28dp</dimen>
+
+    <!-- Card dimensions -->
+    <dimen name="card_elevation_default">1dp</dimen>
+    <dimen name="card_elevation_raised">4dp</dimen>
+    <dimen name="card_stroke_width">0.5dp</dimen>
+    <dimen name="card_content_padding">16dp</dimen>
+
+    <!-- Button dimensions -->
+    <dimen name="button_height">48dp</dimen>
+    <dimen name="button_min_width">120dp</dimen>
+    <dimen name="button_corner_radius">20dp</dimen>
+    <dimen name="button_icon_size">20dp</dimen>
+
+    <!-- Input dimensions -->
+    <dimen name="input_height">52dp</dimen>
+    <dimen name="input_stroke_width">1dp</dimen>
+    <dimen name="input_stroke_width_focused">2dp</dimen>
+    <dimen name="input_corner_radius">12dp</dimen>
+
+    <!-- Icon sizes -->
+    <dimen name="icon_sm">20dp</dimen>
+    <dimen name="icon_md">24dp</dimen>
+    <dimen name="icon_lg">32dp</dimen>
+    <dimen name="icon_xl">44dp</dimen>
+    <dimen name="icon_avatar">120dp</dimen>
+
+    <!-- Text sizes -->
+    <dimen name="text_xs">11sp</dimen>
+    <dimen name="text_sm">12sp</dimen>
+    <dimen name="text_md">14sp</dimen>
+    <dimen name="text_lg">16sp</dimen>
+    <dimen name="text_xl">22sp</dimen>
+    <dimen name="text_xxl">24sp</dimen>
+    <dimen name="text_timer">52sp</dimen>
+
+    <!-- Menu item -->
+    <dimen name="menu_item_height">52dp</dimen>
+    <dimen name="menu_icon_size">36dp</dimen>
+
+    <!-- Bottom nav -->
+    <dimen name="bottom_nav_height">56dp</dimen>
+
+    <!-- Stat card -->
+    <dimen name="stat_card_height">80dp</dimen>
+    <dimen name="stat_card_row_height">110dp</dimen>
+
+    <!-- Avatar -->
+    <dimen name="avatar_height">140dp</dimen>
+
+    <!-- Timer -->
+    <dimen name="timer_size">240dp</dimen>
+    <dimen name="timer_indicator_size">220dp</dimen>
+    <dimen name="timer_track_thickness">5dp</dimen>
+</resources>

@@ -51,6 +51,7 @@ public class InicioFragment extends Fragment {
     private boolean progresoDataLoaded = false;
     private boolean animationsStarted = false;
     private int xpTargetProgress = 0;
+    private int savedScrollY = 0;
     private final List<Call<?>> activeCalls = new ArrayList<>();
 
     @Nullable
@@ -361,21 +362,49 @@ public class InicioFragment extends Fragment {
     }
 
     private void verificarCargaCompleta() {
-        if (!dashboardDataLoaded && !progresoDataLoaded) {
+        if (dashboardDataLoaded && progresoDataLoaded) {
+            binding.emptyView.setVisibility(View.GONE);
+            binding.offlineBanner.setVisibility(View.GONE);
+            animarEntrada();
+        } else if (!dashboardDataLoaded && !progresoDataLoaded) {
             String cachedDashboard = cacheManager.get("dashboard");
             String cachedProgreso = cacheManager.get("progreso");
+            if (cachedDashboard != null && cachedProgreso != null) {
+                mostrarOfflineBanner();
+            }
             if (cachedDashboard == null && cachedProgreso == null) {
                 binding.emptyView.setVisibility(View.VISIBLE);
             }
-        } else {
-            binding.emptyView.setVisibility(View.GONE);
-            animarEntrada();
+        }
+    }
+
+    private void mostrarOfflineBanner() {
+        if (binding != null) {
+            binding.offlineBanner.setVisibility(View.VISIBLE);
         }
     }
 
     private void mostrarErrorRed(Throwable t) {
+        if (!isAdded() || binding == null) return;
         Snackbar.make(requireView(),
                 getString(NetworkUtils.getNetworkErrorResId(t)), Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden && binding != null && savedScrollY > 0) {
+            View scrollChild = binding.swipeRefresh.getChildAt(0);
+            if (scrollChild instanceof android.widget.ScrollView) {
+                ((android.widget.ScrollView) scrollChild).scrollTo(0, savedScrollY);
+            }
+        }
+        if (hidden && binding != null) {
+            View scrollChild = binding.swipeRefresh.getChildAt(0);
+            if (scrollChild instanceof android.widget.ScrollView) {
+                savedScrollY = ((android.widget.ScrollView) scrollChild).getScrollY();
+            }
+        }
     }
 
     @Override

@@ -6,6 +6,7 @@
     <string name="completa_campos">Completa todos los campos</string>
     <string name="error_conexion">No se pudo conectar al servidor</string>
     <string name="sin_conexion_datos">Sin conexión. No hay datos disponibles.</string>
+    <string name="mostrando_datos_sin_conexion">Mostrando datos sin conexión</string>
     <string name="proximamente">Próximamente</string>
     <string name="crear">Crear</string>
     <string name="cancelar">Cancelar</string>
@@ -42,6 +43,7 @@
     <string name="contrasenas_no_coinciden">Las contraseñas no coinciden</string>
     <string name="registro_exitoso">Registro exitoso</string>
     <string name="selecciona_fecha_nacimiento">Selecciona tu fecha de nacimiento</string>
+    <string name="genero_hint">Género</string>
 
     <!-- Inicio / Dashboard -->
     <string name="hola_formato">¡Hola, %s!</string>
@@ -200,6 +202,7 @@
     <string name="error_conexion_formato">Error de conexión: %s</string>
     <string name="error_conexion_verifica">Error de conexión: verifica tu internet</string>
     <string name="error_conexion_habitos">Error de conexión</string>
+    <string name="sin_habitos_categoria">No hay hábitos en esta categoría</string>
     <string name="error_al_completar">Error al completar</string>
     <string name="funcionalidad_pronto">Funcionalidad pronto disponible</string>
     <string name="editar_habito">Editar Hábito</string>

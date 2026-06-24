@@ -1,12 +1,11 @@
 package es.epycus.app.ui.diario;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,7 +32,6 @@ import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.DiarioEntradaResponse;
 import es.epycus.app.model.dto.PreguntaGuiaResponse;
 import es.epycus.app.repository.DiarioRepository;
-import es.epycus.app.ui.ia.IaChatActivity;
 import es.epycus.app.util.NetworkUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -63,9 +61,11 @@ public class DiarioFragment extends Fragment {
                 if (!isAlive()) return;
                 if (selectedMood != null) {
                     selectedMood.setBackgroundResource(R.drawable.bg_card_rounded);
+                    ocultarCheckmark(selectedMood.getId());
                 }
                 selectedMood = v;
                 v.setBackgroundResource(R.drawable.bg_accent_gradient);
+                mostrarCheckmark(v.getId());
 
                 if (v.getId() == R.id.moodGenial) selectedMoodText = "Genial";
                 else if (v.getId() == R.id.moodBien) selectedMoodText = "Bien";
@@ -91,7 +91,7 @@ public class DiarioFragment extends Fragment {
 
             binding.btnChatEdy.setOnClickListener(v -> {
                 if (getActivity() == null) return;
-                startActivity(new Intent(getActivity(), IaChatActivity.class));
+                ((es.epycus.app.ui.MainContainerActivity) getActivity()).navegarAIAChat();
             });
 
             binding.swipeRefresh.setOnRefreshListener(this::recargarTodo);
@@ -117,6 +117,26 @@ public class DiarioFragment extends Fragment {
 
     private boolean isAlive() {
         return isAdded() && binding != null;
+    }
+
+    private void ocultarCheckmark(int moodId) {
+        ImageView check = null;
+        if (moodId == R.id.moodGenial) check = binding.checkGenial;
+        else if (moodId == R.id.moodBien) check = binding.checkBien;
+        else if (moodId == R.id.moodNormal) check = binding.checkNormal;
+        else if (moodId == R.id.moodCansado) check = binding.checkCansado;
+        else if (moodId == R.id.moodEstresado) check = binding.checkEstresado;
+        if (check != null) check.setVisibility(View.GONE);
+    }
+
+    private void mostrarCheckmark(int moodId) {
+        ImageView check = null;
+        if (moodId == R.id.moodGenial) check = binding.checkGenial;
+        else if (moodId == R.id.moodBien) check = binding.checkBien;
+        else if (moodId == R.id.moodNormal) check = binding.checkNormal;
+        else if (moodId == R.id.moodCansado) check = binding.checkCansado;
+        else if (moodId == R.id.moodEstresado) check = binding.checkEstresado;
+        if (check != null) check.setVisibility(View.VISIBLE);
     }
 
     private void guardarAnimo(String estado) {
@@ -151,6 +171,7 @@ public class DiarioFragment extends Fragment {
                     Snackbar.make(requireView(), getString(R.string.entrada_diario_guardada),
                             Snackbar.LENGTH_SHORT).show();
                     if (selectedMood != null) {
+                        ocultarCheckmark(selectedMood.getId());
                         selectedMood.setBackgroundResource(R.drawable.bg_card_rounded);
                         selectedMood = null;
                         selectedMoodText = "";
@@ -374,6 +395,7 @@ public class DiarioFragment extends Fragment {
 
     private static class MoodHistoryAdapter extends RecyclerView.Adapter<MoodHistoryAdapter.ViewHolder> {
         private final List<MoodHistoryItem> items;
+        private LayoutInflater inflater;
 
         MoodHistoryAdapter(List<MoodHistoryItem> items) {
             this.items = items;
@@ -382,19 +404,22 @@ public class DiarioFragment extends Fragment {
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            TextView tv = new TextView(parent.getContext());
-            tv.setPadding(0, 0, 0, 8);
-            return new ViewHolder(tv);
+            if (inflater == null) inflater = LayoutInflater.from(parent.getContext());
+            View view = inflater.inflate(R.layout.item_historial_animo, parent, false);
+            return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             MoodHistoryItem item = items.get(position);
-            String text = item.fecha + " - " + item.estado;
+            holder.tvFecha.setText(item.fecha);
+            holder.tvEstado.setText(item.estado);
             if (!item.nota.isEmpty()) {
-                text += " (\"" + item.nota + "\")";
+                holder.tvNota.setText("\"" + item.nota + "\"");
+                holder.tvNota.setVisibility(View.VISIBLE);
+            } else {
+                holder.tvNota.setVisibility(View.GONE);
             }
-            holder.textView.setText(text);
         }
 
         @Override
@@ -403,11 +428,15 @@ public class DiarioFragment extends Fragment {
         }
 
         static class ViewHolder extends RecyclerView.ViewHolder {
-            final TextView textView;
+            final TextView tvFecha;
+            final TextView tvEstado;
+            final TextView tvNota;
 
-            ViewHolder(TextView tv) {
-                super(tv);
-                textView = tv;
+            ViewHolder(View view) {
+                super(view);
+                tvFecha = view.findViewById(R.id.tvFecha);
+                tvEstado = view.findViewById(R.id.tvEstado);
+                tvNota = view.findViewById(R.id.tvNota);
             }
         }
     }

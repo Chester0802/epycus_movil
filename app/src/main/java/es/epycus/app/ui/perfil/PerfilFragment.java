@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -118,8 +119,12 @@ public class PerfilFragment extends Fragment {
                         binding.tvXp.setText(getString(R.string.xp_formato, perfil.getXpTotal()));
                         binding.tvCarrera.setText(perfil.getCarreraNombre() != null ?
                                 perfil.getCarreraNombre() : getString(R.string.sin_carrera));
-                        binding.tvMiembroDesde.setText(getString(R.string.miembro_desde_formato,
-                                perfil.getFechaRegistro()));
+                        String fechaRegistro = perfil.getFechaRegistro();
+                        if (fechaRegistro != null && !fechaRegistro.isEmpty()) {
+                            binding.tvMiembroDesde.setText(getString(R.string.miembro_desde_formato, fechaRegistro));
+                        } else {
+                            binding.tvMiembroDesde.setText("");
+                        }
 
                         if (perfilResp.getImagenPersonaje() != null && !perfilResp.getImagenPersonaje().isEmpty()) {
                             Glide.with(PerfilFragment.this)
@@ -185,8 +190,12 @@ public class PerfilFragment extends Fragment {
             binding.tvXp.setText(getString(R.string.xp_formato, perfil.getXpTotal()));
             binding.tvCarrera.setText(perfil.getCarreraNombre() != null ?
                     perfil.getCarreraNombre() : getString(R.string.sin_carrera));
-            binding.tvMiembroDesde.setText(getString(R.string.miembro_desde_formato,
-                    perfil.getFechaRegistro()));
+            String fechaRegistro = perfil.getFechaRegistro();
+            if (fechaRegistro != null && !fechaRegistro.isEmpty()) {
+                binding.tvMiembroDesde.setText(getString(R.string.miembro_desde_formato, fechaRegistro));
+            } else {
+                binding.tvMiembroDesde.setText("");
+            }
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Error loading cached perfil", e);
@@ -197,7 +206,8 @@ public class PerfilFragment extends Fragment {
     private void actualizarTextoTema() {
         boolean isLight = ThemeManager.getInstance(requireContext()).isLightTheme();
         binding.tvToggleTheme.setText(isLight ? R.string.modo_oscuro : R.string.modo_claro);
-        binding.tvThemeIcon.setText(isLight ? getString(R.string.emoji_luna) : getString(R.string.emoji_sol));
+        binding.ivThemeIcon.setImageResource(isLight ? R.drawable.ic_moon : R.drawable.ic_sun);
+        binding.ivThemeIcon.setVisibility(View.VISIBLE);
     }
 
     private void cargarDatosLocales() {
@@ -248,17 +258,20 @@ public class PerfilFragment extends Fragment {
     private void mostrarPersonajesDialog(String json) {
         try {
             JsonArray arr = com.google.gson.JsonParser.parseString(json).getAsJsonArray();
-            String[] nombres = new String[arr.size()];
+            CharSequence[] items = new CharSequence[arr.size()];
             for (int i = 0; i < arr.size(); i++) {
                 JsonObject obj = arr.get(i).getAsJsonObject();
-                nombres[i] = obj.has("nombre") ? obj.get("nombre").getAsString() : "Personaje " + (i + 1);
+                String nombre = obj.has("nombre") ? obj.get("nombre").getAsString() : "Personaje " + (i + 1);
+                String nivel = obj.has("nivel") ? " (Nv." + obj.get("nivel").getAsString() + ")" : "";
+                items[i] = "\uD83C\uDFAD " + nombre + nivel;
             }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             builder.setTitle(getString(R.string.mis_personajes));
-            builder.setItems(nombres, (dialog, which) -> {
+            builder.setItems(items, (dialog, which) -> {
                 seleccionarPersonaje(arr.get(which).getAsJsonObject());
             });
+            builder.setNegativeButton(getString(R.string.cancelar), null);
             builder.show();
         } catch (Exception e) {
             Snackbar.make(binding.getRoot(), R.string.error_datos, Snackbar.LENGTH_SHORT).show();
@@ -324,17 +337,19 @@ public class PerfilFragment extends Fragment {
     private void mostrarLogrosDialog(String json) {
         try {
             JsonArray arr = com.google.gson.JsonParser.parseString(json).getAsJsonArray();
-            String[] nombres = new String[arr.size()];
+            CharSequence[] items = new CharSequence[arr.size()];
             for (int i = 0; i < arr.size(); i++) {
                 JsonObject obj = arr.get(i).getAsJsonObject();
                 String nombre = obj.has("nombre") ? obj.get("nombre").getAsString() : "Logro " + (i + 1);
                 String desc = obj.has("descripcion") ? obj.get("descripcion").getAsString() : "";
-                nombres[i] = desc.isEmpty() ? nombre : nombre + " - " + desc;
+                String progreso = obj.has("progreso") ? " [" + obj.get("progreso").getAsString() + "%]" : "";
+                items[i] = "\uD83C\uDFC6 " + nombre + progreso + (desc.isEmpty() ? "" : "\n" + desc);
             }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             builder.setTitle(getString(R.string.logros));
-            builder.setItems(nombres, null);
+            builder.setItems(items, null);
+            builder.setNegativeButton(getString(R.string.cancelar), null);
             builder.show();
         } catch (Exception e) {
             Snackbar.make(binding.getRoot(), R.string.error_datos, Snackbar.LENGTH_SHORT).show();
@@ -350,9 +365,9 @@ public class PerfilFragment extends Fragment {
 
             if (cachedProgreso != null) {
                 JsonObject obj = com.google.gson.JsonParser.parseString(cachedProgreso).getAsJsonObject();
-                stats.append(getString(R.string.xp_total_label, obj.has("xpTotal") ? obj.get("xpTotal").getAsString() : "0")).append("\n");
-                stats.append(getString(R.string.nivel_label, obj.has("nivel") ? obj.get("nivel").getAsString() : "1")).append("\n");
-                stats.append(getString(R.string.racha_dias_label, obj.has("rachaActual") ? obj.get("rachaActual").getAsString() : "0")).append("\n");
+                stats.append("\u2B50 ").append(getString(R.string.xp_total_label, obj.has("xpTotal") ? obj.get("xpTotal").getAsString() : "0")).append("\n");
+                stats.append("\uD83D\uDCDC ").append(getString(R.string.nivel_label, obj.has("nivel") ? obj.get("nivel").getAsString() : "1")).append("\n");
+                stats.append("\uD83D\uDD25 ").append(getString(R.string.racha_dias_label, obj.has("rachaActual") ? obj.get("rachaActual").getAsString() : "0")).append("\n");
             }
 
             if (cachedPerfil != null) {
@@ -360,10 +375,10 @@ public class PerfilFragment extends Fragment {
                 if (obj.has("perfil")) {
                     JsonObject perfil = obj.get("perfil").getAsJsonObject();
                     if (perfil.has("rachaMaxima")) {
-                        stats.append(getString(R.string.mejor_racha_dias_label, perfil.get("rachaMaxima").getAsString())).append("\n");
+                        stats.append("\uD83C\uDFC6 ").append(getString(R.string.mejor_racha_dias_label, perfil.get("rachaMaxima").getAsString())).append("\n");
                     }
                     if (perfil.has("totalHabitosCompletados")) {
-                        stats.append(getString(R.string.habitos_completados_label, perfil.get("totalHabitosCompletados").getAsString())).append("\n");
+                        stats.append("\u2705 ").append(getString(R.string.habitos_completados_label, perfil.get("totalHabitosCompletados").getAsString())).append("\n");
                     }
                 }
             }
@@ -383,32 +398,25 @@ public class PerfilFragment extends Fragment {
     }
 
     private void mostrarDialogoConfiguracion() {
-        boolean isLight = ThemeManager.getInstance(requireContext()).isLightTheme();
-        String[] opciones = {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle(getString(R.string.configuracion));
+        builder.setItems(new String[]{
                 getString(R.string.editar_perfil),
-                isLight ? getString(R.string.modo_oscuro) : getString(R.string.modo_claro),
                 getString(R.string.cambiar_contrasena),
                 getString(R.string.notificaciones_preferencias),
                 getString(R.string.acerca_de)
-        };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle(getString(R.string.configuracion));
-        builder.setItems(opciones, (dialog, which) -> {
+        }, (dialog, which) -> {
             switch (which) {
                 case 0:
                     mostrarDialogoEditarPerfil();
                     break;
                 case 1:
-                    ThemeManager.getInstance(requireContext()).toggle();
-                    break;
-                case 2:
                     mostrarDialogoCambiarContrasena();
                     break;
-                case 3:
+                case 2:
                     mostrarDialogoNotificaciones();
                     break;
-                case 4:
+                case 3:
                     mostrarAcercaDe();
                     break;
             }
@@ -452,16 +460,25 @@ public class PerfilFragment extends Fragment {
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     spCarrera.setAdapter(adapter);
                 }
+                // Habilitar boton guardar cuando carreras carguen (exito o fallo)
+                if (dialog.isShowing()) {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                }
             }
 
             @Override
             public void onFailure(Call<RespuestaApi<List<Carrera>>> call, Throwable t) {
                 activeCalls.remove(call);
                 loading.setVisibility(View.GONE);
+                // Habilitar boton guardar aun si falla la carga de carreras
+                if (dialog.isShowing()) {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                }
             }
         });
 
         dialog.setOnShowListener(d -> {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
                 String nombre = etNombre.getText().toString().trim();
                 if (nombre.isEmpty()) {

@@ -167,12 +167,11 @@
                 android:layout_marginBottom="8dp"
                 android:foreground="?attr/selectableItemBackground">
 
-                <TextView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:gravity="center"
-                    android:text="@string/emoji_personajes"
-                    android:textSize="20sp" />
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_personajes"
+                    app:tint="?attr/epAccentSecondary" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -202,12 +201,11 @@
                 android:layout_marginBottom="8dp"
                 android:foreground="?attr/selectableItemBackground">
 
-                <TextView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:gravity="center"
-                    android:text="@string/emoji_logros"
-                    android:textSize="20sp" />
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_logros"
+                    app:tint="?attr/epWarning" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -237,12 +235,11 @@
                 android:layout_marginBottom="8dp"
                 android:foreground="?attr/selectableItemBackground">
 
-                <TextView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:gravity="center"
-                    android:text="@string/emoji_estadisticas"
-                    android:textSize="20sp" />
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_estadisticas"
+                    app:tint="?attr/epInfo" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -272,12 +269,11 @@
                 android:layout_marginBottom="8dp"
                 android:foreground="?attr/selectableItemBackground">
 
-                <TextView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:gravity="center"
-                    android:text="@string/emoji_config"
-                    android:textSize="20sp" />
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_config"
+                    app:tint="?attr/epTextSecondary" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -308,13 +304,13 @@
                 android:layout_marginBottom="16dp"
                 android:foreground="?attr/selectableItemBackground">
 
-                <TextView
-                    android:id="@+id/tvThemeIcon"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:gravity="center"
-                    android:text="@string/emoji_luna"
-                    android:textSize="20sp" />
+                <ImageView
+                    android:id="@+id/ivThemeIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_moon"
+                    app:tint="?attr/epAccent"
+                    android:visibility="visible" />
 
                 <TextView
                     android:id="@+id/tvToggleTheme"

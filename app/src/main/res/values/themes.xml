@@ -30,6 +30,6 @@
         <item name="epRoundedSm">2dp</item>
         <item name="epRoundedMd">4dp</item>
         <item name="epRoundedLg">8dp</item>
-        <item name="epRoundedXl">12dp</item>
+        <item name="epRoundedXl">28dp</item>
     </style>
 </resources>

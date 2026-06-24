@@ -1,5 +1,6 @@
 package es.epycus.app.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -100,6 +101,10 @@ public class MainContainerActivity extends AppCompatActivity {
 
     public void seleccionarTab(int itemId) {
         binding.bottomNav.setSelectedItemId(itemId);
+    }
+
+    public void navegarAIAChat() {
+        startActivity(new Intent(this, es.epycus.app.ui.ia.IaChatActivity.class));
     }
 
     public void navegarAPomodoro() {

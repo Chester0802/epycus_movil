@@ -101,8 +101,11 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             style="@style/Widget.Epycus.Input"
-            app:startIconDrawable="@drawable/ic_mood_normal"
-            app:startIconTint="?attr/epTextTertiary">
+            app:startIconDrawable="@drawable/ic_calendar"
+            app:startIconTint="?attr/epAccent"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_calendar"
+            app:endIconTint="?attr/epTextTertiary">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etFechaNacimiento"
@@ -117,26 +120,44 @@
                 android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Spinner
-            android:id="@+id/spGenero"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutGenero"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            android:entries="@array/generos"
-            android:textColor="?attr/epTextPrimary"
-            android:popupBackground="?attr/epSurface"
-            android:background="@drawable/bg_card_rounded"
-            android:paddingHorizontal="12dp" />
+            style="@style/Widget.Epycus.Input"
+            app:endIconMode="dropdown_menu">
 
-        <Spinner
-            android:id="@+id/spCarrera"
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/spGenero"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:inputType="none"
+                android:entries="@array/generos"
+                android:textSize="15sp"
+                android:textColor="?attr/epTextPrimary"
+                android:hint="@string/genero_hint"
+                android:popupBackground="?attr/epSurface" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutCarrera"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            android:textColor="?attr/epTextPrimary"
-            android:popupBackground="?attr/epSurface"
-            android:background="@drawable/bg_card_rounded"
-            android:paddingHorizontal="12dp" />
+            style="@style/Widget.Epycus.Input"
+            app:endIconMode="dropdown_menu">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/spCarrera"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:inputType="none"
+                android:textSize="15sp"
+                android:textColor="?attr/epTextPrimary"
+                android:hint="@string/carrera"
+                android:popupBackground="?attr/epSurface" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <CheckBox
             android:id="@+id/cbTerminos"

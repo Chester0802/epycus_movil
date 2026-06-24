@@ -188,8 +188,16 @@ public class HabitosFragment extends Fragment {
     private void mostrarEmpty() {
         binding.rvHabitos.setVisibility(View.GONE);
         binding.layoutEmpty.setVisibility(View.VISIBLE);
-        binding.tvEmpty.setText(todosHabitos.isEmpty() ?
-                getString(R.string.crea_primer_habito) : getString(R.string.error_conexion_habitos));
+        if (todosHabitos.isEmpty()) {
+            binding.tvEmpty.setText(R.string.crea_primer_habito);
+            binding.btnEmptyCrearHabito.setVisibility(View.VISIBLE);
+        } else if (categoriaSeleccionada != null) {
+            binding.tvEmpty.setText(R.string.sin_habitos_categoria);
+            binding.btnEmptyCrearHabito.setVisibility(View.GONE);
+        } else {
+            binding.tvEmpty.setText(R.string.error_conexion_habitos);
+            binding.btnEmptyCrearHabito.setVisibility(View.GONE);
+        }
     }
 
     private void cargarCategorias() {

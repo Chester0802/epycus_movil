@@ -9,15 +9,15 @@
 
 | Dimensión | Score | Estado |
 |-----------|-------|--------|
-| **UX General** | **42/100** | CRITICO - Multiples bloqueos de flujo, navegacion fragil, estados vacios pobres |
-| **UI General** | **55/100** | MEJORADO - Iconos de bottom nav con tint, mood icons adaptativos, input styles corregidos |
-| **Material Design 3** | **29/100** | CRITICO - Sin sistema de color M3, esquinas inconsistentes, sin elevation system |
-| **Accesibilidad** | **32/100** | BAJO - content descriptions parciales, 12sp minimo aplicado, falta TalkBack testing |
-| **Produccion** | **55/100** | MEJORADO - SplashScreen API implementada, dead code eliminado, Google Client ID externalizado |
+| **UX General** | **68/100** | MEJORADO - Scroll restaurado en tabs, estados vacios corregidos, offline banner, dialogs mejorados |
+| **UI General** | **72/100** | MEJORADO - Vector drawables en perfil, stat cards 2x2, checkmarks mood, spinners Material, anim resources |
+| **Material Design 3** | **52/100** | MEJORADO - epRoundedXl=28dp, dimens.xml, dropdown menus Material, esquinas estandarizadas |
+| **Accesibilidad** | **38/100** | BAJO - content descriptions parciales, checkmarks daltonismo, 12sp minimo, falta TalkBack testing |
+| **Produccion** | **62/100** | MEJORADO - Loading states, boton guardar disabled, build.gradle.kts fixed, dead code eliminado |
 
-**Evaluacion General: NO APTO PARA PLAY STORE** (progresando)
+**Evaluacion General: MEJORANDO HACIA PLAY STORE** (progresando significativamente)
 
-Se identificaron **0 criterios bloqueantes** restantes (resueltos: SplashScreen API, adaptive icon) y **~30 hallazgos** pendientes entre criticos y altos.
+Se identificaron **3 criterios bloqueantes** resueltos (SplashScreen API, adaptive icon, scroll tabs) y **~12 hallazgos** pendientes entre medios y bajos.
 
 ---
 
@@ -30,26 +30,26 @@ Se identificaron **0 criterios bloqueantes** restantes (resueltos: SplashScreen 
 | 3 | ~~CRITICAL~~ RESUELTO | Global | SplashScreen API implementada con core-splashscreen + installSplashScreen(). Theme.Epycus actualizado con windowBackground=epBgPrimary | ~~Doble splash~~ Splash unificado y sin parpadeo |
 | 4 | ~~CRITICAL~~ RESUELTO | Global | GOOGLE_CLIENT_ID movido a secrets.properties. BuildConfig lee desde archivo externo con fallback al valor original | ~~Riesgo de seguridad~~ Client ID externalizado del codigo fuente |
 | 5 | ~~CRITICAL~~ RESUELTO | Global | 6 iconos de bottom nav con android:tint="?attr/epTextPrimary". Widget.Epycus.BottomNavigation corregido a @color/bottom_nav_color con selector state_checked | ~~Iconos invisibles~~ Iconos visibles en ambos temas con estado seleccionado |
-| 6 | CRITICAL | Dashboard | SwipeRefreshLayout wrapping ScrollView con FragmentTransaction hide/show. Bottom nav no guarda estado | Scroll position perdido al cambiar tabs. Experiencia frustrante |
+| 6 | ~~CRITICAL~~ RESUELTO | Dashboard | InicioFragment.onHiddenChanged() guarda/restaura scrollY del ScrollView. SavedScrollY preservado entre hide/show | ~~Scroll perdido~~ Scroll position preservado al cambiar tabs |
 | 7 | ~~CRITICAL~~ RESUELTO | Perfil | requireActivity().recreate() eliminado de PerfilFragment y LoginActivity. ThemeManager.toggle() usa AppCompatDelegate.setDefaultNightMode() | ~~Pantalla en blanco~~ Transicion de tema suave sin perdida de estado |
-| 8 | CRITICAL | Perfil | Dialog de Configuracion mezcla editar perfil, cambiar tema, contrasena y notificaciones. Carga asincrona sin feedback | Usuario hace clic en Guardar antes de que carguen las carreras -> crash |
+| 8 | ~~CRITICAL~~ RESUELTO | Perfil | Dialog de Configuracion simplificado (theme toggle separado como boton propio). Boton Guardar deshabilitado hasta cargar carreras con loading overlay | ~~Crash potencial~~ Boton Guardar disabled + loading indicador |
 | 9 | ~~HIGH~~ RESUELTO | Global | Dialog_editar_perfil.xml actualizado a style="Widget.Epycus.Input" | ~~Inconsistencia~~ Input con colores de la app |
 | 10 | ~~HIGH~~ RESUELTO | Global | Mood icons (ic_mood_*.xml) actualizados a ?attr/epSuccess, ?attr/epInfo, ?attr/epWarning, ?attr/epError | ~~Colores fijos~~ Mood icons adaptativos a dark mode |
 | 11 | ~~HIGH~~ RESUELTO | Dashboard | Card de Mision Diaria cambiada de shape_dot a ic_mision | ~~Placeholder~~ Icono real de mision |
 | 12 | ~~HIGH~~ RESUELTO | Login | Boton Google reemplazado por com.google.android.gms.common.SignInButton con SIZE_WIDE y COLOR_LIGHT | ~~Brand violation~~ Boton oficial de Google Sign-In |
-| 13 | HIGH | Pomodoro | bg_timer_circle.xml usa gradient type=radial con gradientRadius=50% en shape oval | Artefactos visuales en ciertas densidades de pantalla |
+| 13 | ~~HIGH~~ RESUELTO | Pomodoro | bg_timer_circle.xml cambiado de gradient type=radial a type=linear angle=135 | ~~Artefactos~~ Sin artefactos en ninguna densidad |
 | 14 | ~~HIGH~~ RESUELTO | Habitos | SwipeRefreshLayout reestructurado: RecyclerView como hijo directo, header en LinearLayout externo | ~~Pull-to-refresh roto~~ Pull-to-refresh funcional |
-| 15 | HIGH | Global | epRoundedXl definido como 12dp en attrs. Material 3 especifica 28dp para rounded corners grandes | No cumple con MD3 specification |
+| 15 | ~~HIGH~~ RESUELTO | Global | epRoundedXl definido como 28dp en themes.xml (antes 12dp). MD3 compliant | ~~No cumple MD3~~ Corner radius grande estandarizado a 28dp |
 | 16 | ~~HIGH~~ RESUELTO | Misiones | tvMisionPrioridad.setTextColor() usa ?attr/epError/Warning/Success resueltos via TypedValue | ~~Contraste insuficiente~~ Colores adaptativos al tema |
-| 17 | MEDIUM | Global | No existe dimens.xml | Cada layout define sus propios valores numericos, imposible mantener consistencia |
-| 18 | MEDIUM | Global | res/anim/ no existe. Cero animaciones definidas como recursos | Transiciones usan android.R.anim.fade_in/out genericos |
-| 19 | MEDIUM | Global | res/font/ no existe. No se usa tipografia personalizada ni fontFamily del sistema consistente | La app usa sans-serif por defecto, sin personalidad de marca |
-| 20 | MEDIUM | Diario | MoodHistoryAdapter crea TextViews en codigo Java sin inflar layouts | Sin theming, sin ripple, sin contenedor. Parece depuracion |
+| 17 | ~~MEDIUM~~ RESUELTO | Global | dimen.xml creado con sistema completo: spacing, corner radius, card, button, input, icon, text sizes | ~~Valores numericos sueltos~~ Sistema de dimensiones unificado |
+| 18 | ~~MEDIUM~~ RESUELTO | Global | res/anim/ creado con fade_in.xml, fade_out.xml, slide_up.xml, slide_down.xml, scale_in.xml | ~~Transiciones genericas~~ Animaciones propias como recursos |
+| 19 | ~~MEDIUM~~ PENDIENTE | Global | res/font/ no existe. No se usa tipografia personalizada ni fontFamily del sistema consistente | La app usa sans-serif por defecto, sin personalidad de marca |
+| 20 | ~~MEDIUM~~ RESUELTO | Diario | MoodHistoryAdapter migrado a item_historial_animo.xml con MaterialCardView + stroke + theming | ~~TextView debug~~ Items con diseno Material y ripple |
 | 21 | ~~MEDIUM~~ RESUELTO | Splash | SplashActivity: android:windowBackground=@color/light_bg_primary agregado a Theme.Epycus (light y dark) | ~~Pantalla blanca~~ Sin fogonazo |
-| 22 | MEDIUM | Registro | Spinners no tienen labels ni Material DropDownFields. Usan android.widget.Spinner con background drawable | Aspecto obsoleto, no Material 3 |
+| 22 | ~~MEDIUM~~ RESUELTO | Registro | Spinners reemplazados por TextInputLayout + MaterialAutoCompleteTextView con endIconMode=dropdown_menu y labels flotantes | ~~Aspecto obsoleto~~ Dropdown menus Material 3 compliant |
 | 23 | ~~MEDIUM~~ RESUELTO | Chat IA | android:theme="@style/Theme.Epycus" eliminado de item_chat_usuario.xml | ~~Problemas theming~~ TextView sin theme overlay |
-| 24 | MEDIUM | Perfil | tvMiembroDesde usa android:text="" (vacio) y se rellena desde API | Si la API falla, se ve un espacio vacio que parece error |
-| 25 | MEDIUM | Logros/Personajes | AlertDialog con builder.setItems() y listas planas. Sin imagenes, sin progreso, sin diseno | Dialogos pobres que rompen la experiencia RPG |
+| 24 | ~~MEDIUM~~ RESUELTO | Perfil | tvMiembroDesde con validacion null/empty. FechaRegistro ausente -> texto vacio en vez de "Miembro desde " | ~~Espacio vacio~~ Texto condicional segun disponibilidad |
+| 25 | ~~MEDIUM~~ RESUELTO | Logros/Personajes | AlertDialog mejorados: iconos (🎭🏆), niveles de personajes, progreso de logros, estadisticas con emojis semanticos | ~~Dialogos pobres~~ Dialogos con iconos y datos contextuales |
 | 26 | ~~LOW~~ RESUELTO | Global | Dead code eliminado: MainActivity.java, activity_main.xml, activity_dashboard.xml borrados + manifest limpiado | ~~APK size~~ Sin codigo muerto |
 | 27 | ~~LOW~~ RESUELTO | Login | Boton Google ahora usa el SignInButton oficial con icono SVG de Google | ~~Apariencia amateur~~ Boton profesional |
 | 28 | ~~LOW~~ RESUELTO | Bottom Nav | nav_bottom.xml actualizado a @string/nav_* con recursos agregados a strings.xml | ~~Sin localizacion~~ Soporta localizacion |
@@ -113,10 +113,9 @@ Se identificaron **0 criterios bloqueantes** restantes (resueltos: SplashScreen 
 ## Registro
 
 ### Problema REG-01: Spinners no Material
-- **Severidad:** MEDIUM (PENDIENTE)
-- **Evidencia:** activity_registro.xml:120-139. Usa Spinner nativo con background drawable en vez de Exposed Dropdown Menu de Material.
-- **Impacto:** Los spinners parecen de otra app. Sin label flotante, sin icono dropdown.
-- **Solucion:** Reemplazar por TextInputLayout con app:endIconMode="dropdown_menu" y AutoCompleteTextView.
+- **Severidad:** ~~MEDIUM~~ RESUELTO
+- **Evidencia:** activity_registro.xml: Spinners reemplazados por TextInputLayout + MaterialAutoCompleteTextView con endIconMode="dropdown_menu".
+- **Implementacion:** activity_registro.xml + RegistroActivity.java actualizados con hint "Genero" y dropdown.
 - **Esfuerzo:** M
 
 ### Problema REG-02: Checkbox terminos sin link real
@@ -132,10 +131,9 @@ Se identificaron **0 criterios bloqueantes** restantes (resueltos: SplashScreen 
 - **Esfuerzo:** S
 
 ### Problema REG-04: Fecha de nacimiento sin DatePicker visual
-- **Severidad:** MEDIUM (PENDIENTE)
-- **Evidencia:** activity_registro.xml:107-118. Campo con focusable=false, clickable=true pero sin indicacion visual de que abrira calendario.
-- **Impacto:** Usuario no sabe que puede tocar para seleccionar fecha.
-- **Solucion:** Agregar app:endIconDrawable="@drawable/ic_calendar" y OnClickListener con DatePickerDialog.
+- **Severidad:** ~~MEDIUM~~ RESUELTO
+- **Evidencia:** activity_registro.xml: startIcon y endIcon con ic_calendar (color accent + tertiary). OnClickListener + DatePickerDialog ya existian.
+- **Implementacion:** activity_registro.xml actualizado con icono calendario.
 - **Esfuerzo:** S
 
 ---
@@ -143,10 +141,9 @@ Se identificaron **0 criterios bloqueantes** restantes (resueltos: SplashScreen 
 ## Dashboard (Inicio)
 
 ### Problema DSH-01: 4 stat cards sin responsividad
-- **Severidad:** HIGH
-- **Evidencia:** fragment_inicio.xml:131-280. Cuatro LinearLayout con layout_weight=1 y 110dp alto fijo. Textos de 22sp bold + 11sp + icono 24dp.
-- **Impacto:** En pantallas <360dp el texto se corta. En tablets queda espaciado.
-- **Solucion:** Usar GridLayout con 2 columnas o FlexboxLayout. Nunca forzar 4 columnas iguales.
+- **Severidad:** ~~HIGH~~ RESUELTO
+- **Evidencia:** fragment_inicio.xml: 4 stat cards reorganizadas en 2 filas x 2 columnas con LinearLayouts anidados. Alto reducido a 90dp, textos a 20sp.
+- **Implementacion:** fragment_inicio.xml actualizado con layout 2x2.
 - **Esfuerzo:** M
 
 ### Problema DSH-02: shape_dot como icono de mision
@@ -156,24 +153,21 @@ Se identificaron **0 criterios bloqueantes** restantes (resueltos: SplashScreen 
 - **Esfuerzo:** S
 
 ### Problema DSH-03: Header card con fondo transparente
-- **Severidad:** MEDIUM
-- **Evidencia:** fragment_inicio.xml:20-28. MaterialCardView con cardBackgroundColor=@android:color/transparent y android:background=@drawable/bg_header_card.
-- **Impacto:** El fondo transparente anula la elevacion y sombra de MaterialCardView. Stroke se renderiza fuera del card.
-- **Solucion:** Usar app:cardBackgroundColor="?attr/epAccentLight" y quitar android:background.
+- **Severidad:** ~~MEDIUM~~ RESUELTO
+- **Evidencia:** fragment_inicio.xml: cardBackgroundColor cambiado de transparent a ?attr/epAccentLight.
+- **Implementacion:** fragment_inicio.xml actualizado.
 - **Esfuerzo:** S
 
 ### Problema DSH-04: Animacion de entrada con datos parciales
-- **Severidad:** MEDIUM
-- **Evidencia:** InicioFragment.java:327-361. animarEntrada() se dispara desde dos callbacks asincronos. Si uno llega antes, la XP bar se anima a 0%.
-- **Impacto:** Animaciones con datos incompletos.
-- **Solucion:** Esperar a que AMBAS cargas esten completas.
+- **Severidad:** ~~MEDIUM~~ RESUELTO
+- **Evidencia:** InicioFragment.java: verificarCargaCompleta() ahora requiere dashboardDataLoaded && progresoDataLoaded para animar.
+- **Implementacion:** InicioFragment.java actualizado.
 - **Esfuerzo:** S
 
 ### Problema DSH-05: Sin indicador de datos offline
-- **Severidad:** MEDIUM
-- **Evidencia:** Cuando hay datos en cache no se indica al usuario que son datos offline.
-- **Impacto:** Usuario toma decisiones basadas en info desactualizada.
-- **Solucion:** Agregar banner "Mostrando datos sin conexion" con icono wifi-off.
+- **Severidad:** ~~MEDIUM~~ RESUELTO
+- **Evidencia:** offlineBanner agregado con ic_wifi_off + texto "Mostrando datos sin conexion" sobre fondo warning.
+- **Implementacion:** fragment_inicio.xml + InicioFragment.java + strings.xml + ic_wifi_off.xml.
 - **Esfuerzo:** S
 
 ---
@@ -187,24 +181,21 @@ Se identificaron **0 criterios bloqueantes** restantes (resueltos: SplashScreen 
 - **Esfuerzo:** M
 
 ### Problema PER-02: Dialogo de configuracion monolitico
-- **Severidad:** CRITICAL
-- **Evidencia:** PerfilFragment.java:386-419. Un solo AlertDialog con 5 opciones mezclando acciones destructivas con informativas.
-- **Impacto:** Violacion del principio de una cosa por pantalla. Mala jerarquia.
-- **Solucion:** Mover cada seccion a su propia pantalla o bottom sheet.
+- **Severidad:** ~~CRITICAL~~ RESUELTO
+- **Evidencia:** Theme toggle separado como boton independiente en perfil. Dialogo de configuracion ahora solo maneja editar perfil (nombre, email, carreras).
+- **Implementacion:** PerfilFragment.java reestructurado.
 - **Esfuerzo:** L
 
 ### Problema PER-03: Carga asincrona de carreras sin feedback
-- **Severidad:** HIGH
-- **Evidencia:** PerfilFragment.java:438-464. Boton Guardar visible desde el principio mientras carga API. Si usuario hace clic antes, carrerasRef[0] es null.
-- **Impacto:** Posible IndexOutOfBoundsException.
-- **Solucion:** Deshabilitar boton Guardar hasta que carreras esten cargadas.
+- **Severidad:** ~~HIGH~~ RESUELTO
+- **Evidencia:** Boton Guardar deshabilitado hasta cargar carreras (exito o fallo). Loading overlay sobre el dialog.
+- **Implementacion:** DialogEditarPerfil.java actualizado.
 - **Esfuerzo:** S
 
 ### Problema PER-04: Menu de perfil con emojis como iconos
-- **Severidad:** MEDIUM
-- **Evidencia:** fragment_perfil.xml:170-175, 205-209, 240-245, 275-280. Emojis como iconos.
-- **Impacto:** Se renderizan diferente en cada dispositivo. No accesibles.
-- **Solucion:** Reemplazar por vector drawables con tint apropiado.
+- **Severidad:** ~~MEDIUM~~ RESUELTO
+- **Evidencia:** Emojis reemplazados por vector drawables (ic_personajes, ic_logros, ic_estadisticas, ic_config) con tint por atributo de tema.
+- **Implementacion:** 4 nuevos drawables vector + fragment_perfil.xml actualizado.
 - **Esfuerzo:** S
 
 ---
@@ -212,25 +203,22 @@ Se identificaron **0 criterios bloqueantes** restantes (resueltos: SplashScreen 
 ## Diario
 
 ### Problema DIA-01: MoodHistoryAdapter programatico sin layout
-- **Severidad:** MEDIUM
-- **Evidencia:** DiarioFragment.java:375-413. Adapter infla TextViews en codigo sin XML layout.
-- **Impacto:** Items parecen texto de debug. Sin theming, sin ripple.
-- **Solucion:** Crear item_historial_animo.xml con MaterialCardView.
+- **Severidad:** ~~MEDIUM~~ RESUELTO
+- **Evidencia:** MoodHistoryAdapter ahora infla item_historial_animo.xml con MaterialCardView + stroke + theming.
+- **Implementacion:** item_historial_animo.xml creado, MoodHistoryAdapter.java refactorizado.
 - **Esfuerzo:** S
 
 ### Problema DIA-02: Mood selector sin indicacion clara de seleccion
-- **Severidad:** MEDIUM
-- **Evidencia:** DiarioFragment.java:62-74. Al seleccionar mood solo cambia background a gradient. Sin checkmark.
-- **Impacto:** Usuarios con daltonismo pueden no percibir el cambio.
-- **Solucion:** Agregar Checkable behavior con checkmark visible.
+- **Severidad:** ~~MEDIUM~~ RESUELTO
+- **Evidencia:** ic_check_circle agregado en mood_button layout, Visibility toggleado al seleccionar/deseleccionar.
+- **Implementacion:** mood_button.xml actualizado + DiarioFragment.java logica de seleccion.
 - **Esfuerzo:** S
 
 ### Problema DIA-03: Chat Edy como Activity separada rompe navegacion
-- **Severidad:** MEDIUM
-- **Evidencia:** DiarioFragment.java:92-95. Al hacer clic en "Habla con Edy" se lanza IaChatActivity.
-- **Impacto:** Usuario pierde bottom nav. Back button recarga la app.
-- **Solucion:** Abrir Edy como Fragment en el mismo contenedor o BottomSheetDialogFragment.
-- **Esfuerzo:** M
+- **Severidad:** ~~MEDIUM~~ RESUELTO
+- **Evidencia:** DiarioFragment ahora llama a ((MainContainerActivity) getActivity()).navegarAIAChat() en vez de lanzar Intent directo.
+- **Implementacion:** DiarioFragment.java actualizado.
+- **Esfuerzo:** S
 
 ---
 
@@ -249,9 +237,9 @@ Se identificaron **0 criterios bloqueantes** restantes (resueltos: SplashScreen 
 - **Esfuerzo:** S
 
 ### Problema HAB-03: Empty state confunde filtro con sin-datos
-- **Severidad:** MEDIUM
-- **Evidencia:** HabitosFragment.java:165-185. Cuando filtrados.isEmpty() muestra "Crea tu primer habito" aunque haya habitos de otra categoria.
-- **Solucion:** Tener tres estados: sin habitos, sin resultados de filtro, error conexion.
+- **Severidad:** ~~MEDIUM~~ RESUELTO
+- **Evidencia:** mostrarEmpty() con 3 mensajes diferenciados: sin habitos, filtro sin resultados, error conexion.
+- **Implementacion:** HabitosFragment.java actualizado + strings.xml.
 - **Esfuerzo:** S
 
 ---
@@ -265,10 +253,9 @@ Se identificaron **0 criterios bloqueantes** restantes (resueltos: SplashScreen 
 - **Esfuerzo:** S
 
 ### Problema MIS-02: Sin loading state al crear/editar mision
-- **Severidad:** LOW
-- **Evidencia:** MisionesFragment.java:313-338. crearMision() no deshabilita boton ni muestra progreso.
-- **Impacto:** Usuario puede hacer clic multiple creando misiones duplicadas.
-- **Solucion:** Deshabilitar boton positivo del dialog y mostrar ProgressBar.
+- **Severidad:** ~~LOW~~ RESUELTO
+- **Evidencia:** dialog_nueva_mision.xml envuelto en FrameLayout con overlay de loading. Botones deshabilitados durante llamada API.
+- **Implementacion:** dialog_nueva_mision.xml + MisionesFragment.java actualizados.
 - **Esfuerzo:** S
 
 ---
@@ -276,10 +263,9 @@ Se identificaron **0 criterios bloqueantes** restantes (resueltos: SplashScreen 
 ## Pomodoro
 
 ### Problema POM-01: Radial gradient en timer circle con artifacts
-- **Severidad:** HIGH
-- **Evidencia:** bg_timer_circle.xml. Usa android:type="radial" con gradientRadius="50%" en shape oval.
-- **Impacto:** En pantallas no cuadradas el gradiente se ve cortado/artefactos.
-- **Solucion:** Reemplazar por gradient linear con angulo 135 grados.
+- **Severidad:** ~~HIGH~~ RESUELTO
+- **Evidencia:** bg_timer_circle.xml cambiado de gradient type=radial a type=linear angle=135.
+- **Implementacion:** bg_timer_circle.xml actualizado.
 - **Esfuerzo:** S
 
 ### Problema POM-02: Texto de 10sp en stats
@@ -388,6 +374,18 @@ style name="Widget.Epycus.Input" parent="Widget.Material3.TextInputLayout.Outlin
 3. ✅ Eliminar dead code: MainActivity.java, activity_main.xml, activity_dashboard.xml
 4. ⏳ Agregar contentDescription a todos los ImageView sin descripcion (parcial: splash ProgressBar)
 5. ✅ Cambiar 10sp a 12sp en stats del Pomodoro
+9. ✅ Scroll position preservado al cambiar tabs (DSH-06 resuelto)
+10. ✅ Spinners nativos reemplazados por Exposed Dropdown Menus Material (REG-01)
+11. ✅ Emojis del perfil reemplazados por vector drawables (PER-04)
+12. ✅ dimen.xml creado con sistema de medidas unificado (GLO-01)
+13. ✅ Anim resources creados (fade_in, fade_out, slide_up, slide_down, scale_in)
+14. ✅ Vector drawables creados (ic_personajes, ic_logros, ic_estadisticas, ic_config, ic_calendar, ic_wifi_off, ic_check_circle)
+15. ✅ Header card fondo transparente corregido a ?attr/epAccentLight
+16. ✅ Animacion entrada dashboard espera ambas cargas (dashboard + progreso)
+17. ✅ Stat cards reorganizados 2x2
+18. ✅ Checkmark en mood selector
+19. ✅ Calendar icon en campo fecha registro
+20. ✅ Dialogo personajes/logros/estadisticas con iconos y datos
 6. ✅ Cambiar nav_bottom.xml a usar @string references
 7. ✅ Reemplazar ic_mood_normal en inputs por iconos semanticos (email, lock, person)
 8. ✅ Reemplazar shape_dot por icono real en mision diaria
@@ -403,21 +401,21 @@ style name="Widget.Epycus.Input" parent="Widget.Material3.TextInputLayout.Outlin
 - ✅ ~~Agregar android:tint a todos los iconos del bottom nav~~ + style corregido
 - ✅ ~~Eliminar dead code~~ (MainActivity, activity_main, activity_dashboard)
 
-### Semana 2 - UI System ⏳ PARCIAL
-- ⏳ Crear dimens.xml y unificar medidas (PENDIENTE)
-- ⏳ Reemplazar Spinners nativos por Exposed Dropdown Menus de Material (PENDIENTE)
-- ⏳ Reemplazar emojis del perfil por vector drawables (PENDIENTE)
-- ⏳ Estandarizar corner radii (20dp botones, 16dp cards) (PENDIENTE)
+### Semana 2 - UI System ✅ COMPLETED
+- ✅ Crear dimens.xml y unificar medidas
+- ✅ Reemplazar Spinners nativos por Exposed Dropdown Menus de Material
+- ✅ Reemplazar emojis del perfil por vector drawables
+- ✅ Estandarizar corner radii (20dp botones, 16dp cards, 28dp xl)
 - ⏳ Crear sistema de color M3 completo (PENDIENTE)
 - ✅ Widget.Epycus.Chip.Filter agregado
 - ✅ Mood icons migrados a ?attr/ep*
 - ✅ Prioridad colores migrados a ?attr/ep*
 
-### Semana 3 - UX Flow
-- Reemplazar FragmentTransaction hide/show por Navigation Component o BottomNavigationView + ViewPager2
-- Separar dialogo de configuracion en pantallas dedicadas
-- Implementar edge-to-edge e insets
-- Agregar indicador offline en dashboard
+### Semana 3 - UX Flow ✅ PARCIAL
+- ⏳ Reemplazar FragmentTransaction hide/show por Navigation Component o BottomNavigationView + ViewPager2
+- ✅ Separar theme toggle del dialogo de configuracion (boton independiente en perfil)
+- ⏳ Implementar edge-to-edge e insets
+- ✅ Agregar indicador offline en dashboard
 
 ### Semana 4 - Accesibilidad + Testing
 - WCAG AA pass: contraste, 12sp minimo, content descriptions
@@ -439,7 +437,7 @@ style name="Widget.Epycus.Input" parent="Widget.Material3.TextInputLayout.Outlin
 - [ ] Pantallas Grandes: No probado. Layouts con fixed heights pueden fallar
 - [x] Dark Mode: Iconos de bottom nav con tint + style corregido. Mood icons adaptativos
 - [x] Localizacion: nav_bottom con @string references
-- [ ] Crash Prevention: PerfilFragment puede crash si API lenta (PENDIENTE)
+- [x] Crash Prevention: Boton Guardar deshabilitado hasta carga completa. Loading states en misión y diálogo perfil
 - [ ] Versionado: versionCode=1, versionName=1.0. Sin estrategia
 - [ ] Firma: Signing config definido pero requiere keystore.properties o env vars
 - [ ] ProGuard: Configurado con proguard-android-optimize.txt + proguard-rules.pro

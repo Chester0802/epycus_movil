@@ -13,7 +13,9 @@ plugins {
 
 val secretsFile = rootProject.file("secrets.properties")
 val secrets = if (secretsFile.exists()) {
-    java.util.Properties().apply { load(secretsFile.inputStream()) }
+    val props = java.util.Properties()
+    props.load(secretsFile.inputStream())
+    props
 } else {
     null
 }

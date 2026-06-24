@@ -23,7 +23,7 @@
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="6dp"
-                app:cardBackgroundColor="@android:color/transparent"
+                app:cardBackgroundColor="?attr/epAccentLight"
                 app:strokeWidth="0dp"
                 android:background="@drawable/bg_header_card">
 
@@ -96,6 +96,34 @@
                 </RelativeLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Offline Banner -->
+            <LinearLayout
+                android:id="@+id/offlineBanner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:padding="8dp"
+                android:background="?attr/epWarning"
+                android:visibility="gone"
+                android:layout_marginBottom="8dp">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_wifi_off"
+                    android:contentDescription="@null"
+                    android:layout_marginEnd="6dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mostrando_datos_sin_conexion"
+                    android:textSize="12sp"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
             <!-- Loading -->
             <FrameLayout
                 android:layout_width="match_parent"
@@ -127,155 +155,168 @@
                 </LinearLayout>
             </FrameLayout>
 
-            <!-- Stats Cards Row (4 cards) -->
+            <!-- Stats Cards (2x2 grid con LinearLayouts anidados) -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="110dp"
-                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_marginBottom="16dp">
 
                 <LinearLayout
-                    android:id="@+id/cardHabitosPendientes"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="4dp"
-                    android:background="@drawable/bg_card_rounded"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:foreground="?attr/selectableItemBackground">
+                    android:layout_width="match_parent"
+                    android:layout_height="90dp"
+                    android:orientation="horizontal">
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_habits"
-                        app:tint="?attr/epAccent"
-                        android:layout_marginBottom="4dp"
-                        android:contentDescription="@null" />
+                    <LinearLayout
+                        android:id="@+id/cardHabitosPendientes"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/bg_card_rounded"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:foreground="?attr/selectableItemBackground">
 
-                    <TextView
-                        android:id="@+id/tvHabitosPendientes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/cero"
-                        android:textSize="22sp"
-                        android:textColor="?attr/epTextPrimary"
-                        android:textStyle="bold" />
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_habits"
+                            app:tint="?attr/epAccent"
+                            android:layout_marginBottom="4dp"
+                            android:contentDescription="@null" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/habitos"
-                        android:textSize="11sp"
-                        android:textColor="?attr/epTextSecondary" />
+                        <TextView
+                            android:id="@+id/tvHabitosPendientes"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/cero"
+                            android:textSize="20sp"
+                            android:textColor="?attr/epTextPrimary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/habitos"
+                            android:textSize="11sp"
+                            android:textColor="?attr/epTextSecondary" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/cardRacha"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        android:background="@drawable/bg_card_rounded"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_streak"
+                            app:tint="?attr/epWarning"
+                            android:layout_marginBottom="4dp"
+                            android:contentDescription="@null" />
+
+                        <TextView
+                            android:id="@+id/tvRacha"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/cero"
+                            android:textSize="20sp"
+                            android:textColor="?attr/epTextPrimary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/racha"
+                            android:textSize="11sp"
+                            android:textColor="?attr/epTextSecondary" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/cardRacha"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginHorizontal="2dp"
-                    android:background="@drawable/bg_card_rounded"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:foreground="?attr/selectableItemBackground">
+                    android:layout_width="match_parent"
+                    android:layout_height="90dp"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp">
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_streak"
-                        app:tint="?attr/epWarning"
-                        android:layout_marginBottom="4dp"
-                        android:contentDescription="@null" />
+                    <LinearLayout
+                        android:id="@+id/cardNivel"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/bg_card_rounded"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:foreground="?attr/selectableItemBackground">
 
-                    <TextView
-                        android:id="@+id/tvRacha"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/cero"
-                        android:textSize="22sp"
-                        android:textColor="?attr/epTextPrimary"
-                        android:textStyle="bold" />
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_level"
+                            app:tint="?attr/epAccentSecondary"
+                            android:layout_marginBottom="4dp"
+                            android:contentDescription="@null" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/racha"
-                        android:textSize="11sp"
-                        android:textColor="?attr/epTextSecondary" />
-                </LinearLayout>
+                        <TextView
+                            android:id="@+id/tvNivel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/nv_1"
+                            android:textSize="20sp"
+                            android:textColor="?attr/epTextPrimary"
+                            android:textStyle="bold" />
 
-                <LinearLayout
-                    android:id="@+id/cardNivel"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginHorizontal="2dp"
-                    android:background="@drawable/bg_card_rounded"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:foreground="?attr/selectableItemBackground">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/nivel"
+                            android:textSize="11sp"
+                            android:textColor="?attr/epTextSecondary" />
+                    </LinearLayout>
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_level"
-                        app:tint="?attr/epAccentSecondary"
-                        android:layout_marginBottom="4dp"
-                        android:contentDescription="@null" />
+                    <LinearLayout
+                        android:id="@+id/cardMisionesPendientes"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        android:background="@drawable/bg_card_rounded"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:foreground="?attr/selectableItemBackground">
 
-                    <TextView
-                        android:id="@+id/tvNivel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/nv_1"
-                        android:textSize="22sp"
-                        android:textColor="?attr/epTextPrimary"
-                        android:textStyle="bold" />
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_mision"
+                            app:tint="?attr/epAccentSecondary"
+                            android:layout_marginBottom="4dp"
+                            android:contentDescription="@null" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/nivel"
-                        android:textSize="11sp"
-                        android:textColor="?attr/epTextSecondary" />
-                </LinearLayout>
+                        <TextView
+                            android:id="@+id/tvMisionesPendientes"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/cero"
+                            android:textSize="20sp"
+                            android:textColor="?attr/epTextPrimary"
+                            android:textStyle="bold" />
 
-                <LinearLayout
-                    android:id="@+id/cardMisionesPendientes"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginStart="4dp"
-                    android:background="@drawable/bg_card_rounded"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:foreground="?attr/selectableItemBackground">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_mision"
-                        app:tint="?attr/epAccentSecondary"
-                        android:layout_marginBottom="4dp"
-                        android:contentDescription="@null" />
-
-                    <TextView
-                        android:id="@+id/tvMisionesPendientes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/cero"
-                        android:textSize="22sp"
-                        android:textColor="?attr/epTextPrimary"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/misiones_pendientes_label"
-                        android:textSize="11sp"
-                        android:textColor="?attr/epTextSecondary" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/misiones_pendientes_label"
+                            android:textSize="11sp"
+                            android:textColor="?attr/epTextSecondary" />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 

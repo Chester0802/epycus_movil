@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -60,17 +59,9 @@ public class RegistroActivity extends AppCompatActivity {
             if (hasFocus) mostrarDatePicker();
         });
 
-        binding.spCarrera.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (carreras != null && position >= 0 && position < carreras.size()) {
-                    carreraSeleccionadaId = carreras.get(position).getId();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                carreraSeleccionadaId = -1;
+        binding.spCarrera.setOnItemClickListener((parent, view, position, id) -> {
+            if (carreras != null && position >= 0 && position < carreras.size()) {
+                carreraSeleccionadaId = carreras.get(position).getId();
             }
         });
 
@@ -146,7 +137,10 @@ public class RegistroActivity extends AppCompatActivity {
         String contrasena = binding.etContrasena.getText().toString().trim();
         String confirmar = binding.etConfirmarContrasena.getText().toString().trim();
         String fechaNac = binding.etFechaNacimiento.getText().toString().trim();
-        String genero = binding.spGenero.getSelectedItem().toString();
+        String genero = binding.spGenero.getText().toString().trim();
+        if (genero.isEmpty()) {
+            genero = getResources().getStringArray(R.array.generos)[0];
+        }
         boolean aceptaTerminos = binding.cbTerminos.isChecked();
 
         if (nombre.isEmpty() || correo.isEmpty() || contrasena.isEmpty()) {

@@ -213,6 +213,7 @@ public class MisionesFragment extends Fragment {
         Spinner spCategoria = view.findViewById(R.id.spMisionCategoria);
         View layoutFecha = view.findViewById(R.id.layoutFecha);
         TextView tvFecha = view.findViewById(R.id.tvFechaSeleccionada);
+        View loadingOverlay = view.findViewById(R.id.loadingOverlay);
 
         String[] prioridades = {
                 getString(R.string.prioridad_alta),
@@ -300,17 +301,29 @@ public class MisionesFragment extends Fragment {
                 if (catId > 0) body.addProperty("categoriaId", catId);
                 if (!fecha.isEmpty()) body.addProperty("fechaLimite", fecha);
 
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setEnabled(false);
+                loadingOverlay.setVisibility(View.VISIBLE);
+
                 if (isEditing) {
-                    actualizarMision(existing.getId(), body, dialog);
+                    actualizarMision(existing.getId(), body, dialog, loadingOverlay);
                 } else {
-                    crearMision(body, dialog);
+                    crearMision(body, dialog, loadingOverlay);
                 }
             });
         });
         dialog.show();
     }
 
-    private void crearMision(JsonObject body, AlertDialog dialog) {
+    private void mostrarCargandoMision(AlertDialog dialog, View loadingOverlay, boolean cargando) {
+        if (dialog.isShowing()) {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(!cargando);
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setEnabled(!cargando);
+            loadingOverlay.setVisibility(cargando ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private void crearMision(JsonObject body, AlertDialog dialog, View loadingOverlay) {
         Call<RespuestaApi<SuccessResponseDto>> call = repository.crear(body);
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
@@ -326,6 +339,7 @@ public class MisionesFragment extends Fragment {
                 } else {
                     String msg = NetworkUtils.getErrorMessage(requireContext(), response);
                     Snackbar.make(requireView(), msg, Snackbar.LENGTH_SHORT).show();
+                    mostrarCargandoMision(dialog, loadingOverlay, false);
                 }
             }
 
@@ -333,11 +347,12 @@ public class MisionesFragment extends Fragment {
             public void onFailure(@NonNull Call<RespuestaApi<SuccessResponseDto>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
                 mostrarErrorRed(t);
+                mostrarCargandoMision(dialog, loadingOverlay, false);
             }
         });
     }
 
-    private void actualizarMision(int id, JsonObject body, AlertDialog dialog) {
+    private void actualizarMision(int id, JsonObject body, AlertDialog dialog, View loadingOverlay) {
         Call<RespuestaApi<SuccessResponseDto>> call = repository.actualizar(id, body);
         activeCalls.add(call);
         call.enqueue(new Callback<>() {
@@ -353,6 +368,7 @@ public class MisionesFragment extends Fragment {
                 } else {
                     String msg = NetworkUtils.getErrorMessage(requireContext(), response);
                     Snackbar.make(requireView(), msg, Snackbar.LENGTH_SHORT).show();
+                    mostrarCargandoMision(dialog, loadingOverlay, false);
                 }
             }
 
@@ -360,6 +376,7 @@ public class MisionesFragment extends Fragment {
             public void onFailure(@NonNull Call<RespuestaApi<SuccessResponseDto>> call, @NonNull Throwable t) {
                 activeCalls.remove(call);
                 mostrarErrorRed(t);
+                mostrarCargandoMision(dialog, loadingOverlay, false);
             }
         });
     }

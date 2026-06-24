@@ -96,12 +96,26 @@
                     android:background="@drawable/bg_card_rounded"
                     android:foreground="?attr/selectableItemBackground">
 
-                    <ImageView
+                    <FrameLayout
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:src="@drawable/ic_mood_genial"
-                        android:layout_marginBottom="4dp"
-                        android:contentDescription="@null" />
+                        android:layout_marginBottom="4dp">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_mood_genial"
+                            android:contentDescription="@null" />
+
+                        <ImageView
+                            android:id="@+id/checkGenial"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_check_circle"
+                            app:tint="?attr/epSuccess"
+                            android:layout_gravity="end|bottom"
+                            android:visibility="gone" />
+                    </FrameLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -123,12 +137,26 @@
                     android:background="@drawable/bg_card_rounded"
                     android:foreground="?attr/selectableItemBackground">
 
-                    <ImageView
+                    <FrameLayout
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:src="@drawable/ic_mood_bien"
-                        android:layout_marginBottom="4dp"
-                        android:contentDescription="@null" />
+                        android:layout_marginBottom="4dp">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_mood_bien"
+                            android:contentDescription="@null" />
+
+                        <ImageView
+                            android:id="@+id/checkBien"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_check_circle"
+                            app:tint="?attr/epInfo"
+                            android:layout_gravity="end|bottom"
+                            android:visibility="gone" />
+                    </FrameLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -150,12 +178,26 @@
                     android:background="@drawable/bg_card_rounded"
                     android:foreground="?attr/selectableItemBackground">
 
-                    <ImageView
+                    <FrameLayout
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:src="@drawable/ic_mood_normal"
-                        android:layout_marginBottom="4dp"
-                        android:contentDescription="@null" />
+                        android:layout_marginBottom="4dp">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_mood_normal"
+                            android:contentDescription="@null" />
+
+                        <ImageView
+                            android:id="@+id/checkNormal"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_check_circle"
+                            app:tint="?attr/epWarning"
+                            android:layout_gravity="end|bottom"
+                            android:visibility="gone" />
+                    </FrameLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -177,12 +219,26 @@
                     android:background="@drawable/bg_card_rounded"
                     android:foreground="?attr/selectableItemBackground">
 
-                    <ImageView
+                    <FrameLayout
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:src="@drawable/ic_mood_cansado"
-                        android:layout_marginBottom="4dp"
-                        android:contentDescription="@null" />
+                        android:layout_marginBottom="4dp">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_mood_cansado"
+                            android:contentDescription="@null" />
+
+                        <ImageView
+                            android:id="@+id/checkCansado"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_check_circle"
+                            app:tint="?attr/epWarning"
+                            android:layout_gravity="end|bottom"
+                            android:visibility="gone" />
+                    </FrameLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -204,12 +260,26 @@
                     android:background="@drawable/bg_card_rounded"
                     android:foreground="?attr/selectableItemBackground">
 
-                    <ImageView
+                    <FrameLayout
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:src="@drawable/ic_mood_estresado"
-                        android:layout_marginBottom="4dp"
-                        android:contentDescription="@null" />
+                        android:layout_marginBottom="4dp">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_mood_estresado"
+                            android:contentDescription="@null" />
+
+                        <ImageView
+                            android:id="@+id/checkEstresado"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_check_circle"
+                            app:tint="?attr/epError"
+                            android:layout_gravity="end|bottom"
+                            android:visibility="gone" />
+                    </FrameLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
