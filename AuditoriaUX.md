@@ -13,11 +13,11 @@
 | **UI General** | **38/100** | CRITICO - Iconos rotos en dark mode, jerarquia inconsistente, tipografia sin sistema |
 | **Material Design 3** | **29/100** | CRITICO - Sin sistema de color M3, esquinas inconsistentes, sin elevation system |
 | **Accesibilidad** | **22/100** | CRITICO - Sin content descriptions, contraste insuficiente, 10sp texto, emojis como iconos |
-| **Produccion** | **18/100** | BLOQUEANTE - Launcher icon 1.8MB en drawable, sin adaptive icon real, sin SplashScreen API, dead code, Google Client ID expuesto |
+| **Produccion** | **28/100** | CRITICO - Sin SplashScreen API, dead code, Google Client ID expuesto |
 
 **Evaluacion General: NO APTO PARA PLAY STORE**
 
-Se identificaron **3 criterios bloqueantes** que impedirian la publicacion y **47 hallazgos** entre criticos y altos.
+Se identificaron **2 criterios bloqueantes** que impedirian la publicacion y **47 hallazgos** entre criticos y altos.
 
 ---
 
@@ -25,8 +25,8 @@ Se identificaron **3 criterios bloqueantes** que impedirian la publicacion y **4
 
 | # | Severidad | Pantalla | Problema | Impacto |
 |---|-----------|----------|----------|---------|
-| 1 | CRITICAL | Global | ic_logo.webp de 1.82MB en res/drawable/ usada como icono de app. Adaptive icon definido pero NO usado | Rechazo Play Store por tamano de icono + falta de adaptive icon |
-| 2 | CRITICAL | Global | AndroidManifest.xml usa @drawable/ic_logo como android:icon y roundIcon en vez de @mipmap/ic_launcher. Directorios mipmap-* vacios | Rechazo Play Store. No cumple adaptive icon requirement |
+| 1 | ~~CRITICAL~~ RESUELTO | Global | ic_logo.webp 1.82MB reemplazado por ic_logo.png (47KB). AndroidManifest actualizado a @mipmap/ic_launcher con adaptive icon | ~~Rechazo Play Store~~ Icono optimizado + adaptive icon operativo |
+| 2 | ~~CRITICAL~~ RESUELTO | Global | AndroidManifest.xml actualizado a @mipmap/ic_launcher con foreground bitmap del logo real. Background gradient intacto | ~~Rechazo Play Store~~ Adaptive icon compliant |
 | 3 | CRITICAL | Global | Sin SplashScreen API de Android 12+. Usa Handler.postDelayed legacy. Sin dependencia core-splashscreen | Experiencia rota en Android 12+: doble splash + parpadeo |
 | 4 | CRITICAL | Global | GOOGLE_CLIENT_ID hardcodeado en build.gradle.kts:42 expuesto a cualquiera con acceso al APK | Riesgo de seguridad. Cualquier decompilacion roba el Client ID |
 | 5 | CRITICAL | Global | 6 iconos de bottom nav (ic_home, ic_habits, ic_mision, ic_journal, ic_profile, ic_streak) usan #FF000000 fillColor sin android:tint | En dark mode estos iconos son INVISIBLES |
@@ -443,8 +443,8 @@ style name="Widget.Epycus.Input" parent="Widget.Material3.TextInputLayout.Outlin
 
 ## Checklist Play Store
 
-- [ ] Launcher Icon: WEBP 1.8MB -> Adaptive icon vectorial en mipmap-*
-- [ ] Adaptive Icon: XML definido pero mipmap-* vacios. POBLARLOS
+- [x] Launcher Icon: WEBP 1.8MB -> PNG 47KB en drawable/ic_logo.png
+- [x] Adaptive Icon: Manifest apunta a @mipmap/ic_launcher con foreground bitmap del logo real
 - [ ] Splash API Android 12+: NO implementado. BLOQUEANTE
 - [ ] Accesibilidad: Sin content descriptions en 80% de iconos. 10sp texto. REPROBADO
 - [ ] Rendimiento: ic_logo 1.8MB en drawable. Overdraw por layouts anidados
