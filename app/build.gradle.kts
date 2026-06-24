@@ -2,7 +2,28 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+// Para publicar en Play Store, crea un archivo keystore.properties en la raíz del proyecto:
+// storeFile=ruta/al/keystore.jks
+// storePassword=tu_store_password
+// keyAlias=tu_key_alias
+// keyPassword=tu_key_password
+// Luego, en el build la firma se configura automáticamente.
+// Alternativa: definir las variables de entorno EPYCUS_STORE_FILE, EPYCUS_STORE_PASSWORD,
+// EPYCUS_KEY_ALIAS, EPYCUS_KEY_PASSWORD.
+
 android {
+    signingConfigs {
+        create("release") {
+            val storeFileEnv = System.getenv("EPYCUS_STORE_FILE")
+            if (storeFileEnv != null) {
+                storeFile = file(storeFileEnv)
+                storePassword = System.getenv("EPYCUS_STORE_PASSWORD") ?: ""
+                keyAlias = System.getenv("EPYCUS_KEY_ALIAS") ?: ""
+                keyPassword = System.getenv("EPYCUS_KEY_PASSWORD") ?: ""
+            }
+        }
+    }
+
     namespace = "es.epycus.app"
     compileSdk {
         version = release(36) {
@@ -23,6 +44,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:5053/\"")
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -30,6 +54,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "API_BASE_URL", "\"https://app.epycus.es/\"")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {

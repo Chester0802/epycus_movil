@@ -36,6 +36,9 @@ public class Habito {
     @SerializedName("categoria")
     private String categoria;
 
+    @SerializedName("categoriaNombre")
+    private String categoriaNombre;
+
     @SerializedName("recordatorioHora")
     private String recordatorioHora;
 
@@ -49,6 +52,7 @@ public class Habito {
     public boolean isEstaActivo() { return estaActivo; }
     public String getFechaCreacion() { return fechaCreacion; }
     public int getCategoriaId() { return categoriaId; }
-    public String getCategoria() { return categoria; }
+    public String getCategoria() { return categoria != null ? categoria : categoriaNombre; }
+    public String getCategoriaNombre() { return categoriaNombre; }
     public String getRecordatorioHora() { return recordatorioHora; }
 }

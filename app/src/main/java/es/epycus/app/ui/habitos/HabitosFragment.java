@@ -321,9 +321,8 @@ public class HabitosFragment extends Fragment {
         JsonObject body = new JsonObject();
         body.addProperty("nombre", nombre);
 
-        // Mapeo de frecuencia para la API (Indispensable para que el server no de error)
-        String frecuenciaApi = frecuencia.toLowerCase().contains("semanal") ? "WEEKLY" : "DAILY";
-        body.addProperty("frecuencia", frecuenciaApi);
+        // La frecuencia se envía en español ("Diaria", "Semanal", "Personalizada") como espera el backend
+        body.addProperty("frecuencia", frecuencia);
         body.addProperty("categoria", categoria);
 
         Call<RespuestaApi<SuccessResponseDto>> call = repository.crear(body);
@@ -455,10 +454,12 @@ public class HabitosFragment extends Fragment {
 
         String frecuenciaStr = habito.getFrecuencia();
         if (frecuenciaStr != null) {
-            if (frecuenciaStr.equals("WEEKLY")) {
+            if (frecuenciaStr.equalsIgnoreCase("Semanal") || frecuenciaStr.equalsIgnoreCase("WEEKLY")) {
                 spFrecuencia.setSelection(1);
-            } else if (frecuenciaStr.equals("DAILY")) {
+            } else if (frecuenciaStr.equalsIgnoreCase("Diaria") || frecuenciaStr.equalsIgnoreCase("DAILY")) {
                 spFrecuencia.setSelection(0);
+            } else if (frecuenciaStr.equalsIgnoreCase("Personalizada")) {
+                spFrecuencia.setSelection(2);
             }
         }
 
@@ -481,8 +482,7 @@ public class HabitosFragment extends Fragment {
         JsonObject body = new JsonObject();
         body.addProperty("nombre", nombre);
 
-        String frecuenciaApi = frecuencia.toLowerCase().contains("semanal") ? "WEEKLY" : "DAILY";
-        body.addProperty("frecuencia", frecuenciaApi);
+        body.addProperty("frecuencia", frecuencia);
         body.addProperty("categoria", categoria);
 
         Call<RespuestaApi<SuccessResponseDto>> call = repository.actualizar(id, body);
