@@ -579,14 +579,14 @@ style name="Widget.Epycus.Input" parent="Widget.Material3.TextInputLayout.Outlin
 - [x] Splash API Android 12+: Implementado con core-splashscreen + installSplashScreen()
 - [x] Accesibilidad: content descriptions corregidas (38 ImageViews + 7 spinners + 11 loading). 12sp minimo aplicado. Guia de prueba TalkBack documentada. Falta ejecucion manual de pruebas TalkBack
 - [x] Rendimiento: Overdraw analizado - maxima profundidad 4 (fragment_inicio.xml), promedio 1-2. Sin issues significativos
-- [ ] Permisos: Solo INTERNET. OK pero sin notificaciones
-- [ ] Pantallas Grandes: No probado. Layouts con fixed heights pueden fallar
+- [x] Permisos: INTERNET, POST_NOTIFICATIONS (API 33+), USE_EXACT_ALARM (API 33-), SCHEDULE_EXACT_ALARM (API 34+). Notificaciones para Pomodoro + alarmas exactas configuradas por SDK
+- [ ] Pantallas Grandes: No probado. Contenedores raiz usan match_parent/wrap_content correctamente. Alturas fijas solo en elementos hijos especificos (stat cards 90dp, mood selector 100dp, quick actions 120dp). Sin layouts alternativos (-w600dp, -land). Riesgo bajo para MVP, pendiente testing manual
 - [x] Dark Mode: Iconos de bottom nav con tint + style corregido. Mood icons adaptativos
 - [x] Localizacion: nav_bottom con @string references
 - [x] Crash Prevention: Boton Guardar deshabilitado hasta carga completa. Loading states en misión y diálogo perfil
 - [x] Versionado: versionCode=2, versionName=1.1. Estrategia: versionCode 100+ para produccion, incrementar por release. VersionName semantico (major.minor.patch)
 - [x] Firma: Signing config lee keystore.properties (con ejemplo en keystore.properties.example) o env vars. Configuracion completa
-- [ ] ProGuard: Configurado con proguard-android-optimize.txt + proguard-rules.pro
+- [x] ProGuard: Configurado con proguard-android-optimize.txt + proguard-rules.pro (Retrofit, Gson, Room, OkHttp, Glide, ViewBinding)
 - [x] Google Services: No se requiere google-services.json - la app no usa Firebase ni FCM. Solo Google Sign-In via play-services-auth
 - [x] Google Client ID: Externalizado a secrets.properties
 - [x] Dead Code: MainActivity.java, activity_main.xml, activity_dashboard.xml. ELIMINADO

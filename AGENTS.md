@@ -31,8 +31,9 @@
 - **ViewPager2 + BottomNavigationView + edge-to-edge + insets**
 - **Accessibilidad completa**: 38/38 ImageViews, 22/22 EditTexts, 7 Spinners, 11 ProgressBar guia TalkBack
 - **Análisis de rendimiento**: max nesting depth=4, sin issues de overdraw significativos
-- **Play Store ready**: signing config (keystore.properties + env vars), keystore.properties.example, versionado semántico documentado
+- **Play Store ready**: signing config (keystore.properties + env vars), keystore.properties.example, versionado semántico documentado, ProGuard configurado, permisos revisados (INTERNET, POST_NOTIFICATIONS, USE/SCHEDULE_EXACT_ALARM)
 - **Tipografía personalizada**: Quicksand vía Google Fonts descargable (Downloadable Fonts API, API 28+ nativo)
+- **Play Store checklist actualizado**: permisos, ProGuard, pantallas grandes documentados en AuditoriaUX.md
 
 ### In Progress
 - (ninguno)
@@ -40,7 +41,6 @@
 ### Pending
 - TalkBack testing manual en todas las pantallas
 - Pruebas en pantalla plegada/desplegada y landscape
-- Pruebas de rendimiento (overdraw, layout depth)
 
 ## Key Decisions
 - No se usó GridLayout para los stat cards porque layout_columnWeight no es estándar en framework GridLayout; se optó por LinearLayouts anidados (2 filas × 2 columnas)
