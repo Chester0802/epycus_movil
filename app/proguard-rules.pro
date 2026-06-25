@@ -33,3 +33,11 @@
 -keep class com.bumptech.glide.** { *; }
 -keep class * extends com.bumptech.glide.module.AppGlideModule
 -keep class * extends com.bumptech.glide.module.LibraryGlideModule
+
+# ViewBinding
+-keepclassmembers class * implements androidx.viewbinding.ViewBinding {
+    public static * inflate(...);
+}
+
+# Keep BuildConfig
+-keep class es.epycus.app.BuildConfig { *; }

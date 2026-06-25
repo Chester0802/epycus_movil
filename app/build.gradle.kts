@@ -42,8 +42,8 @@ android {
         applicationId = "es.epycus.app"
         minSdk = 28
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         buildConfigField("String", "API_BASE_URL", "\"https://app.epycus.es/\"")
         buildConfigField("String", "GOOGLE_CLIENT_ID", "\"${googleClientId}\"")

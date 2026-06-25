@@ -14,13 +14,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="8dp">
 
             <!-- Loading -->
             <LinearLayout
                 android:id="@+id/loadingView"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="80dp"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:visibility="gone">
@@ -36,13 +36,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="24dp">
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp">
 
                 <ImageView
                     android:id="@+id/ivAvatar"
-                    android:layout_width="120dp"
-                    android:layout_height="140dp"
+                    android:layout_width="80dp"
+                    android:layout_height="100dp"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
                     android:background="@drawable/bg_character_glow"
@@ -101,7 +101,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:orientation="horizontal"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="12dp">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -165,12 +165,12 @@
                 android:gravity="center_vertical"
                 android:background="@drawable/bg_card_rounded"
                 android:paddingHorizontal="16dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="4dp"
                 android:foreground="?attr/selectableItemBackground">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:src="@drawable/ic_personajes"
                     app:tint="?attr/epAccentSecondary"
                     android:importantForAccessibility="no" />
@@ -306,12 +306,12 @@
                 android:gravity="center_vertical"
                 android:background="@drawable/bg_card_rounded"
                 android:paddingHorizontal="16dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="8dp"
                 android:foreground="?attr/selectableItemBackground">
 
                 <ImageView
                     android:id="@+id/ivThemeIcon"
-                    android:layout_width="24dp"
+                    android:layout_width="20dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_moon"
                     app:tint="?attr/epAccent"
@@ -348,7 +348,7 @@
                 android:textSize="12sp"
                 android:textColor="?attr/epTextTertiary"
                 android:gravity="center"
-                android:layout_marginBottom="24dp" />
+                android:layout_marginBottom="8dp" />
 
         </LinearLayout>
     </ScrollView>

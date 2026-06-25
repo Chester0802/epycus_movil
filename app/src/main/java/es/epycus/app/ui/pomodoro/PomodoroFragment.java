@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -84,6 +86,8 @@ public class PomodoroFragment extends Fragment {
     private int ciclosCompletadosSesion = 0;
     private static final String CHANNEL_ID = "pomodoro_channel";
     private static final int NOTIFICATION_ID_CICLO = 1001;
+    private static final int PERMISSION_REQUEST_POST_NOTIFICATIONS = 100;
+    private boolean notificacionesPermitidas = false;
     private static final String CACHE_KEY_CONFIG = "pomodoro_config";
     private static final String CACHE_KEY_TIP = "pomodoro_tip";
     private boolean sonidoActivo = true;
@@ -139,6 +143,8 @@ public class PomodoroFragment extends Fragment {
         }
 
         recargarTodo();
+
+        solicitarPermisoNotificacion();
 
         return view;
     }
@@ -516,6 +522,10 @@ public class PomodoroFragment extends Fragment {
         String title = getString(isFoco ? R.string.foco_completado_notif : R.string.pausa_completada_notif);
         String body = getString(R.string.sesion_formato, ciclosCompletados);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !notificacionesPermitidas) {
+            return;
+        }
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_pomodoro)
                 .setContentTitle(title)
@@ -524,6 +534,37 @@ public class PomodoroFragment extends Fragment {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         nm.notify(NOTIFICATION_ID_CICLO, builder.build());
+    }
+
+    private void solicitarPermisoNotificacion() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            notificacionesPermitidas = true;
+            return;
+        }
+        if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.POST_NOTIFICATIONS)
+                == PackageManager.PERMISSION_GRANTED) {
+            notificacionesPermitidas = true;
+        } else if (shouldShowRequestPermissionRationale(android.Manifest.permission.POST_NOTIFICATIONS)) {
+            Snackbar.make(binding.getRoot(), R.string.notif_pomodoro_permiso_razon, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.permitir, v ->
+                            requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS},
+                                    PERMISSION_REQUEST_POST_NOTIFICATIONS))
+                    .show();
+        } else {
+            requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS},
+                    PERMISSION_REQUEST_POST_NOTIFICATIONS);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_POST_NOTIFICATIONS) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                notificacionesPermitidas = true;
+            }
+        }
     }
 
     private void showConfigDialog() {

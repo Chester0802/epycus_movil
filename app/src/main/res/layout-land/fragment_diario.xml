@@ -14,13 +14,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="8dp">
 
             <!-- Loading -->
             <LinearLayout
                 android:id="@+id/loadingView"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="80dp"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:visibility="gone">
@@ -37,8 +37,8 @@
                 android:textSize="22sp"
                 android:textColor="?attr/epTextPrimary"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="4dp" />
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="2dp" />
 
             <!-- Guiding Question Card -->
             <LinearLayout
@@ -46,8 +46,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/bg_card_rounded"
-                android:padding="16dp"
-                android:layout_marginBottom="20dp">
+                android:padding="10dp"
+                android:layout_marginBottom="8dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -76,11 +76,11 @@
                 android:textSize="15sp"
                 android:textColor="?attr/epTextPrimary"
                 android:textStyle="bold"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="6dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="80dp"
                 android:orientation="horizontal"
                 android:gravity="center"
                 android:layout_marginBottom="16dp">
@@ -301,7 +301,7 @@
                 android:id="@+id/layoutDiarioTexto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="6dp"
                 style="@style/Widget.Epycus.Input">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -324,7 +324,7 @@
                 android:backgroundTint="?attr/epAccent"
                 android:textColor="?attr/epTextOnPrimary"
                 app:cornerRadius="16dp"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="8dp" />
 
             <!-- Today's Entry Card -->
             <LinearLayout
@@ -332,8 +332,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/bg_card_rounded"
-                android:padding="16dp"
-                android:layout_marginBottom="16dp">
+                android:padding="10dp"
+                android:layout_marginBottom="8dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -361,11 +361,11 @@
                 android:gravity="center"
                 android:orientation="vertical"
                 android:visibility="gone"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="8dp">
 
                 <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:src="@drawable/ic_mood_normal"
                     app:tint="?attr/epTextTertiary"
                     android:contentDescription="@null"
@@ -388,7 +388,7 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:background="@drawable/bg_card_rounded"
-                android:padding="16dp"
+                android:padding="10dp"
                 android:foreground="?attr/selectableItemBackground">
 
                 <LinearLayout
@@ -437,7 +437,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:visibility="gone"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="8dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -457,7 +457,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="40dp"
                 android:orientation="vertical" />
         </LinearLayout>
     </ScrollView>

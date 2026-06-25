@@ -37,13 +37,13 @@
 - **Sistema de color M3 completo**: 12 nuevos colores (containers, surface/outline variants), 18 nuevos attrs ep*, 23 M3 roles mapeados en ambos temas (light Kawaii + dark Solo Leveling)
 - **ViewPager2 + BottomNavigationView**: FragmentTransaction hide/show reemplazado por ViewPager2 con FragmentStateAdapter, swipe entre tabs, Pomodoro como overlay separado con back stack
 - **Edge-to-edge + insets**: WindowCompat.setDecorFitsSystemWindows(false), transparent status bar, inset padding para ViewPager y BottomAppBar
+- **Accessibilidad**: contentDescription/importantForAccessibility agregados a 12 ImageViews (Quick Win #4)
 
 ### In Progress
 - (ninguno)
 
 ### Blocked
 - #19 (tipografía personalizada): requiere archivos .ttf que no están en el proyecto
-- POM-03: el código ya manejaba onSaveInstanceState + reanudarTimer(), no requiere cambios
 
 ## Key Decisions
 - No se usó GridLayout para los stat cards porque layout_columnWeight no es estándar en framework GridLayout; se optó por LinearLayouts anidados (2 filas × 2 columnas)
@@ -53,7 +53,9 @@
 
 ## Next Steps
 - ~~Verificar que el proyecto compile~~ ✅ COMPILACIÓN EXITOSA
-- Hacer commit de todos los cambios
+- ~~Hacer commit de todos los cambios~~ ✅ COMMIT REALIZADO (fb7ad26, 56676ad, b4d7b41, bed0ae5, d6e0554)
+- Probar TalkBack en todas las pantallas (Semana 4)
+- Probar en pantalla plegada/desplegada y landscape
 
 ## Relevant Files
 - app/src/main/res/values/dimens.xml: sistema completo de dimensiones

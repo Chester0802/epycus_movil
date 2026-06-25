@@ -12,7 +12,7 @@
 | **UX General** | **78/100** | MEJORADO - ViewPager2 con swipe entre tabs, edge-to-edge con insets, scroll restaurado en tabs, estados vacios corregidos, offline banner, dialogs mejorados |
 | **UI General** | **72/100** | MEJORADO - Vector drawables en perfil, stat cards 2x2, checkmarks mood, spinners Material, anim resources |
 | **Material Design 3** | **82/100** | MEJORADO - Mapa M3 completo con 23 roles (primary, secondary, tertiary, error, background, surface, outline), 12 nuevos colores, 18 nuevos attrs, epRoundedXl=28dp, dimens.xml, dropdown menus Material |
-| **Accesibilidad** | **38/100** | BAJO - content descriptions parciales, checkmarks daltonismo, 12sp minimo, falta TalkBack testing |
+| **Accesibilidad** | **45/100** | MEJORADO - content descriptions en 12 ImageViews corregidos, checkmarks daltonismo, 12sp minimo, falta TalkBack testing |
 | **Produccion** | **72/100** | MEJORADO - Loading states, boton guardar disabled, build.gradle.kts fixed, dead code eliminado, compilacion exitosa con Java 25 + AGP 9.0.1 + Gradle 9.2.1 |
 
 **Evaluacion General: MEJORANDO HACIA PLAY STORE** (progresando significativamente)
@@ -285,9 +285,9 @@ Se identificaron **3 criterios bloqueantes** resueltos (SplashScreen API, adapti
 - **Esfuerzo:** S
 
 ### Problema POM-03: Sesion activa no persiste entre rotaciones
-- **Severidad:** MEDIUM (PENDIENTE)
-- **Evidencia:** PomodoroFragment.java:111-118. onSaveInstanceState restaura flags pero CountDownTimer no se reanuda.
-- **Solucion:** En onCreateView si isRunning, llamar reanudarTimer() automaticamente.
+- **Severidad:** ~~MEDIUM~~ RESUELTO
+- **Evidencia:** PomodoroFragment.java:111-118. onSaveInstanceState guarda flags + onCreateView restaura estado + reanudarTimer() recrea CountDownTimer si isRunning=true.
+- **Implementacion:** PomodoroFragment.java ya maneja ciclo completo.
 - **Esfuerzo:** S
 
 ### Problema POM-04: trackColor hardcodeado
@@ -382,7 +382,7 @@ style name="Widget.Epycus.Input" parent="Widget.Material3.TextInputLayout.Outlin
 1. ✅ Agregar android:tint="?attr/epTextPrimary" a todos los iconos del bottom nav con fillColor=#FF000000
 2. ✅ Reemplazar @drawable/ic_logo por @mipmap/ic_launcher en AndroidManifest.xml (hecho antes del audit)
 3. ✅ Eliminar dead code: MainActivity.java, activity_main.xml, activity_dashboard.xml
-4. ⏳ Agregar contentDescription a todos los ImageView sin descripcion (parcial: splash ProgressBar)
+4. ✅ Agregar contentDescription/importantForAccessibility a todos los ImageView (12 ImageViews corregidos: 5 check marks diario, ivPersonaje inicio, ivAvatar perfil, 4 iconos menu perfil, ivThemeIcon)
 5. ✅ Cambiar 10sp a 12sp en stats del Pomodoro
 9. ✅ Scroll position preservado al cambiar tabs (DSH-06 resuelto)
 10. ✅ Spinners nativos reemplazados por Exposed Dropdown Menus Material (REG-01)
@@ -445,7 +445,7 @@ style name="Widget.Epycus.Input" parent="Widget.Material3.TextInputLayout.Outlin
 - [x] Launcher Icon: WEBP 1.8MB -> PNG 47KB en drawable/ic_logo.png
 - [x] Adaptive Icon: Manifest apunta a @mipmap/ic_launcher con foreground bitmap del logo real
 - [x] Splash API Android 12+: Implementado con core-splashscreen + installSplashScreen()
-- [ ] Accesibilidad: content descriptions parciales. 12sp minimo aplicado. REPROBADO aun
+- [ ] Accesibilidad: content descriptions corregidas (12 ImageViews). 12sp minimo aplicado. Falta TalkBack testing completo
 - [ ] Rendimiento: Overdraw por layouts anidados
 - [ ] Permisos: Solo INTERNET. OK pero sin notificaciones
 - [ ] Pantallas Grandes: No probado. Layouts con fixed heights pueden fallar

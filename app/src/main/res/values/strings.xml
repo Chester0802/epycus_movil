@@ -240,6 +240,8 @@
 
     <!-- Perfil extra -->
     <string name="notificaciones_preferencias">Preferencias de notificaciones</string>
+    <string name="notif_pomodoro_permiso_razon">Epycus necesita permisos de notificación para avisarte cuando terminen tus ciclos de foco o descanso.</string>
+    <string name="permitir">Permitir</string>
     <string name="carga_perfil_estadisticas">Carga tu perfil para ver estadísticas.</string>
     <string name="xp_total_label">• XP Total: %s</string>
     <string name="nivel_label">• Nivel: %s</string>
