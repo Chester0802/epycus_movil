@@ -57,6 +57,7 @@
             android:layout_height="52dp"
             android:layout_marginBottom="12dp"
             android:entries="@array/generos"
+            android:prompt="@string/seleccionar_genero"
             android:textColor="?attr/epTextPrimary"
             android:popupBackground="?attr/epSurface"
             android:background="@drawable/bg_card_rounded"
@@ -67,6 +68,7 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginBottom="12dp"
+            android:prompt="@string/seleccionar_carrera"
             android:textColor="?attr/epTextPrimary"
             android:popupBackground="?attr/epSurface"
             android:background="@drawable/bg_card_rounded"
@@ -102,7 +104,8 @@
                 android:layout_height="28dp"
                 android:layout_gravity="center"
                 android:indeterminateTint="?attr/epTextOnPrimary"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:contentDescription="@string/cargando" />
         </FrameLayout>
 
     </LinearLayout>

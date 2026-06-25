@@ -99,7 +99,8 @@
             <ProgressBar
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:indeterminateTint="?attr/epAccent" />
+                android:indeterminateTint="?attr/epAccent"
+                android:contentDescription="@string/edy_escribiendo" />
         </LinearLayout>
     </FrameLayout>
 

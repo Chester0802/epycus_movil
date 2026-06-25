@@ -27,7 +27,8 @@
         android:layout_height="48dp"
         android:background="@drawable/bg_card_rounded"
         android:paddingHorizontal="12dp"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="16dp"
+        android:prompt="@string/seleccionar_categoria_habito" />
 
     <Spinner
         android:id="@+id/spFrecuenciaHabito"
@@ -35,6 +36,7 @@
         android:layout_height="48dp"
         android:background="@drawable/bg_card_rounded"
         android:paddingHorizontal="12dp"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="8dp"
+        android:prompt="@string/seleccionar_frecuencia" />
 
 </LinearLayout>

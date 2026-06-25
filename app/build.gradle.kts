@@ -2,14 +2,26 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
-// Para publicar en Play Store, crea un archivo keystore.properties en la raíz del proyecto:
-// storeFile=ruta/al/keystore.jks
-// storePassword=tu_store_password
-// keyAlias=tu_key_alias
-// keyPassword=tu_key_password
-// Luego, en el build la firma se configura automáticamente.
-// Alternativa: definir las variables de entorno EPYCUS_STORE_FILE, EPYCUS_STORE_PASSWORD,
-// EPYCUS_KEY_ALIAS, EPYCUS_KEY_PASSWORD.
+// ============================================================
+// Play Store Publishing Configuration
+// ============================================================
+// Version strategy:
+//   versionCode: integer, increment by 1 for every Play Store release
+//     - Internal/test releases: 1-99
+//     - Production v1.x: 100+
+//     - Production v2.x: 200+, etc.
+//   versionName: Semantic versioning "major.minor.patch"
+//     - Major: breaking changes or big feature releases
+//     - Minor: new features, backward compatible
+//     - Patch: bug fixes, small improvements
+//
+// Current: versionCode=2, versionName="1.1" (first public release candidate)
+//
+// Signing: the release signing config reads from these sources (in priority):
+//   1. keystore.properties file at project root (see keystore.properties.example)
+//   2. Environment variables: EPYCUS_STORE_FILE, EPYCUS_STORE_PASSWORD,
+//      EPYCUS_KEY_ALIAS, EPYCUS_KEY_PASSWORD
+// ============================================================
 
 val secretsFile = rootProject.file("secrets.properties")
 val googleClientId = if (secretsFile.exists()) {
@@ -22,11 +34,28 @@ val googleClientId = if (secretsFile.exists()) {
     "621141066064-vtm8tf4bv7bl3oubq3eesaha0205e6gr.apps.googleusercontent.com"
 }
 
+fun getKeystoreProperty(key: String): String? {
+    val f = rootProject.file("keystore.properties")
+    if (f.exists()) {
+        return f.readLines()
+            .firstOrNull { it.startsWith("$key=") }
+            ?.substringAfter("=")
+            ?.trim()
+    }
+    return null
+}
+
 android {
     signingConfigs {
         create("release") {
+            val storeFileProp = getKeystoreProperty("storeFile")
             val storeFileEnv = System.getenv("EPYCUS_STORE_FILE")
-            if (storeFileEnv != null) {
+            if (storeFileProp != null) {
+                storeFile = file(storeFileProp)
+                storePassword = getKeystoreProperty("storePassword")
+                keyAlias = getKeystoreProperty("keyAlias")
+                keyPassword = getKeystoreProperty("keyPassword")
+            } else if (storeFileEnv != null) {
                 storeFile = file(storeFileEnv)
                 storePassword = System.getenv("EPYCUS_STORE_PASSWORD") ?: ""
                 keyAlias = System.getenv("EPYCUS_KEY_ALIAS") ?: ""

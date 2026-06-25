@@ -136,7 +136,8 @@
                     android:layout_height="28dp"
                     android:layout_gravity="center"
                     android:indeterminateTint="?attr/epTextOnPrimary"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    android:contentDescription="@string/cargando" />
             </FrameLayout>
 
             <!-- Google button -->

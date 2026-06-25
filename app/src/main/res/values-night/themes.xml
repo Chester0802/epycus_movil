@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.Epycus" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:fontFamily">@font/quicksand</item>
         <!-- M3 Primary -->
         <item name="colorPrimary">@color/dark_accent</item>
         <item name="colorOnPrimary">@color/white</item>

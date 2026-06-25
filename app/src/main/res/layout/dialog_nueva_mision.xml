@@ -46,7 +46,8 @@
         android:layout_height="48dp"
         android:background="@drawable/bg_card_rounded"
         android:paddingHorizontal="12dp"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="12dp"
+        android:prompt="@string/seleccionar_prioridad" />
 
     <Spinner
         android:id="@+id/spMisionCategoria"
@@ -54,7 +55,8 @@
         android:layout_height="48dp"
         android:background="@drawable/bg_card_rounded"
         android:paddingHorizontal="12dp"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="12dp"
+        android:prompt="@string/seleccionar_categoria_mision" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -94,7 +96,8 @@
         <ProgressBar
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:indeterminateTint="?attr/epAccent" />
+            android:indeterminateTint="?attr/epAccent"
+            android:contentDescription="@string/cargando" />
     </FrameLayout>
 </LinearLayout>
 

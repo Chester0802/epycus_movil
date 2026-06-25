@@ -31,11 +31,13 @@
         android:id="@+id/loadingCarreras"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:contentDescription="@string/cargando" />
 
     <Spinner
         android:id="@+id/spCarrera"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:prompt="@string/seleccionar_carrera" />
 
 </LinearLayout>

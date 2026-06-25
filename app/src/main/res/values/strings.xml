@@ -191,6 +191,14 @@
     <string name="modo_oscuro">Modo oscuro</string>
     <string name="modo_claro">Modo claro</string>
 
+    <!-- Spinner prompts for accessibility -->
+    <string name="seleccionar_prioridad">Seleccionar prioridad</string>
+    <string name="seleccionar_categoria_mision">Seleccionar categoría de misión</string>
+    <string name="seleccionar_categoria_habito">Seleccionar categoría de hábito</string>
+    <string name="seleccionar_frecuencia">Seleccionar frecuencia</string>
+    <string name="seleccionar_genero">Seleccionar género</string>
+    <string name="seleccionar_carrera">Seleccionar carrera</string>
+
     <!-- Network errors -->
     <string name="error_timeout">El servidor no responde (tiempo de espera agotado)</string>
     <string name="error_sin_conexion">Sin conexión a internet. Verifica tu red.</string>

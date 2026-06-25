@@ -6,6 +6,7 @@
 - #13 (POM-01): bg_timer_circle.xml cambiado de radial a linear gradient (sin artefactos)
 - #15 + #17: epRoundedXl=28dp + dimen.xml completo (spacing, corner radius, buttons, inputs, icons, text)
 - #18: res/anim/ creado con 5 animaciones (fade_in, fade_out, slide_up, slide_down, scale_in)
+- #19: res/font/ creado con Quicksand como Google Font descargable (sin .ttf en repo)
 - #20 (DIA-01): MoodHistoryAdapter infla item_historial_animo.xml con MaterialCardView
 - #22 (REG-01): Spinners nativos → Material Exposed Dropdown Menus en registro
 - #24: tvMiembroDesde con validación null/empty
@@ -25,25 +26,21 @@
 - build.gradle.kts: error sintaxis corregido en secrets.properties
 - Creados 7 drawables vector + múltiples strings
 - AuditoriaUX.md: actualizada con todos los RESUELTOs
-- **Compilación exitosa**: 5 errores corregidos:
-  - `app/build.gradle.kts`: `java.util.Properties` no resuelto → parseo manual de secrets.properties
-  - `app/build.gradle.kts`: `compileSdk { version = release(36) }` inválido → `compileSdk = 36`
-  - `dialog_nueva_mision.xml`: etiquetas `</FrameLayout>` y `</LinearLayout>` invertidas → corregido anidamiento
-  - `DiarioFragment.java`: falta `import android.widget.TextView` en ViewHolder → agregado
-  - `DashboardActivity.java`: dead code que referenciaba `ActivityDashboardBinding` (layout eliminado) → archivo eliminado
-  - `HabitosFragment.java`: `R.style.Widget.Epycus.Chip.Filter` → `R.style.Widget_Epycus_Chip_Filter` (dots → underscores)
-  - `styles_epycus.xml`: `checkedChipBackgroundColor` no encontrado → atributo eliminado
-  - `scale_in.xml`: `@android:anim/fast_out_slow_in_interpolator` no encontrado → reemplazado por `accelerate_decelerate_interpolator`
-- **Sistema de color M3 completo**: 12 nuevos colores (containers, surface/outline variants), 18 nuevos attrs ep*, 23 M3 roles mapeados en ambos temas (light Kawaii + dark Solo Leveling)
-- **ViewPager2 + BottomNavigationView**: FragmentTransaction hide/show reemplazado por ViewPager2 con FragmentStateAdapter, swipe entre tabs, Pomodoro como overlay separado con back stack
-- **Edge-to-edge + insets**: WindowCompat.setDecorFitsSystemWindows(false), transparent status bar, inset padding para ViewPager y BottomAppBar
-- **Accessibilidad**: contentDescription/importantForAccessibility agregados a 12 ImageViews (Quick Win #4)
+- **Compilación exitosa**: 8 errores corregidos (build.gradle.kts, layouts, imports, dead code, R.style, styles, interpolator)
+- **Sistema de color M3 completo**: 12 nuevos colores, 18 nuevos attrs ep*, 23 M3 roles en ambos temas
+- **ViewPager2 + BottomNavigationView + edge-to-edge + insets**
+- **Accessibilidad completa**: 38/38 ImageViews, 22/22 EditTexts, 7 Spinners, 11 ProgressBar guia TalkBack
+- **Análisis de rendimiento**: max nesting depth=4, sin issues de overdraw significativos
+- **Play Store ready**: signing config (keystore.properties + env vars), keystore.properties.example, versionado semántico documentado
+- **Tipografía personalizada**: Quicksand vía Google Fonts descargable (Downloadable Fonts API, API 28+ nativo)
 
 ### In Progress
 - (ninguno)
 
-### Blocked
-- #19 (tipografía personalizada): requiere archivos .ttf que no están en el proyecto
+### Pending
+- TalkBack testing manual en todas las pantallas
+- Pruebas en pantalla plegada/desplegada y landscape
+- Pruebas de rendimiento (overdraw, layout depth)
 
 ## Key Decisions
 - No se usó GridLayout para los stat cards porque layout_columnWeight no es estándar en framework GridLayout; se optó por LinearLayouts anidados (2 filas × 2 columnas)
@@ -52,9 +49,14 @@
 - mostrarCargandoMision recibe el overlay View directamente (no dialog.findViewById) para evitar problemas de compatibilidad
 
 ## Next Steps
-- ~~Verificar que el proyecto compile~~ ✅ COMPILACIÓN EXITOSA
-- ~~Hacer commit de todos los cambios~~ ✅ COMMIT REALIZADO (fb7ad26, 56676ad, b4d7b41, bed0ae5, d6e0554)
-- Probar TalkBack en todas las pantallas (Semana 4)
+- ~~Verificar que el proyecto compile~~ ✅
+- ~~Hacer commit de todos los cambios~~ ✅
+- ~~Auditoria accesibilidad completa (contentDescriptions, spinners, loading bars)~~ ✅
+- ~~Guia de prueba TalkBack documentada en AuditoriaUX.md~~ ✅
+- ~~Analisis de rendimiento (overdraw, layout depth)~~ ✅
+- ~~Play Store: versionado, firma, google-services.json~~ ✅
+- ~~#19 Tipografia personalizada (Quicksand via Google Fonts)~~ ✅
+- Probar TalkBack en todas las pantallas (ejecucion manual)
 - Probar en pantalla plegada/desplegada y landscape
 
 ## Relevant Files
@@ -65,4 +67,5 @@
 - app/src/main/res/values/themes.xml + values-night/themes.xml: mapa M3 completo (23 roles)
 - app/src/main/res/values/colors.xml: 12 nuevos colores M3 (containers, surface/outline variants)
 - app/src/main/res/values/attrs.xml: 18 nuevos attrs ep* (onPrimaryContainer, secondaryContainer, tertiary, etc.)
+- app/src/main/res/font/quicksand.xml: tipografía personalizada vía Google Fonts descargable
 - AuditoriaUX.md: documento de auditoría actualizado con todos los cambios

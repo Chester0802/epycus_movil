@@ -27,9 +27,9 @@
                 <ProgressBar
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:indeterminateTint="?attr/epAccent" />
+                    android:indeterminateTint="?attr/epAccent"
+                    android:contentDescription="@string/cargando" />
             </LinearLayout>
-
             <!-- Avatar Section -->
             <LinearLayout
                 android:layout_width="match_parent"
