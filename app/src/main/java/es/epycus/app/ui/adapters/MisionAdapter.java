@@ -26,6 +26,7 @@ public class MisionAdapter extends RecyclerView.Adapter<MisionAdapter.ViewHolder
     public interface OnMisionListener {
         void onCompletar(int id);
         void onEditar(MisionDto mision);
+        void onVerSubtareas(MisionDto mision);
     }
 
     public MisionAdapter(OnMisionListener listener) {
@@ -115,6 +116,12 @@ public class MisionAdapter extends RecyclerView.Adapter<MisionAdapter.ViewHolder
         holder.binding.btnEditarMision.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onEditar(mision);
+            }
+        });
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onVerSubtareas(mision);
             }
         });
     }

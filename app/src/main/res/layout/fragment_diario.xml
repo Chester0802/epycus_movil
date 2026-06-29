@@ -397,13 +397,12 @@
                     android:gravity="center"
                     android:background="@drawable/bg_accent_circle">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/edy_letra"
-                        android:textColor="?attr/epTextOnPrimary"
-                        android:textStyle="bold"
-                        android:textSize="18sp" />
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_robot"
+                        app:tint="?attr/epTextOnPrimary"
+                        android:contentDescription="@null" />
                 </LinearLayout>
 
                 <LinearLayout

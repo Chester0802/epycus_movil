@@ -288,17 +288,18 @@ public class PomodoroFragment extends Fragment {
         JsonObject body = new JsonObject();
         body.addProperty("ciclosCompletados", ciclosCompletados);
 
-        Call<RespuestaApi<PomodoroCicloCompletadoResponse>> call = repository.cicloCompletado(sesionId, body);
-        activeCalls.add(call);
-        call.enqueue(new Callback<>() {
+        repository.cicloCompletadoAsync(sesionId, body, new PomodoroRepository.WriteBackCallback() {
             @Override
-            public void onResponse(Call<RespuestaApi<PomodoroCicloCompletadoResponse>> call, Response<RespuestaApi<PomodoroCicloCompletadoResponse>> response) {
-                activeCalls.remove(call);
+            public void onSuccess() {
+                // Ciclo completado confirmado en servidor
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<PomodoroCicloCompletadoResponse>> call, Throwable t) {
-                activeCalls.remove(call);
+            public void onFailure(String error) {
+                // Encolado para reintento automático
+                if (isAdded()) {
+                    Snackbar.make(requireView(), getString(R.string.pomodoro_sync_pendiente), Snackbar.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -309,17 +310,17 @@ public class PomodoroFragment extends Fragment {
         JsonObject body = new JsonObject();
         body.addProperty("ciclosCompletados", ciclosCompletados);
 
-        Call<RespuestaApi<PomodoroFinalizarResponse>> call = repository.finalizar(sesionId, body);
-        activeCalls.add(call);
-        call.enqueue(new Callback<RespuestaApi<PomodoroFinalizarResponse>>() {
+        repository.finalizarAsync(sesionId, body, new PomodoroRepository.WriteBackCallback() {
             @Override
-            public void onResponse(Call<RespuestaApi<PomodoroFinalizarResponse>> call, Response<RespuestaApi<PomodoroFinalizarResponse>> response) {
-                activeCalls.remove(call);
+            public void onSuccess() {
+                // Sesión finalizada confirmada
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<PomodoroFinalizarResponse>> call, Throwable t) {
-                activeCalls.remove(call);
+            public void onFailure(String error) {
+                if (isAdded()) {
+                    Snackbar.make(requireView(), getString(R.string.pomodoro_sync_pendiente), Snackbar.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -327,17 +328,17 @@ public class PomodoroFragment extends Fragment {
     private void cancelarSesion() {
         if (sesionId == -1) return;
 
-        Call<RespuestaApi<SuccessResponseDto>> call = repository.cancelar(sesionId);
-        activeCalls.add(call);
-        call.enqueue(new Callback<>() {
+        repository.cancelarAsync(sesionId, new PomodoroRepository.WriteBackCallback() {
             @Override
-            public void onResponse(Call<RespuestaApi<SuccessResponseDto>> call, Response<RespuestaApi<SuccessResponseDto>> response) {
-                activeCalls.remove(call);
+            public void onSuccess() {
+                // Sesión cancelada confirmada
             }
 
             @Override
-            public void onFailure(Call<RespuestaApi<SuccessResponseDto>> call, Throwable t) {
-                activeCalls.remove(call);
+            public void onFailure(String error) {
+                if (isAdded()) {
+                    Snackbar.make(requireView(), getString(R.string.pomodoro_sync_pendiente), Snackbar.LENGTH_SHORT).show();
+                }
             }
         });
     }

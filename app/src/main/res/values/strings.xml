@@ -171,6 +171,7 @@
     <string name="prioridad_media">Media</string>
     <string name="prioridad_alta">Alta</string>
     <string name="prioridad_baja">Baja</string>
+    <string name="orden_formato">Orden: %d</string>
     <string name="fecha_ejemplo">2026-01-01</string>
     <string name="misiones_titulo">Misiones</string>
     <string name="nueva_mision">Nueva misión</string>
@@ -320,7 +321,17 @@
     <string name="foco_completado_notif">¡Ciclo de foco completado!</string>
     <string name="pausa_completada_notif">¡Descanso terminado! Vuelve al trabajo</string>
     <string name="canal_pomodoro">Pomodoro</string>
+    <string name="pomodoro_sync_pendiente">Sincronización pendiente — se reintentará automáticamente</string>
+    <string name="subtareas_de_mision">Subtareas de: %1$s</string>
+    <string name="nueva_subtarea">Nueva subtarea</string>
+    <string name="editar_subtarea">Editar subtarea</string>
+    <string name="eliminar_subtarea">Eliminar subtarea</string>
+    <string name="nombre_subtarea">Nombre de la subtarea</string>
+    <string name="descripcion_subtarea">Descripción (opcional)</string>
+    <string name="orden_subtarea">Orden</string>
+    <string name="tiempo_enfoque">Tiempo: %s</string>
     <string name="ok">OK</string>
+    <string name="cerrar">Cerrar</string>
 
     <!-- Google Sign-In completion -->
     <string name="completar_registro_titulo">Completa tu registro</string>

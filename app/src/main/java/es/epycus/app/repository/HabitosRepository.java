@@ -72,6 +72,10 @@ public class HabitosRepository {
         cacheManager.put(key, json, ttlSeconds);
     }
 
+    public void getCachedHabitosJsonAsync(String key, CacheManager.CacheCallback callback) {
+        cacheManager.getAsync(key, callback);
+    }
+
     public String getCachedHabitosJson(String key) {
         return cacheManager.get(key);
     }

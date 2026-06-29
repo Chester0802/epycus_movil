@@ -57,6 +57,10 @@ public class DiarioRepository {
         cacheManager.put(key, json, ttlSeconds);
     }
 
+    public void getCachedJsonAsync(String key, CacheManager.CacheCallback callback) {
+        cacheManager.getAsync(key, callback);
+    }
+
     public String getCachedJson(String key) {
         return cacheManager.get(key);
     }

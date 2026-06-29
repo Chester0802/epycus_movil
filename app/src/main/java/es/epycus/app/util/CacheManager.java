@@ -48,27 +48,54 @@ public class CacheManager {
                 database.cacheDao().insert(new CacheEntity(key, wrappedJson)));
     }
 
-    public String get(String key) {
-        String wrappedJson = database.cacheDao().getValue(key);
-        if (wrappedJson == null) return null;
-        try {
-            JsonObject wrapper = JsonParser.parseString(wrappedJson).getAsJsonObject();
-            long cachedAt = wrapper.get("cachedAt").getAsLong();
-            long ttl = wrapper.get("ttl").getAsLong();
-            long now = System.currentTimeMillis() / 1000;
-            if ((now - cachedAt) > ttl) {
-                AppDatabase.getWriteExecutor().execute(() ->
-                        database.cacheDao().delete(key));
-                return null;
-            }
-            return wrapper.get("data").getAsString();
-        } catch (Exception e) {
-            return null;
-        }
+    public interface CacheCallback {
+        void onResult(String jsonData);
     }
 
-    public boolean isCached(String key) {
-        return get(key) != null;
+    public void getAsync(String key, CacheCallback callback) {
+        AppDatabase.getWriteExecutor().execute(() -> {
+            String wrappedJson = database.cacheDao().getValue(key);
+            String result = null;
+            if (wrappedJson != null) {
+                try {
+                    JsonObject wrapper = JsonParser.parseString(wrappedJson).getAsJsonObject();
+                    long cachedAt = wrapper.get("cachedAt").getAsLong();
+                    long ttl = wrapper.get("ttl").getAsLong();
+                    long now = System.currentTimeMillis() / 1000;
+                    if ((now - cachedAt) <= ttl) {
+                        result = wrapper.get("data").getAsString();
+                    } else {
+                        database.cacheDao().delete(key);
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+            final String finalResult = result;
+            new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> callback.onResult(finalResult));
+        });
+    }
+
+    public void isCachedAsync(String key, CacheCallback callback) {
+        getAsync(key, callback);
+    }
+
+    public String get(String key) {
+        String wrappedJson = database.cacheDao().getValue(key);
+        if (wrappedJson != null) {
+            try {
+                com.google.gson.JsonObject wrapper = com.google.gson.JsonParser.parseString(wrappedJson).getAsJsonObject();
+                long cachedAt = wrapper.get("cachedAt").getAsLong();
+                long ttl = wrapper.get("ttl").getAsLong();
+                long now = System.currentTimeMillis() / 1000;
+                if ((now - cachedAt) <= ttl) {
+                    return wrapper.get("data").getAsString();
+                } else {
+                    database.cacheDao().delete(key);
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return null;
     }
 
     public void clear() {

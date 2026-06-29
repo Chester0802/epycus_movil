@@ -2,6 +2,8 @@ package es.epycus.app.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,15 +17,19 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 
 import es.epycus.app.R;
+import es.epycus.app.api.SignalRService;
 import es.epycus.app.databinding.ActivityMainContainerBinding;
 import es.epycus.app.ui.pomodoro.PomodoroFragment;
+import es.epycus.app.util.SessionManager;
 import es.epycus.app.util.ThemeManager;
 
-public class MainContainerActivity extends AppCompatActivity {
+public class MainContainerActivity extends AppCompatActivity implements SignalRService.SignalRListener {
 
     private ActivityMainContainerBinding binding;
     private FragmentManager fragmentManager;
     private ViewPager2 viewPager;
+    private SignalRService signalRService;
+    private boolean signalRIniciado = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,6 +52,12 @@ public class MainContainerActivity extends AppCompatActivity {
         binding.viewPager.post(() -> aplicarInsets());
 
         setupNavigation();
+
+        if (!signalRIniciado && SessionManager.getInstance(this).isLoggedIn()) {
+            signalRIniciado = true;
+            signalRService = SignalRService.getInstance(this, this);
+            signalRService.iniciarConexion();
+        }
     }
 
     private void aplicarInsets() {
@@ -64,6 +76,7 @@ public class MainContainerActivity extends AppCompatActivity {
             int id = item.getItemId();
             int position = menuIdToPosition(id);
             if (position >= 0) {
+                ocultarPomodoro();
                 viewPager.setCurrentItem(position, true);
                 return true;
             }
@@ -105,7 +118,17 @@ public class MainContainerActivity extends AppCompatActivity {
     public void seleccionarTab(int itemId) {
         int position = menuIdToPosition(itemId);
         if (position >= 0) {
+            ocultarPomodoro();
             viewPager.setCurrentItem(position, true);
+        }
+    }
+
+    private void ocultarPomodoro() {
+        if (binding.pomodoroContainer.getVisibility() == android.view.View.VISIBLE) {
+            while (fragmentManager.getBackStackEntryCount() > 0) {
+                fragmentManager.popBackStackImmediate();
+            }
+            binding.pomodoroContainer.setVisibility(android.view.View.GONE);
         }
     }
 
@@ -142,8 +165,82 @@ public class MainContainerActivity extends AppCompatActivity {
             if (fragmentManager.getBackStackEntryCount() == 0) {
                 binding.pomodoroContainer.setVisibility(android.view.View.GONE);
             }
+        } else if (binding.pomodoroContainer.getVisibility() == android.view.View.VISIBLE) {
+            ocultarPomodoro();
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (signalRService != null) {
+            signalRService.desconectar();
+            SignalRService.resetInstance();
+            signalRIniciado = false;
+        }
+    }
+
+    @Override
+    public void onPomodoroCicloCompletado(int xpGanado, boolean sugerirDescanso, String pausaActiva) {
+        runOnUiThread(() -> {
+            Log.d("SignalR", "Pomodoro ciclo completado: xp=" + xpGanado);
+            Toast.makeText(this, "+" + xpGanado + " XP", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    @Override
+    public void onPomodoroFinalizado(int xpTotal, boolean sesionGuardada) {
+        runOnUiThread(() -> {
+            Log.d("SignalR", "Pomodoro finalizado: xpTotal=" + xpTotal);
+            Toast.makeText(this, "Sesión completada: " + xpTotal + " XP", Toast.LENGTH_LONG).show();
+        });
+    }
+
+    @Override
+    public void onHabitoCompletado(int habitId, int xpGanado) {
+        runOnUiThread(() -> {
+            Log.d("SignalR", "Hábito completado: " + habitId);
+            Toast.makeText(this, "Hábito completado: +" + xpGanado + " XP", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    @Override
+    public void onMisionCompletada(int misionId, int xpGanado) {
+        runOnUiThread(() -> {
+            Log.d("SignalR", "Misión completada: " + misionId);
+            Toast.makeText(this, "Misión completada: +" + xpGanado + " XP", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    @Override
+    public void onNotificacionRecibida(String titulo, String mensaje, String tipo) {
+        runOnUiThread(() -> {
+            Log.d("SignalR", "Notificación: " + titulo);
+            Toast.makeText(this, titulo + ": " + mensaje, Toast.LENGTH_LONG).show();
+        });
+    }
+
+    @Override
+    public void onEstadoCambio(String entidad, int entidadId, String nuevoEstado) {
+        runOnUiThread(() -> {
+            Log.d("SignalR", "Estado cambio: " + entidad + " " + entidadId + " -> " + nuevoEstado);
+        });
+    }
+
+    @Override
+    public void onConnectionStateChanged(boolean conectado) {
+        runOnUiThread(() -> {
+            Log.d("SignalR", "Conexión: " + (conectado ? "Conectado" : "Desconectado"));
+        });
+    }
+
+    @Override
+    public void onError(String error) {
+        runOnUiThread(() -> {
+            Log.e("SignalR", "Error: " + error);
+            Toast.makeText(this, "Error conexión: " + error, Toast.LENGTH_SHORT).show();
+        });
     }
 }

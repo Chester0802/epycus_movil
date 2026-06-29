@@ -4,6 +4,7 @@ import android.content.Context;
 
 import es.epycus.app.BuildConfig;
 import es.epycus.app.util.SessionManager;
+import okhttp3.CertificatePinner;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -15,6 +16,7 @@ public class RetrofitClient {
     private static RetrofitClient instance;
     private static Retrofit authlessRetrofit;
     private final Retrofit retrofit;
+    private final OkHttpClient okHttpClient;
     private final ApiAuthService apiAuthService;
     private final ApiBienestarService apiBienestarService;
     private final ApiDashboardService apiDashboardService;
@@ -28,6 +30,7 @@ public class RetrofitClient {
     private final ApiPomodoroService apiPomodoroService;
     private final ApiProgresoService apiProgresoService;
     private final ApiAdminService apiAdminService;
+    private final ApiSubTareasService apiSubTareasService;
 
     private RetrofitClient(Context context) {
         SessionManager sessionManager = SessionManager.getInstance(context);
@@ -37,12 +40,17 @@ public class RetrofitClient {
                 ? HttpLoggingInterceptor.Level.HEADERS
                 : HttpLoggingInterceptor.Level.NONE);
 
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+        CertificatePinner certificatePinner = new CertificatePinner.Builder()
+                .add("app.epycus.es", "sha256/REPLACE_WITH_ACTUAL_PIN")
+                .build();
+
+        okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new AuthInterceptor(sessionManager, context))
                 .addInterceptor(logging)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
+                .certificatePinner(certificatePinner)
                 .build();
 
         retrofit = new Retrofit.Builder()
@@ -64,6 +72,7 @@ public class RetrofitClient {
         apiPomodoroService = retrofit.create(ApiPomodoroService.class);
         apiProgresoService = retrofit.create(ApiProgresoService.class);
         apiAdminService = retrofit.create(ApiAdminService.class);
+        apiSubTareasService = retrofit.create(ApiSubTareasService.class);
     }
 
     public static synchronized RetrofitClient getInstance(Context context) {
@@ -75,10 +84,15 @@ public class RetrofitClient {
 
     public static synchronized Retrofit getAuthlessRetrofit(Context context) {
         if (authlessRetrofit == null) {
+            CertificatePinner certificatePinner = new CertificatePinner.Builder()
+                    .add("app.epycus.es", "sha256/REPLACE_WITH_ACTUAL_PIN")
+                    .build();
+
             OkHttpClient client = new OkHttpClient.Builder()
                     .connectTimeout(30, TimeUnit.SECONDS)
                     .readTimeout(30, TimeUnit.SECONDS)
                     .writeTimeout(30, TimeUnit.SECONDS)
+                    .certificatePinner(certificatePinner)
                     .build();
             authlessRetrofit = new Retrofit.Builder()
                     .baseUrl(BuildConfig.API_BASE_URL)
@@ -88,6 +102,10 @@ public class RetrofitClient {
         }
         return authlessRetrofit;
     }
+
+    public OkHttpClient getHttpClient() { return okHttpClient; }
+
+    public String getBaseUrl() { return BuildConfig.API_BASE_URL; }
 
     public ApiAuthService getApiAuthService() { return apiAuthService; }
     public ApiBienestarService getApiBienestarService() { return apiBienestarService; }
@@ -102,4 +120,5 @@ public class RetrofitClient {
     public ApiPomodoroService getApiPomodoroService() { return apiPomodoroService; }
     public ApiProgresoService getApiProgresoService() { return apiProgresoService; }
     public ApiAdminService getApiAdminService() { return apiAdminService; }
+    public ApiSubTareasService getApiSubTareasService() { return apiSubTareasService; }
 }

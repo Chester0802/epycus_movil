@@ -27,11 +27,15 @@ import es.epycus.app.data.local.entity.MisionEntity;
 import es.epycus.app.databinding.FragmentMisionesBinding;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.CategoriaDto;
+import es.epycus.app.model.dto.CrearSubTareaDto;
+import es.epycus.app.model.dto.EditarSubTareaDto;
 import es.epycus.app.model.dto.MisionCompletarResponse;
 import es.epycus.app.model.dto.MisionDto;
+import es.epycus.app.model.dto.SubTareaResponse;
 import es.epycus.app.model.dto.SuccessResponseDto;
 import es.epycus.app.repository.MisionesRepository;
 import es.epycus.app.ui.adapters.MisionAdapter;
+import es.epycus.app.ui.adapters.SubTareaAdapter;
 import es.epycus.app.util.NetworkUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -43,6 +47,7 @@ public class MisionesFragment extends Fragment {
     private FragmentMisionesBinding binding;
     private MisionesRepository repository;
     private MisionAdapter adapter;
+    private SubTareaAdapter subtareaAdapter;
     private final List<Call<?>> activeCalls = new ArrayList<>();
     private List<CategoriaDto> categorias = new ArrayList<>();
     private int defaultCategoriaId = -1;
@@ -65,6 +70,11 @@ public class MisionesFragment extends Fragment {
             @Override
             public void onEditar(MisionDto mision) {
                 mostrarDialogoEditarMision(mision);
+            }
+
+            @Override
+            public void onVerSubtareas(MisionDto mision) {
+                mostrarDialogoSubtareas(mision);
             }
         });
         binding.rvMisiones.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -384,6 +394,235 @@ public class MisionesFragment extends Fragment {
     private void mostrarErrorRed(Throwable t) {
         Snackbar.make(requireView(),
                 getString(NetworkUtils.getNetworkErrorResId(t)), Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void mostrarDialogoSubtareas(MisionDto mision) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle(getString(R.string.subtareas_de_mision, mision.getNombre()));
+        
+        View view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_subtareas, null);
+        androidx.recyclerview.widget.RecyclerView rvSubtareas = view.findViewById(R.id.rvSubtareas);
+        com.google.android.material.button.MaterialButton btnNuevaSubTarea = view.findViewById(R.id.btnNuevaSubTarea);
+        
+        subtareaAdapter = new SubTareaAdapter(new SubTareaAdapter.OnSubTareaListener() {
+            @Override
+            public void onCompletar(int misionId, int id) {
+                completarSubTarea(misionId, id);
+            }
+            
+            @Override
+            public void onDescompletar(int misionId, int id) {
+                descompletarSubTarea(misionId, id);
+            }
+            
+            @Override
+            public void onEditar(SubTareaResponse subtarea) {
+                mostrarDialogoEditarSubTarea(subtarea);
+            }
+            
+            @Override
+            public void onEliminar(int misionId, int id) {
+                eliminarSubTarea(misionId, id);
+            }
+        });
+        
+        rvSubtareas.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvSubtareas.setAdapter(subtareaAdapter);
+        
+        cargarSubTareas(mision.getId());
+        
+        btnNuevaSubTarea.setOnClickListener(v -> mostrarDialogoNuevaSubTarea(mision.getId()));
+        
+        builder.setView(view);
+        builder.setPositiveButton(getString(R.string.cerrar), null);
+        builder.show();
+    }
+    
+    private void cargarSubTareas(int misionId) {
+        Call<RespuestaApi<List<SubTareaResponse>>> call = repository.listarSubTareas(misionId);
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<List<SubTareaResponse>>> call, Response<RespuestaApi<List<SubTareaResponse>>> response) {
+                activeCalls.remove(call);
+                if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
+                    subtareaAdapter.setSubTareas(response.body().getDatos());
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<RespuestaApi<List<SubTareaResponse>>> call, Throwable t) {
+                activeCalls.remove(call);
+            }
+        });
+    }
+    
+    private void mostrarDialogoNuevaSubTarea(int misionId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle(getString(R.string.nueva_subtarea));
+        
+        View view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_nueva_subtarea, null);
+        com.google.android.material.textfield.TextInputEditText etNombre = view.findViewById(R.id.etSubTareaNombre);
+        com.google.android.material.textfield.TextInputEditText etDescripcion = view.findViewById(R.id.etSubTareaDescripcion);
+        com.google.android.material.textfield.TextInputEditText etOrden = view.findViewById(R.id.etSubTareaOrden);
+        
+        builder.setView(view);
+        builder.setPositiveButton(getString(R.string.crear), null);
+        builder.setNegativeButton(getString(R.string.cancelar), null);
+        
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(d -> {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                String nombre = etNombre.getText().toString().trim();
+                if (nombre.isEmpty()) {
+                    Snackbar.make(requireView(), getString(R.string.completa_campos), Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+                String descripcion = etDescripcion.getText().toString().trim();
+                int orden = 0;
+                try {
+                    orden = Integer.parseInt(etOrden.getText().toString().trim());
+                } catch (NumberFormatException ignored) {}
+                
+                CrearSubTareaDto dto = new CrearSubTareaDto(nombre, descripcion, orden);
+                
+                Call<RespuestaApi<SuccessResponseDto>> call = repository.crearSubTarea(misionId, dto);
+                activeCalls.add(call);
+                call.enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(Call<RespuestaApi<SuccessResponseDto>> call, Response<RespuestaApi<SuccessResponseDto>> response) {
+                        activeCalls.remove(call);
+                        if (response.isSuccessful()) {
+                            dialog.dismiss();
+                            cargarSubTareas(misionId);
+                        } else {
+                            String msg = NetworkUtils.getErrorMessage(requireContext(), response);
+                            Snackbar.make(requireView(), msg, Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+                    
+                    @Override
+                    public void onFailure(Call<RespuestaApi<SuccessResponseDto>> call, Throwable t) {
+                        activeCalls.remove(call);
+                        mostrarErrorRed(t);
+                    }
+                });
+            });
+        });
+        dialog.show();
+    }
+    
+    private void mostrarDialogoEditarSubTarea(SubTareaResponse subtarea) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle(getString(R.string.editar_subtarea));
+        
+        View view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_nueva_subtarea, null);
+        com.google.android.material.textfield.TextInputEditText etNombre = view.findViewById(R.id.etSubTareaNombre);
+        com.google.android.material.textfield.TextInputEditText etDescripcion = view.findViewById(R.id.etSubTareaDescripcion);
+        com.google.android.material.textfield.TextInputEditText etOrden = view.findViewById(R.id.etSubTareaOrden);
+        
+        etNombre.setText(subtarea.getNombre());
+        if (subtarea.getDescripcion() != null) etDescripcion.setText(subtarea.getDescripcion());
+        etOrden.setText(String.valueOf(subtarea.getOrden()));
+        
+        builder.setView(view);
+        builder.setPositiveButton(getString(R.string.guardar), null);
+        builder.setNegativeButton(getString(R.string.cancelar), null);
+        
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(d -> {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                String nombre = etNombre.getText().toString().trim();
+                if (nombre.isEmpty()) {
+                    Snackbar.make(requireView(), getString(R.string.completa_campos), Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+                String descripcion = etDescripcion.getText().toString().trim();
+                int orden = 0;
+                try {
+                    orden = Integer.parseInt(etOrden.getText().toString().trim());
+                } catch (NumberFormatException ignored) {}
+                
+                EditarSubTareaDto dto = new EditarSubTareaDto(nombre, descripcion, orden);
+                
+                Call<RespuestaApi<SuccessResponseDto>> call = repository.actualizarSubTarea(subtarea.getMisionId(), subtarea.getId(), dto);
+                activeCalls.add(call);
+                call.enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(Call<RespuestaApi<SuccessResponseDto>> call, Response<RespuestaApi<SuccessResponseDto>> response) {
+                        activeCalls.remove(call);
+                        if (response.isSuccessful()) {
+                            dialog.dismiss();
+                            cargarSubTareas(subtarea.getMisionId());
+                        } else {
+                            String msg = NetworkUtils.getErrorMessage(requireContext(), response);
+                            Snackbar.make(requireView(), msg, Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+                    
+                    @Override
+                    public void onFailure(Call<RespuestaApi<SuccessResponseDto>> call, Throwable t) {
+                        activeCalls.remove(call);
+                        mostrarErrorRed(t);
+                    }
+                });
+            });
+        });
+        dialog.show();
+    }
+    
+    private void completarSubTarea(int misionId, int id) {
+        Call<RespuestaApi<SuccessResponseDto>> call = repository.completarSubTarea(misionId, id);
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<SuccessResponseDto>> call, Response<RespuestaApi<SuccessResponseDto>> response) {
+                activeCalls.remove(call);
+                if (response.isSuccessful()) {
+                    // El adapter se actualiza automáticamente via DiffUtil
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<RespuestaApi<SuccessResponseDto>> call, Throwable t) {
+                activeCalls.remove(call);
+            }
+        });
+    }
+    
+    private void descompletarSubTarea(int misionId, int id) {
+        Call<RespuestaApi<SuccessResponseDto>> call = repository.descompletarSubTarea(misionId, id);
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<SuccessResponseDto>> call, Response<RespuestaApi<SuccessResponseDto>> response) {
+                activeCalls.remove(call);
+            }
+            
+            @Override
+            public void onFailure(Call<RespuestaApi<SuccessResponseDto>> call, Throwable t) {
+                activeCalls.remove(call);
+            }
+        });
+    }
+    
+    private void eliminarSubTarea(int misionId, int id) {
+        Call<RespuestaApi<SuccessResponseDto>> call = repository.eliminarSubTarea(misionId, id);
+        activeCalls.add(call);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<SuccessResponseDto>> call, Response<RespuestaApi<SuccessResponseDto>> response) {
+                activeCalls.remove(call);
+                if (response.isSuccessful()) {
+                    // El adapter se actualiza automáticamente
+                }
+            }
+            
+            @Override
+            public void onFailure(Call<RespuestaApi<SuccessResponseDto>> call, Throwable t) {
+                activeCalls.remove(call);
+            }
+        });
     }
 
     @Override

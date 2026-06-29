@@ -194,40 +194,39 @@ public class InicioFragment extends Fragment {
                 activeCalls.remove(call);
                 binding.loadingView.setVisibility(View.GONE);
                 binding.swipeRefresh.setRefreshing(false);
-                if (cargarDashboardDesdeCache()) {
-                    dashboardDataLoaded = true;
-                }
-                verificarCargaCompleta();
+                cargarDashboardDesdeCache();
                 mostrarErrorRed(t);
             }
         });
     }
 
-    private boolean cargarDashboardDesdeCache() {
-        String json = cacheManager.get("dashboard");
-        if (json != null) {
-            try {
-                Gson gson = new Gson();
-                DashboardResponse data = gson.fromJson(json, DashboardResponse.class);
-                DashboardResponse.Kpis kpis = data.getKpis();
+    private void cargarDashboardDesdeCache() {
+        cacheManager.getAsync("dashboard", json -> {
+            if (!isAdded()) return;
+            if (json != null) {
+                try {
+                    Gson gson = new Gson();
+                    DashboardResponse data = gson.fromJson(json, DashboardResponse.class);
+                    DashboardResponse.Kpis kpis = data.getKpis();
 
-                int habitos = (kpis != null)
-                        ? kpis.getHabitosPendientes() : data.getHabitosPendientes();
-                int misiones = (kpis != null)
-                        ? kpis.getMisionesPendientes() : data.getMisionesPendientes();
+                    int habitos = (kpis != null)
+                            ? kpis.getHabitosPendientes() : data.getHabitosPendientes();
+                    int misiones = (kpis != null)
+                            ? kpis.getMisionesPendientes() : data.getMisionesPendientes();
 
-                binding.tvHabitosPendientes.setText(String.valueOf(habitos));
-                binding.tvMisionesPendientes.setText(String.valueOf(misiones));
-                if (data.getFrase() != null) {
-                    binding.tvFrase.setText(data.getFrase().getFrase());
-                    binding.tvFraseAutor.setText(getString(R.string.autor_formato, data.getFrase().getAutor()));
+                    binding.tvHabitosPendientes.setText(String.valueOf(habitos));
+                    binding.tvMisionesPendientes.setText(String.valueOf(misiones));
+                    if (data.getFrase() != null) {
+                        binding.tvFrase.setText(data.getFrase().getFrase());
+                        binding.tvFraseAutor.setText(getString(R.string.autor_formato, data.getFrase().getAutor()));
+                    }
+                    dashboardDataLoaded = true;
+                    verificarCargaCompleta();
+                } catch (Exception e) {
+                    Log.e(TAG, "Error loading cached dashboard", e);
                 }
-                return true;
-            } catch (Exception e) {
-                Log.e(TAG, "Error loading cached dashboard", e);
             }
-        }
-        return false;
+        });
     }
 
     private void cargarProgreso() {
@@ -296,33 +295,33 @@ public class InicioFragment extends Fragment {
 
     private boolean cargarProgresoDesdeCache() {
         String json = cacheManager.get("progreso");
-        if (json != null) {
-            try {
-                Gson gson = new Gson();
-                GamificacionResponse data = gson.fromJson(json, GamificacionResponse.class);
-                progresoDataLoaded = true;
-                xpTargetProgress = (int) data.getPorcentajeProgreso();
+        if (json == null) return false;
+        try {
+            Gson gson = new Gson();
+            GamificacionResponse data = gson.fromJson(json, GamificacionResponse.class);
+            progresoDataLoaded = true;
+            xpTargetProgress = (int) data.getPorcentajeProgreso();
 
-                binding.tvRacha.setText(String.valueOf(data.getRachaActual()));
-                binding.tvNivel.setText(getString(R.string.nv_formato, data.getNivel()));
-                binding.tvNivelTitulo.setText(getString(R.string.nivel_formato, data.getNivel())
-                        + (data.getTitulo() != null ? " - " + data.getTitulo() : ""));
-                binding.tvXpText.setText(getString(R.string.xp_formato, data.getXpTotal()));
-                binding.tvXpPorcentaje.setText(getString(R.string.porcentaje_nivel, (int) data.getPorcentajeProgreso()));
+            binding.tvRacha.setText(String.valueOf(data.getRachaActual()));
+            binding.tvNivel.setText(getString(R.string.nv_formato, data.getNivel()));
+            binding.tvNivelTitulo.setText(getString(R.string.nivel_formato, data.getNivel())
+                    + (data.getTitulo() != null ? " - " + data.getTitulo() : ""));
+            binding.tvXpText.setText(getString(R.string.xp_formato, data.getXpTotal()));
+            binding.tvXpPorcentaje.setText(getString(R.string.porcentaje_nivel, (int) data.getPorcentajeProgreso()));
 
-                int xpRestante = data.getXpParaSiguienteNivel();
-                if (xpRestante > 0) {
-                    binding.tvSiguienteHito.setText(getString(R.string.siguiente_nivel_xp, xpRestante));
-                    binding.tvSiguienteHito.setVisibility(View.VISIBLE);
-                } else {
-                    binding.tvSiguienteHito.setVisibility(View.GONE);
-                }
-                return true;
-            } catch (Exception e) {
-                Log.e(TAG, "Error loading cached progreso", e);
+            int xpRestante = data.getXpParaSiguienteNivel();
+            if (xpRestante > 0) {
+                binding.tvSiguienteHito.setText(getString(R.string.siguiente_nivel_xp, xpRestante));
+                binding.tvSiguienteHito.setVisibility(View.VISIBLE);
+            } else {
+                binding.tvSiguienteHito.setVisibility(View.GONE);
             }
+            verificarCargaCompleta();
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading cached progreso", e);
+            return false;
         }
-        return false;
     }
 
     private void animarEntrada() {
@@ -367,14 +366,8 @@ public class InicioFragment extends Fragment {
             binding.offlineBanner.setVisibility(View.GONE);
             animarEntrada();
         } else if (!dashboardDataLoaded && !progresoDataLoaded) {
-            String cachedDashboard = cacheManager.get("dashboard");
-            String cachedProgreso = cacheManager.get("progreso");
-            if (cachedDashboard != null && cachedProgreso != null) {
-                mostrarOfflineBanner();
-            }
-            if (cachedDashboard == null && cachedProgreso == null) {
-                binding.emptyView.setVisibility(View.VISIBLE);
-            }
+            // Offline banner is handled by async cache loading
+            // Empty view will show if both fail and no cache
         }
     }
 
@@ -393,12 +386,15 @@ public class InicioFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (binding != null && savedScrollY > 0) {
-            View scrollChild = binding.swipeRefresh.getChildAt(0);
-            if (scrollChild instanceof android.widget.ScrollView) {
-                ((android.widget.ScrollView) scrollChild).post(() ->
-                    ((android.widget.ScrollView) scrollChild).scrollTo(0, savedScrollY));
-            }
+        if (binding == null) return;
+
+        // Refresh progreso data (character image, xp, level, streak) on tab switch
+        cargarProgreso();
+
+        View scrollChild = binding.swipeRefresh.getChildAt(0);
+        if (scrollChild instanceof android.widget.ScrollView && savedScrollY > 0) {
+            ((android.widget.ScrollView) scrollChild).post(() ->
+                ((android.widget.ScrollView) scrollChild).scrollTo(0, savedScrollY));
         }
     }
 

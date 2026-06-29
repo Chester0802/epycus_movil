@@ -146,10 +146,7 @@ public class PerfilFragment extends Fragment {
                                 database.usuarioDao().insert(new UsuarioEntity(
                                         sessionManager.getUserId(),
                                         perfil.getNombre(),
-                                        perfil.getCorreoElectronico(),
-                                        sessionManager.getToken(),
-                                        sessionManager.getRefreshToken(),
-                                        perfil.getFechaRegistro()
+                                        perfil.getCorreoElectronico()
                                 )));
                     } catch (Exception e) {
                         Log.e(TAG, "Error parsing perfil", e);
@@ -196,6 +193,15 @@ public class PerfilFragment extends Fragment {
             } else {
                 binding.tvMiembroDesde.setText("");
             }
+
+            if (perfilResp.getImagenPersonaje() != null && !perfilResp.getImagenPersonaje().isEmpty()) {
+                Glide.with(PerfilFragment.this)
+                        .load(perfilResp.getImagenPersonaje())
+                        .error(R.drawable.ic_profile)
+                        .into(binding.ivAvatar);
+            } else {
+                binding.ivAvatar.setImageResource(R.drawable.ic_profile);
+            }
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Error loading cached perfil", e);
@@ -216,6 +222,7 @@ public class PerfilFragment extends Fragment {
             if (cachedUser != null) {
                 binding.tvNombre.setText(cachedUser.getNombre());
                 binding.tvCorreo.setText(cachedUser.getCorreoElectronico());
+                binding.tvCarrera.setText(getString(R.string.sin_carrera));
                 return;
             }
         }
@@ -224,6 +231,7 @@ public class PerfilFragment extends Fragment {
         binding.tvNivel.setText(getString(R.string.nivel_formato, 1));
         binding.tvRacha.setText(getString(R.string.dias_formato, 0));
         binding.tvXp.setText(getString(R.string.xp_formato, 0));
+        binding.tvCarrera.setText(getString(R.string.sin_carrera));
     }
 
     private void cargarPersonajes() {
@@ -284,6 +292,9 @@ public class PerfilFragment extends Fragment {
             body.addProperty("personajeId", personaje.get("id").getAsInt());
         }
 
+        final String previewUrl = personaje.has("imagenPreviewUrl") && !personaje.get("imagenPreviewUrl").isJsonNull()
+                ? personaje.get("imagenPreviewUrl").getAsString() : null;
+
         Call<RespuestaApi<MensajeResponseDto>> call = RetrofitClient.getInstance(requireContext()).getApiPerfilService()
                 .cambiarPersonaje(body);
         activeCalls.add(call);
@@ -293,6 +304,18 @@ public class PerfilFragment extends Fragment {
                 activeCalls.remove(call);
                 if (response.isSuccessful()) {
                     Snackbar.make(binding.getRoot(), getString(R.string.personaje_actualizado), Snackbar.LENGTH_SHORT).show();
+                    // Load character image immediately from preview URL
+                    if (previewUrl != null && !previewUrl.isEmpty()) {
+                        Glide.with(PerfilFragment.this)
+                                .load(previewUrl)
+                                .error(R.drawable.ic_profile)
+                                .into(binding.ivAvatar);
+                    }
+                    // Clear caches so fresh profile and progreso data is fetched
+                    AppDatabase.getWriteExecutor().execute(() -> {
+                        database.cacheDao().delete("perfil");
+                        database.cacheDao().delete("progreso");
+                    });
                     cargarPerfil();
                 }
             }
@@ -433,6 +456,7 @@ public class PerfilFragment extends Fragment {
         etNombre.setText(sessionManager.getUserName());
 
         final List<Carrera>[] carrerasRef = new List[]{null};
+        final String carreraActual = binding.tvCarrera.getText().toString();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle(getString(R.string.editar_perfil));
@@ -452,13 +476,19 @@ public class PerfilFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null && response.body().getDatos() != null) {
                     carrerasRef[0] = response.body().getDatos();
                     List<String> nombres = new ArrayList<>();
-                    for (Carrera c : carrerasRef[0]) {
+                    int selectedIndex = 0;
+                    for (int i = 0; i < carrerasRef[0].size(); i++) {
+                        Carrera c = carrerasRef[0].get(i);
                         nombres.add(c.getNombre());
+                        if (carreraActual.equals(c.getNombre())) {
+                            selectedIndex = i;
+                        }
                     }
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
                             android.R.layout.simple_spinner_item, nombres);
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     spCarrera.setAdapter(adapter);
+                    spCarrera.setSelection(selectedIndex);
                 }
                 // Habilitar boton guardar cuando carreras carguen (exito o fallo)
                 if (dialog.isShowing()) {

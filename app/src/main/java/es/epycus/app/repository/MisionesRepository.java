@@ -9,11 +9,16 @@ import es.epycus.app.data.local.AppDatabase;
 import es.epycus.app.data.local.entity.MisionEntity;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.CategoriaDto;
+import es.epycus.app.model.dto.CrearSubTareaDto;
+import es.epycus.app.model.dto.EditarSubTareaDto;
 import es.epycus.app.model.dto.MisionDto;
 import es.epycus.app.model.dto.MisionCompletarResponse;
+import es.epycus.app.model.dto.SubTareaResponse;
 import es.epycus.app.model.dto.SuccessResponseDto;
 import es.epycus.app.util.CacheManager;
 import retrofit2.Call;
+
+import java.util.List;
 
 public class MisionesRepository {
     private final RetrofitClient api;
@@ -50,12 +55,40 @@ public class MisionesRepository {
         return api.getApiMisionesService().categorias();
     }
 
+    public Call<RespuestaApi<List<SubTareaResponse>>> listarSubTareas(int misionId) {
+        return api.getApiSubTareasService().listar(misionId);
+    }
+
+    public Call<RespuestaApi<SubTareaResponse>> obtenerSubTarea(int misionId, int id) {
+        return api.getApiSubTareasService().obtener(misionId, id);
+    }
+
+    public Call<RespuestaApi<SuccessResponseDto>> crearSubTarea(int misionId, CrearSubTareaDto dto) {
+        return api.getApiSubTareasService().crear(misionId, dto);
+    }
+
+    public Call<RespuestaApi<SuccessResponseDto>> actualizarSubTarea(int misionId, int id, EditarSubTareaDto dto) {
+        return api.getApiSubTareasService().actualizar(misionId, id, dto);
+    }
+
+    public Call<RespuestaApi<SuccessResponseDto>> completarSubTarea(int misionId, int id) {
+        return api.getApiSubTareasService().completar(misionId, id);
+    }
+
+    public Call<RespuestaApi<SuccessResponseDto>> descompletarSubTarea(int misionId, int id) {
+        return api.getApiSubTareasService().descompletar(misionId, id);
+    }
+
+    public Call<RespuestaApi<SuccessResponseDto>> eliminarSubTarea(int misionId, int id) {
+        return api.getApiSubTareasService().eliminar(misionId, id);
+    }
+
     public void cacheJson(String key, String json, long ttlSeconds) {
         cacheManager.put(key, json, ttlSeconds);
     }
 
-    public String getCachedJson(String key) {
-        return cacheManager.get(key);
+    public void getCachedJsonAsync(String key, CacheManager.CacheCallback callback) {
+        cacheManager.getAsync(key, callback);
     }
 
     public void cacheMisiones(List<MisionEntity> misiones) {

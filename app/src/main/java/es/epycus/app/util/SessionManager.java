@@ -22,12 +22,11 @@ public class SessionManager {
 
     private SessionManager(Context context) {
         Context appContext = context.getApplicationContext();
-        SharedPreferences sharedPrefs;
         try {
             MasterKey masterKey = new MasterKey.Builder(appContext)
                     .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                     .build();
-            sharedPrefs = EncryptedSharedPreferences.create(
+            prefs = EncryptedSharedPreferences.create(
                     appContext,
                     PREF_NAME,
                     masterKey,
@@ -35,9 +34,8 @@ public class SessionManager {
                     EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             );
         } catch (GeneralSecurityException | IOException e) {
-            sharedPrefs = appContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+            throw new RuntimeException("Failed to initialize EncryptedSharedPreferences. Cannot store tokens securely.", e);
         }
-        prefs = sharedPrefs;
     }
 
     public static synchronized SessionManager getInstance(Context context) {

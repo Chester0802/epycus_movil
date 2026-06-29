@@ -5,10 +5,11 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 
-import java.io.IOException;
-
 import androidx.annotation.NonNull;
 
+import java.io.IOException;
+
+import es.epycus.app.api.SignalRService;
 import es.epycus.app.model.RespuestaApi;
 import es.epycus.app.model.dto.RefreshDto;
 import es.epycus.app.model.entidades.AuthResponse;
@@ -100,6 +101,13 @@ public class AuthInterceptor implements Interceptor {
 
                 AuthResponse authData = refreshResponse.body().getDatos();
                 sessionManager.updateToken(authData.getToken(), authData.getRefreshToken());
+
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    SignalRService signalR = SignalRService.getInstance();
+                    if (signalR != null) {
+                        signalR.actualizarToken(authData.getToken());
+                    }
+                });
 
                 Request.Builder retryBuilder = original.newBuilder()
                         .header("Authorization", "Bearer " + authData.getToken())

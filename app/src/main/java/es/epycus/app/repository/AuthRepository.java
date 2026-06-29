@@ -3,6 +3,7 @@ package es.epycus.app.repository;
 import android.content.Context;
 
 import es.epycus.app.api.RetrofitClient;
+import es.epycus.app.api.SignalRService;
 import es.epycus.app.data.local.AppDatabase;
 import es.epycus.app.data.local.entity.UsuarioEntity;
 import es.epycus.app.model.RespuestaApi;
@@ -55,6 +56,9 @@ public class AuthRepository {
     }
 
     public void logoutAndClean() {
+        SignalRService signalR = SignalRService.getInstance();
+        if (signalR != null) signalR.desconectar();
+        SignalRService.resetInstance();
         sessionManager.logout();
         AppDatabase.getWriteExecutor().execute(() -> {
             database.usuarioDao().deleteAll();
@@ -80,8 +84,11 @@ public class AuthRepository {
                 nombre,
                 email
         );
-        cacheUsuario(new UsuarioEntity(userId, nombre, email,
-                authResponse.getToken(), authResponse.getRefreshToken(), ""));
+        cacheUsuario(new UsuarioEntity(userId, nombre, email));
+        if (userId > 0) {
+            SignalRService signalR = SignalRService.getInstance(context, null);
+            if (signalR != null) signalR.iniciarConexion();
+        }
     }
 
     public boolean isLoggedIn() {

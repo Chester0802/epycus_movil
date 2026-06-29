@@ -29,9 +29,9 @@ val googleClientId = if (secretsFile.exists()) {
         .firstOrNull { it.startsWith("googleClientId=") }
         ?.substringAfter("=")
         ?.trim()
-        ?: "621141066064-vtm8tf4bv7bl3oubq3eesaha0205e6gr.apps.googleusercontent.com"
+        ?: error("googleClientId no definido en secrets.properties")
 } else {
-    "621141066064-vtm8tf4bv7bl3oubq3eesaha0205e6gr.apps.googleusercontent.com"
+    error("secrets.properties no encontrado. Copia secrets.properties.example a secrets.properties y configura googleClientId")
 }
 
 fun getKeystoreProperty(key: String): String? {
@@ -114,6 +114,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
     implementation(libs.gson)
+    implementation(libs.signalr)
+    implementation(libs.rxjava3)
     implementation(libs.nav.fragment)
     implementation(libs.nav.ui)
     implementation(libs.lifecycle.viewmodel)

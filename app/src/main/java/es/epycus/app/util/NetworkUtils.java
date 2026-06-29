@@ -1,5 +1,10 @@
 package es.epycus.app.util;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.os.Build;
+
 import androidx.annotation.StringRes;
 
 import java.io.IOException;
@@ -33,7 +38,7 @@ public class NetworkUtils {
     }
 
     public static String getErrorMessage(android.content.Context context,
-                                          retrofit2.Response<?> response) {
+                                           retrofit2.Response<?> response) {
         if (response.body() != null && ((RespuestaApi<?>) response.body()).getMensaje() != null) {
             return ((RespuestaApi<?>) response.body()).getMensaje();
         }
@@ -51,5 +56,17 @@ public class NetworkUtils {
             return context.getString(R.string.error_http_desconocido, response.code());
         }
         return context.getString(resId);
+    }
+
+    public static boolean isOnline(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm == null) return false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            NetworkCapabilities nc = cm.getNetworkCapabilities(cm.getActiveNetwork());
+            return nc != null && nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+        } else {
+            android.net.NetworkInfo ni = cm.getActiveNetworkInfo();
+            return ni != null && ni.isConnected();
+        }
     }
 }

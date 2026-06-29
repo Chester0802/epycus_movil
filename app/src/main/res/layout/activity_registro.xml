@@ -133,7 +133,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:inputType="none"
-                android:entries="@array/generos"
                 android:textSize="15sp"
                 android:textColor="?attr/epTextPrimary"
                 android:hint="@string/genero_hint"

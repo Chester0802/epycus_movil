@@ -51,6 +51,7 @@ public class RegistroActivity extends AppCompatActivity {
         authRepository = new AuthRepository(this);
 
         cargarCarreras();
+        configurarSpinnerGenero();
 
         binding.etFechaNacimiento.setFocusable(false);
         binding.etFechaNacimiento.setClickable(true);
@@ -98,6 +99,13 @@ public class RegistroActivity extends AppCompatActivity {
             binding.etFechaNacimiento.setText(fecha);
         }, anio, mes, dia);
         picker.show();
+    }
+
+    private void configurarSpinnerGenero() {
+        String[] generos = getResources().getStringArray(R.array.generos);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_dropdown_item, generos);
+        binding.spGenero.setAdapter(adapter);
     }
 
     private void cargarCarreras() {
