@@ -22,7 +22,10 @@
 -keepclassmembers class es.epycus.app.model.dto.** { *; }
 -keepclassmembers class es.epycus.app.model.entidades.** { *; }
 
-# Room
+# Room — keep generated _Impl classes and constructors used by reflection
+-keep class * extends androidx.room.RoomDatabase { *; }
+-keepclassmembers @androidx.room.Entity class * { *; }
+-keep class **._Impl { <init>(); }
 -keep class es.epycus.app.data.local.** { *; }
 
 # OkHttp
@@ -33,6 +36,11 @@
 -keep class com.bumptech.glide.** { *; }
 -keep class * extends com.bumptech.glide.module.AppGlideModule
 -keep class * extends com.bumptech.glide.module.LibraryGlideModule
+
+# Fragment/AppCompat — evitar ClassCastException por R8 full mode
+-keep class androidx.fragment.app.** { *; }
+-keep class androidx.appcompat.app.** { *; }
+-keep class androidx.activity.** { *; }
 
 # ViewBinding
 -keepclassmembers class * implements androidx.viewbinding.ViewBinding {
