@@ -148,6 +148,7 @@ dependencies {
     testImplementation(libs.ext.junit)
     testImplementation(libs.room.testing)
     testImplementation(libs.mockito.core)
+    testImplementation(libs.mockwebserver)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }
