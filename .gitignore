@@ -20,3 +20,7 @@ secrets.properties
 *.apk
 *.jks
 *.keystore
+
+# Maestro: credenciales locales (NO versionar)
+.maestro/secrets.local.ps1
+.maestro/secrets.local.sh

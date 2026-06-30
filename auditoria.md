@@ -177,10 +177,12 @@ Infra: **Robolectric + Room-testing** → corren en la JVM con `./gradlew testDe
 - [x] `SyncWorkerLogicTest` (3) — mapeo de método HTTP
 - [x] `NetworkUtilsTest` (8) — mapeo de errores HTTP/red a strings
 - [x] `ApiAuthContractTest` (4) — contrato request/response de auth con **MockWebServer**
+- [x] `ApiContractTest` (8) — contrato de hábitos/misiones/pomodoro con MockWebServer (ruta `@Path` + verbo HTTP; valida que el endpoint que reencola `SyncWorker` coincide)
+- [x] `CacheManagerTest` (8) — TTL/expiración/`purgeExpired` (refactor mínimo: `isExpired`/`wrap` testables + constructor con DI de la BD)
 - [x] `ContratoJsonTest` (8) — contratos JSON (ya existía)
-- [ ] `CacheManagerTest` — pendiente: requiere DI de la BD (el singleton + executor async dificulta el test determinista)
-- [ ] Más servicios API con MockWebServer (habitos, misiones, pomodoro)
-- Nota: tests de `SessionManager`/`AuthRepository` con sesión cifrada no se hacen en JVM (EncryptedSharedPreferences usa AndroidKeyStore, no soportado por Robolectric) → cubiertos por Maestro.
+- **Total: 68 tests JVM, 0 fallos** (`./gradlew testDebugUnitTest`).
+- `isOnline` no se testea en JVM (envoltorio fino de `ConnectivityManager`, shadow frágil) → cubierto por Maestro.
+- Tests de `SessionManager`/`AuthRepository` con sesión cifrada tampoco (EncryptedSharedPreferences usa AndroidKeyStore, no soportado por Robolectric) → cubiertos por Maestro.
 - [ ] `MigrationTestHelper` (posible gracias a `exportSchema=true`) — necesita wiring de `schemas` en androidTest
 - [x] **UI con Maestro** (black-box, en `.maestro/`): `01_login`, `02_navegacion_tabs`, `03_navegacion_atras` (valida el fix de back), `04_cerrar_sesion`, `00_smoke`. Se corren con `maestro test -e EMAIL=.. -e PASSWORD=.. .maestro/` sobre un emulador/dispositivo con la app instalada (`./gradlew installDebug`). Reemplazan a Espresso.
 

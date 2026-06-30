@@ -2,7 +2,8 @@ package es.epycus.app.util;
 
 import android.content.Context;
 
-import com.google.gson.Gson;
+import androidx.annotation.VisibleForTesting;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -13,7 +14,6 @@ public class CacheManager {
 
     private static CacheManager instance;
     private final AppDatabase database;
-    private final Gson gson;
 
     public static final long TTL_DASHBOARD = 300;
     public static final long TTL_HABITOS = 120;
@@ -28,30 +28,15 @@ public class CacheManager {
 
     private CacheManager(Context context) {
         this.database = AppDatabase.getInstance(context.getApplicationContext());
-        this.gson = new Gson();
         // Limpieza inicial: las entradas expiradas que nunca se vuelven a leer no se
         // borran solas en get(); este barrido evita que la BD crezca indefinidamente.
         purgeExpired();
     }
 
-    /** Elimina todas las entradas de cache cuyo TTL haya vencido. */
-    public void purgeExpired() {
-        AppDatabase.getWriteExecutor().execute(() -> {
-            long now = System.currentTimeMillis() / 1000;
-            for (CacheEntity entry : database.cacheDao().getAll()) {
-                try {
-                    JsonObject wrapper = JsonParser.parseString(entry.getValue()).getAsJsonObject();
-                    long cachedAt = wrapper.get("cachedAt").getAsLong();
-                    long ttl = wrapper.get("ttl").getAsLong();
-                    if ((now - cachedAt) > ttl) {
-                        database.cacheDao().delete(entry.getKey());
-                    }
-                } catch (Exception e) {
-                    // Entrada corrupta o con formato antiguo: descartarla.
-                    database.cacheDao().delete(entry.getKey());
-                }
-            }
-        });
+    /** Constructor para tests: inyecta la BD y no lanza la purga asíncrona. */
+    @VisibleForTesting
+    CacheManager(AppDatabase database) {
+        this.database = database;
     }
 
     public static synchronized CacheManager getInstance(Context context) {
@@ -62,11 +47,7 @@ public class CacheManager {
     }
 
     public void put(String key, String jsonData, long ttlSeconds) {
-        JsonObject wrapper = new JsonObject();
-        wrapper.addProperty("data", jsonData);
-        wrapper.addProperty("cachedAt", System.currentTimeMillis() / 1000);
-        wrapper.addProperty("ttl", ttlSeconds);
-        String wrappedJson = gson.toJson(wrapper);
+        String wrappedJson = wrap(jsonData, ttlSeconds, nowSeconds());
         AppDatabase.getWriteExecutor().execute(() ->
                 database.cacheDao().insert(new CacheEntity(key, wrappedJson)));
     }
@@ -77,24 +58,9 @@ public class CacheManager {
 
     public void getAsync(String key, CacheCallback callback) {
         AppDatabase.getWriteExecutor().execute(() -> {
-            String wrappedJson = database.cacheDao().getValue(key);
-            String result = null;
-            if (wrappedJson != null) {
-                try {
-                    JsonObject wrapper = JsonParser.parseString(wrappedJson).getAsJsonObject();
-                    long cachedAt = wrapper.get("cachedAt").getAsLong();
-                    long ttl = wrapper.get("ttl").getAsLong();
-                    long now = System.currentTimeMillis() / 1000;
-                    if ((now - cachedAt) <= ttl) {
-                        result = wrapper.get("data").getAsString();
-                    } else {
-                        database.cacheDao().delete(key);
-                    }
-                } catch (Exception ignored) {
-                }
-            }
-            final String finalResult = result;
-            new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> callback.onResult(finalResult));
+            String result = readFresh(key);
+            new android.os.Handler(android.os.Looper.getMainLooper())
+                    .post(() -> callback.onResult(result));
         });
     }
 
@@ -102,23 +68,48 @@ public class CacheManager {
         getAsync(key, callback);
     }
 
+    /** Devuelve el dato cacheado si no ha expirado; si expiró lo elimina y devuelve null. */
     public String get(String key) {
+        return readFresh(key);
+    }
+
+    private String readFresh(String key) {
         String wrappedJson = database.cacheDao().getValue(key);
-        if (wrappedJson != null) {
-            try {
-                com.google.gson.JsonObject wrapper = com.google.gson.JsonParser.parseString(wrappedJson).getAsJsonObject();
-                long cachedAt = wrapper.get("cachedAt").getAsLong();
-                long ttl = wrapper.get("ttl").getAsLong();
-                long now = System.currentTimeMillis() / 1000;
-                if ((now - cachedAt) <= ttl) {
-                    return wrapper.get("data").getAsString();
-                } else {
-                    database.cacheDao().delete(key);
-                }
-            } catch (Exception ignored) {
+        if (wrappedJson == null) return null;
+        try {
+            JsonObject wrapper = JsonParser.parseString(wrappedJson).getAsJsonObject();
+            long cachedAt = wrapper.get("cachedAt").getAsLong();
+            long ttl = wrapper.get("ttl").getAsLong();
+            if (!isExpired(cachedAt, ttl, nowSeconds())) {
+                return wrapper.get("data").getAsString();
             }
+            database.cacheDao().delete(key);
+        } catch (Exception ignored) {
         }
         return null;
+    }
+
+    /** Elimina todas las entradas de cache cuyo TTL haya vencido (asíncrono). */
+    public void purgeExpired() {
+        AppDatabase.getWriteExecutor().execute(this::purgeExpiredBlocking);
+    }
+
+    @VisibleForTesting
+    void purgeExpiredBlocking() {
+        long now = nowSeconds();
+        for (CacheEntity entry : database.cacheDao().getAll()) {
+            try {
+                JsonObject wrapper = JsonParser.parseString(entry.getValue()).getAsJsonObject();
+                long cachedAt = wrapper.get("cachedAt").getAsLong();
+                long ttl = wrapper.get("ttl").getAsLong();
+                if (isExpired(cachedAt, ttl, now)) {
+                    database.cacheDao().delete(entry.getKey());
+                }
+            } catch (Exception e) {
+                // Entrada corrupta o con formato antiguo: descartarla.
+                database.cacheDao().delete(entry.getKey());
+            }
+        }
     }
 
     public void clear() {
@@ -129,5 +120,27 @@ public class CacheManager {
     public void clear(String key) {
         AppDatabase.getWriteExecutor().execute(() ->
                 database.cacheDao().delete(key));
+    }
+
+    // --- Helpers puros (testables) ---
+
+    private static long nowSeconds() {
+        return System.currentTimeMillis() / 1000;
+    }
+
+    /** Una entrada está expirada cuando han pasado más de {@code ttl} segundos desde {@code cachedAt}. */
+    @VisibleForTesting
+    static boolean isExpired(long cachedAt, long ttl, long now) {
+        return (now - cachedAt) > ttl;
+    }
+
+    /** Envuelve el dato con su marca de tiempo y TTL (formato persistido en la tabla cache). */
+    @VisibleForTesting
+    static String wrap(String data, long ttlSeconds, long cachedAt) {
+        JsonObject wrapper = new JsonObject();
+        wrapper.addProperty("data", data);
+        wrapper.addProperty("cachedAt", cachedAt);
+        wrapper.addProperty("ttl", ttlSeconds);
+        return wrapper.toString();
     }
 }
