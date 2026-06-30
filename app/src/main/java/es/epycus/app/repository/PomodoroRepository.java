@@ -34,8 +34,10 @@ public class PomodoroRepository {
     private final CacheManager cacheManager;
     private final WriteBackDao writeBackDao;
     private final ExecutorService writeExecutor;
+    private final Context appContext;
 
     public PomodoroRepository(Context context) {
+        this.appContext = context.getApplicationContext();
         this.api = RetrofitClient.getInstance(context);
         this.cacheManager = CacheManager.getInstance(context);
         this.writeBackDao = AppDatabase.getInstance(context).writeBackDao();
@@ -166,7 +168,10 @@ public class PomodoroRepository {
 
     private void handleResponse(Response<?> response, String operationType, String endpoint, Object body, WriteBackCallback callback) {
         if (response.isSuccessful()) {
-            writeExecutor.execute(() -> writeBackDao.deleteAll());
+            // Estamos online: aprovechar para vaciar cualquier operación pendiente en la cola.
+            // (Antes hacía writeBackDao.deleteAll(), que borraba TODA la cola, incluidas
+            //  operaciones de otras sesiones aún sin sincronizar → pérdida de datos.)
+            es.epycus.app.util.SyncWorker.schedule(appContext);
             if (callback != null) callback.onSuccess();
         } else {
             queueForRetry(operationType, endpoint, body);
@@ -194,89 +199,9 @@ public class PomodoroRepository {
             entity.retryCount = 0;
             entity.status = "pending";
             writeBackDao.insert(entity);
-        });
-    }
-
-    public void procesarColaWriteBack() {
-        writeExecutor.execute(() -> {
-            var pending = writeBackDao.getPending();
-            for (WriteBackEntity entity : pending) {
-                if (entity.retryCount >= 3) {
-                    entity.status = "failed";
-                    writeBackDao.update(entity);
-                    continue;
-                }
-                reintentarOperacion(entity);
-            }
-        });
-    }
-
-    private void reintentarOperacion(WriteBackEntity entity) {
-        int sesionId = Integer.parseInt(entity.endpoint.split("/")[entity.endpoint.split("/").length - 2]);
-        switch (entity.operationType) {
-            case "ciclo_completado":
-                @SuppressWarnings("unchecked")
-                Call<RespuestaApi<PomodoroCicloCompletadoResponse>> callCiclo = 
-                    (Call<RespuestaApi<PomodoroCicloCompletadoResponse>>) api.getApiPomodoroService().cicloCompletado(sesionId, new com.google.gson.Gson().fromJson(entity.requestBody, Object.class));
-                callCiclo.enqueue(new Callback<RespuestaApi<PomodoroCicloCompletadoResponse>>() {
-                    @Override
-                    public void onResponse(Call<RespuestaApi<PomodoroCicloCompletadoResponse>> call, Response<RespuestaApi<PomodoroCicloCompletadoResponse>> response) {
-                        handleRetryResponse(response, entity);
-                    }
-                    @Override
-                    public void onFailure(Call<RespuestaApi<PomodoroCicloCompletadoResponse>> call, Throwable t) {
-                        handleRetryFailure(entity, t);
-                    }
-                });
-                break;
-            case "finalizar":
-                @SuppressWarnings("unchecked")
-                Call<RespuestaApi<PomodoroFinalizarResponse>> callFinalizar = 
-                    (Call<RespuestaApi<PomodoroFinalizarResponse>>) api.getApiPomodoroService().finalizar(sesionId, new com.google.gson.Gson().fromJson(entity.requestBody, Object.class));
-                callFinalizar.enqueue(new Callback<RespuestaApi<PomodoroFinalizarResponse>>() {
-                    @Override
-                    public void onResponse(Call<RespuestaApi<PomodoroFinalizarResponse>> call, Response<RespuestaApi<PomodoroFinalizarResponse>> response) {
-                        handleRetryResponse(response, entity);
-                    }
-                    @Override
-                    public void onFailure(Call<RespuestaApi<PomodoroFinalizarResponse>> call, Throwable t) {
-                        handleRetryFailure(entity, t);
-                    }
-                });
-                break;
-            case "cancelar":
-                Call<RespuestaApi<SuccessResponseDto>> callCancelar = api.getApiPomodoroService().cancelar(sesionId);
-                callCancelar.enqueue(new Callback<RespuestaApi<SuccessResponseDto>>() {
-                    @Override
-                    public void onResponse(Call<RespuestaApi<SuccessResponseDto>> call, Response<RespuestaApi<SuccessResponseDto>> response) {
-                        handleRetryResponse(response, entity);
-                    }
-                    @Override
-                    public void onFailure(Call<RespuestaApi<SuccessResponseDto>> call, Throwable t) {
-                        handleRetryFailure(entity, t);
-                    }
-                });
-                break;
-            default:
-                return;
-        }
-    }
-
-    private void handleRetryResponse(Response<?> response, WriteBackEntity entity) {
-        writeExecutor.execute(() -> {
-            if (response.isSuccessful()) {
-                writeBackDao.delete(entity);
-            } else {
-                entity.retryCount++;
-                writeBackDao.update(entity);
-            }
-        });
-    }
-
-    private void handleRetryFailure(WriteBackEntity entity, Throwable t) {
-        writeExecutor.execute(() -> {
-            entity.retryCount++;
-            writeBackDao.update(entity);
+            // Programa el flush vía WorkManager: se ejecutará en cuanto haya red, incluso
+            // si el proceso muere antes (antes la cola se encolaba pero nunca se vaciaba).
+            es.epycus.app.util.SyncWorker.schedule(appContext);
         });
     }
 

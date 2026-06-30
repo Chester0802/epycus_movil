@@ -1,0 +1,14 @@
+# Flujo: valida el fix de navegación "atrás" (OnBackPressedDispatcher).
+# Abre Pomodoro desde Inicio y pulsa atrás: debe CERRAR el panel y volver a
+# Inicio, no salir de la app (antes, con gestos de Android 13+, se rompía).
+appId: es.epycus.app
+---
+- runFlow: login.yaml
+- tapOn:
+    id: "cardFocus"
+- assertVisible:
+    id: "tvTiempo"
+- pressKey: Back
+# Tras el back debemos seguir dentro de la app, en Inicio.
+- assertVisible:
+    id: "tvBienvenida"

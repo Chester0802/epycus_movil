@@ -7,7 +7,6 @@
     <string name="error_conexion">No se pudo conectar al servidor</string>
     <string name="sin_conexion_datos">Sin conexión. No hay datos disponibles.</string>
     <string name="mostrando_datos_sin_conexion">Mostrando datos sin conexión</string>
-    <string name="proximamente">Próximamente</string>
     <string name="crear">Crear</string>
     <string name="cancelar">Cancelar</string>
     <string name="guardar">Guardar</string>
@@ -20,17 +19,13 @@
     <string name="correo_hint">Correo electrónico</string>
     <string name="contrasena_hint">Contraseña</string>
     <string name="olvidaste_contrasena">¿Olvidaste tu contraseña?</string>
-    <string name="continuar_con_google">Continuar con Google</string>
     <string name="o_texto">o</string>
     <string name="no_tienes_cuenta">¿No tienes cuenta?</string>
     <string name="crear_cuenta">Crear cuenta</string>
-    <string name="logo_e">E</string>
     <string name="tu_companero_productividad">Tu compañero de productividad</string>
-    <string name="iniciando_sesion">Iniciando sesión...</string>
     <string name="ingresa_correo">Ingresa un correo</string>
     <string name="correo_recuperacion_enviado">Revisa tu correo para recuperar tu contraseña</string>
     <string name="recuperar_contrasena">Recuperar contraseña</string>
-    <string name="google_g">G</string>
 
     <!-- Registro -->
     <string name="crear_cuenta_titulo">Crear cuenta</string>
@@ -39,7 +34,6 @@
     <string name="fecha_nacimiento_hint">Fecha de nacimiento</string>
     <string name="acepto_terminos">Acepto los términos y condiciones</string>
     <string name="registrarse">Registrarse</string>
-    <string name="registrandose">Registrando...</string>
     <string name="contrasenas_no_coinciden">Las contraseñas no coinciden</string>
     <string name="registro_exitoso">Registro exitoso</string>
     <string name="selecciona_fecha_nacimiento">Selecciona tu fecha de nacimiento</string>
@@ -49,14 +43,12 @@
     <string name="hola_formato">¡Hola, %s!</string>
     <string name="frase_motivacional_defecto">Un pequeño paso hoy, un gran cambio mañana.</string>
     <string name="tu_progreso">Tu Progreso</string>
-    <string name="acciones_rapidas">Acciones Rápidas</string>
     <string name="nuevo_habito">Nuevo Hábito</string>
     <string name="mision_diaria">Misión Diaria</string>
     <string name="modo_enfoque">Modo Enfoque</string>
     <string name="habitos">Pendientes</string>
     <string name="racha">Racha</string>
     <string name="nivel">Nivel</string>
-    <string name="chat_edy_ia">Chat con Edy IA</string>
     <string name="nv_formato">Nv.%d</string>
     <string name="xp_formato">%d XP</string>
     <string name="autor_formato">- %s</string>
@@ -83,15 +75,11 @@
     <string name="normal">Normal</string>
     <string name="cansado">Cansado</string>
     <string name="estresado">Estresado</string>
-    <string name="notas_hint">¿Qué más quieres compartir? (opcional)</string>
-    <string name="guardar_estado_animo">Guardar estado de ánimo</string>
     <string name="escribe_tu_dia">Escribe algo sobre tu día...</string>
     <string name="guardar_entrada_diario">Guardar entrada del diario</string>
     <string name="tu_entrada_hoy">Tu entrada de hoy</string>
-    <string name="entrada_hoy_formato">Hoy te sientes: %s</string>
     <string name="sin_entrada_hoy">Aún no has registrado tu estado de ánimo hoy.</string>
     <string name="selecciona_como_te_sientes">Selecciona cómo te sientes</string>
-    <string name="estado_animo_guardado">Estado de ánimo guardado</string>
     <string name="entrada_diario_guardada">Entrada del diario guardada</string>
     <string name="habla_con_edy">Habla con Edy IA</string>
     <string name="asistente_bienestar">Tu asistente personal de bienestar</string>
@@ -115,7 +103,6 @@
     <string name="cerrar_sesion">Cerrar sesión</string>
     <string name="confirmar_cerrar_sesion">¿Estás seguro de que quieres cerrar sesión?</string>
     <string name="si_cerrar_sesion">Sí, cerrar sesión</string>
-    <string name="sesion_cerrada">Sesión cerrada</string>
     <string name="personaje_actualizado">Personaje actualizado</string>
     <string name="editar_perfil">Editar perfil</string>
     <string name="nombre_hint">Nombre</string>
@@ -126,15 +113,8 @@
     <string name="nueva_contrasena_hint">Nueva contraseña</string>
     <string name="confirmar_nueva_contrasena_hint">Confirmar nueva contraseña</string>
     <string name="contrasena_actualizada">Contraseña actualizada</string>
-    <string name="notificaciones_proximamente">Notificaciones: próximamente</string>
     <string name="acerca_de">Acerca de Epycus</string>
     <string name="acerca_de_texto">Epycus v%s\n\nTu compañero de productividad y bienestar.\n\nDesarrollado para ayudarte a mantener hábitos, gestionar tu tiempo y mejorar tu bienestar.</string>
-    <string name="emoji_personajes">🎭</string>
-    <string name="emoji_logros">🏆</string>
-    <string name="emoji_estadisticas">📊</string>
-    <string name="emoji_config">⚙️</string>
-    <string name="emoji_luna">🌙</string>
-    <string name="emoji_sol">☀️</string>
     <string name="chevron_right">›</string>
 
     <!-- Pomodoro -->
@@ -177,9 +157,6 @@
     <string name="nueva_mision">Nueva misión</string>
     <string name="mision_nombre_hint">Nombre de la misión</string>
     <string name="mision_descripcion_hint">Descripción</string>
-    <string name="mision_curso_hint">Curso</string>
-    <string name="mision_fecha_limite_hint">Fecha límite</string>
-    <string name="mision_prioridad_hint">Prioridad</string>
     <string name="mision_creada">Misión creada</string>
     <string name="mision_completada">¡Misión completada!</string>
     <string name="mision_sin_fecha">Sin fecha</string>
@@ -208,20 +185,11 @@
     <string name="error_http_422">Error de validación. Revisa los datos ingresados.</string>
     <string name="error_http_500">Error interno del servidor. Intenta más tarde.</string>
     <string name="error_http_desconocido">Error inesperado (código %d). Intenta de nuevo.</string>
-    <string name="error_conexion_formato">Error de conexión: %s</string>
-    <string name="error_conexion_verifica">Error de conexión: verifica tu internet</string>
     <string name="error_conexion_habitos">Error de conexión</string>
     <string name="sin_habitos_categoria">No hay hábitos en esta categoría</string>
-    <string name="error_al_completar">Error al completar</string>
-    <string name="funcionalidad_pronto">Funcionalidad pronto disponible</string>
     <string name="editar_habito">Editar Hábito</string>
     <string name="error_cargar_habito">Error al cargar el hábito</string>
     <string name="habito_actualizado">Hábito actualizado</string>
-    <string name="credenciales_incorrectas">Credenciales incorrectas</string>
-    <string name="error_carreras">Error al cargar carreras</string>
-    <string name="error_carreras_conexion">No se pudieron cargar las carreras</string>
-    <string name="error_procesar_mensaje">Lo siento, no pude procesar tu mensaje.</string>
-    <string name="error_conexion_ia">Error de conexión. Verifica tu internet.</string>
 
     <!-- Habito actions -->
     <string name="completar">Completar</string>
@@ -279,7 +247,6 @@
     <string name="porcentaje_siguiente_nivel_text">0% para siguiente nivel</string>
 
     <!-- Dashboard activity -->
-    <string name="bienvenido">Bienvenido</string>
 
     <!-- Bottom nav -->
     <string name="nav_inicio">Inicio</string>
@@ -317,7 +284,6 @@
     <string name="historial_titulo">Historial de sesiones</string>
     <string name="historial_vacio">No hay sesiones registradas</string>
     <string name="historial_formato">%1$s - %2$d ciclos - %3$d min</string>
-    <string name="sesion_cancelada">Sesión cancelada</string>
     <string name="foco_completado_notif">¡Ciclo de foco completado!</string>
     <string name="pausa_completada_notif">¡Descanso terminado! Vuelve al trabajo</string>
     <string name="canal_pomodoro">Pomodoro</string>

@@ -32,17 +32,35 @@ public class RetrofitClient {
     private final ApiAdminService apiAdminService;
     private final ApiSubTareasService apiSubTareasService;
 
+    // Pines SHA-256 de la clave pública (SPKI) de la cadena TLS de app.epycus.es.
+    // Se pinan 3 niveles para evitar que la app quede inutilizable en la renovación
+    // de Let's Encrypt (certbot rota la clave de la hoja cada 90 días):
+    //   1. Hoja (app.epycus.es)        -> máxima seguridad, cambia en cada renovación
+    //   2. Intermedio (Let's Encrypt)  -> respaldo, sobrevive a la rotación de la hoja
+    //   3. Raíz (ISRG Root X2)          -> respaldo estable durante años
+    // OkHttp valida si CUALQUIER pin de la cadena coincide.
+    private static final String PIN_LEAF = "sha256/3lfk/L2YnLH4PKmnFxaXzoayzzgEKxcG6G+XeqxGuhQ=";
+    private static final String PIN_INTERMEDIATE = "sha256/s/tdAOmUzd8syaTuqfgGvFcn6DzA5Cmb+Vby1ST+U3Y=";
+    private static final String PIN_ROOT = "sha256/diGVwiVYbubAI3RW4hB9xU8e/CH2GnkuvVFZE8zmgzI=";
+
+    private static CertificatePinner buildCertificatePinner() {
+        return new CertificatePinner.Builder()
+                .add("app.epycus.es", PIN_LEAF)
+                .add("app.epycus.es", PIN_INTERMEDIATE)
+                .add("app.epycus.es", PIN_ROOT)
+                .build();
+    }
+
     private RetrofitClient(Context context) {
         SessionManager sessionManager = SessionManager.getInstance(context);
 
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        // BASIC nunca registra cabeceras (evita filtrar el JWT en Logcat); NONE en release.
         logging.setLevel(BuildConfig.DEBUG
-                ? HttpLoggingInterceptor.Level.HEADERS
+                ? HttpLoggingInterceptor.Level.BASIC
                 : HttpLoggingInterceptor.Level.NONE);
 
-        CertificatePinner certificatePinner = new CertificatePinner.Builder()
-                .add("app.epycus.es", "sha256/REPLACE_WITH_ACTUAL_PIN")
-                .build();
+        CertificatePinner certificatePinner = buildCertificatePinner();
 
         okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new AuthInterceptor(sessionManager, context))
@@ -84,9 +102,7 @@ public class RetrofitClient {
 
     public static synchronized Retrofit getAuthlessRetrofit(Context context) {
         if (authlessRetrofit == null) {
-            CertificatePinner certificatePinner = new CertificatePinner.Builder()
-                    .add("app.epycus.es", "sha256/REPLACE_WITH_ACTUAL_PIN")
-                    .build();
+            CertificatePinner certificatePinner = buildCertificatePinner();
 
             OkHttpClient client = new OkHttpClient.Builder()
                     .connectTimeout(30, TimeUnit.SECONDS)

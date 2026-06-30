@@ -253,7 +253,7 @@ public class PomodoroFragment extends Fragment {
     private void actualizarDisplay() {
         int minutos = segundosRestantes / 60;
         int segs = segundosRestantes % 60;
-        binding.tvTiempo.setText(String.format("%02d:%02d", minutos, segs));
+        binding.tvTiempo.setText(String.format(java.util.Locale.getDefault(), "%02d:%02d", minutos, segs));
         binding.tvEstado.setText(isPausa ? getString(R.string.pausa) : getString(R.string.foco));
         int total = getTiempoActual();
         if (total > 0) {

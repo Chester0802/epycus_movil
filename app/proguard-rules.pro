@@ -39,5 +39,15 @@
     public static * inflate(...);
 }
 
+# SignalR (usa reflexión + Gson/RxJava; slf4j es dependencia opcional de logging)
+-keep class com.microsoft.signalr.** { *; }
+-dontwarn com.microsoft.signalr.**
+-dontwarn org.slf4j.**
+
+# WorkManager: los Worker se instancian por reflexión (incluido SyncWorker)
+-keep class * extends androidx.work.ListenableWorker {
+    public <init>(android.content.Context, androidx.work.WorkerParameters);
+}
+
 # Keep BuildConfig
 -keep class es.epycus.app.BuildConfig { *; }

@@ -29,7 +29,7 @@ import es.epycus.app.data.local.entity.WriteBackEntity;
 
 @Database(entities = {UsuarioEntity.class, HabitoEntity.class, ProgresoEntity.class,
         CacheEntity.class, MisionEntity.class, DiarioEntradaEntity.class, WriteBackEntity.class},
-        version = 4, exportSchema = false)
+        version = 4, exportSchema = true)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase instance;

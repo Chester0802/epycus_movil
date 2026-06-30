@@ -37,6 +37,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_alignParentStart="true"
+                        android:layout_toStartOf="@id/ivPersonaje"
                         android:layout_centerVertical="true">
 
                         <TextView

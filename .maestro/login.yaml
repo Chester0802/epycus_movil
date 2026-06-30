@@ -1,0 +1,27 @@
+# Subflujo reutilizable: arranca la app limpia e inicia sesión.
+# Las credenciales se pasan por variables de entorno:
+#   maestro test -e EMAIL=tu@correo.es -e PASSWORD=tuClave .maestro/<flujo>.yaml
+appId: es.epycus.app
+---
+- launchApp:
+    clearState: true
+    permissions:
+      all: allow
+- assertVisible:
+    id: "etCorreo"
+- tapOn:
+    id: "etCorreo"
+- inputText: "${EMAIL}"
+- tapOn:
+    id: "etContrasena"
+- inputText: "${PASSWORD}"
+- hideKeyboard
+- tapOn:
+    id: "btnLogin"
+# Espera al round-trip de red; tras login aparece la barra de navegación inferior.
+- extendedWaitUntil:
+    visible:
+      text: "Inicio"
+    timeout: 20000
+- assertVisible:
+    id: "tvBienvenida"

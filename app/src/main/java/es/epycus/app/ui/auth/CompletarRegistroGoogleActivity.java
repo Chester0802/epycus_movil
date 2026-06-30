@@ -97,7 +97,7 @@ public class CompletarRegistroGoogleActivity extends AppCompatActivity {
         int dia = cal.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog picker = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
-            String fecha = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth);
+            String fecha = String.format(java.util.Locale.US, "%04d-%02d-%02d", year, month + 1, dayOfMonth);
             binding.etFechaNacimiento.setText(fecha);
         }, anio, mes, dia);
         picker.show();

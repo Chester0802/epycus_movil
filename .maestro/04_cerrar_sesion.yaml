@@ -1,0 +1,18 @@
+# Flujo: cerrar sesión (filtro humano: opción clara de salir).
+# Perfil -> Cerrar sesión -> confirmar -> de vuelta en la pantalla de login.
+appId: es.epycus.app
+---
+- runFlow: login.yaml
+- tapOn:
+    id: "nav_perfil"
+- assertVisible: "Perfil"
+- scrollUntilVisible:
+    element:
+      id: "btnCerrarSesion"
+    direction: DOWN
+- tapOn:
+    id: "btnCerrarSesion"
+- assertVisible: "¿Estás seguro de que quieres cerrar sesión?"
+- tapOn: "Sí, cerrar sesión"
+- assertVisible:
+    id: "etCorreo"

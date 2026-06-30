@@ -1,0 +1,21 @@
+# Flujo: navegación entre las 5 pestañas del bottom nav (filtro humano:
+# los botones de navegación no se rompen). Recorre todas y vuelve a Inicio.
+appId: es.epycus.app
+---
+- runFlow: login.yaml
+- tapOn:
+    id: "nav_habitos"
+- assertVisible: "Hábitos"
+- tapOn:
+    id: "nav_misiones"
+- assertVisible: "Misiones"
+- tapOn:
+    id: "nav_diario"
+- assertVisible: "Diario"
+- tapOn:
+    id: "nav_perfil"
+- assertVisible: "Perfil"
+- tapOn:
+    id: "nav_inicio"
+- assertVisible:
+    id: "tvBienvenida"

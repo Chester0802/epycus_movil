@@ -278,7 +278,7 @@ public class MisionesFragment extends Fragment {
                 } catch (Exception ignored) {}
             }
             DatePickerDialog dpd = new DatePickerDialog(requireContext(), (view1, year, month, dayOfMonth) -> {
-                selectedDate[0] = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth);
+                selectedDate[0] = String.format(java.util.Locale.US, "%04d-%02d-%02d", year, month + 1, dayOfMonth);
                 tvFecha.setText(selectedDate[0]);
             }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
             dpd.show();

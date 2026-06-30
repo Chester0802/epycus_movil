@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -52,6 +53,7 @@ public class MainContainerActivity extends AppCompatActivity implements SignalRS
         binding.viewPager.post(() -> aplicarInsets());
 
         setupNavigation();
+        setupBackNavigation();
 
         if (!signalRIniciado && SessionManager.getInstance(this).isLoggedIn()) {
             signalRIniciado = true;
@@ -158,18 +160,29 @@ public class MainContainerActivity extends AppCompatActivity implements SignalRS
         transaction.commit();
     }
 
-    @Override
-    public void onBackPressed() {
-        if (fragmentManager.getBackStackEntryCount() > 0) {
-            fragmentManager.popBackStack();
-            if (fragmentManager.getBackStackEntryCount() == 0) {
-                binding.pomodoroContainer.setVisibility(android.view.View.GONE);
+    /**
+     * Navegación "atrás" mediante {@link OnBackPressedDispatcher} (compatible con gestos
+     * de Android 13+). El antiguo override de {@code onBackPressed()} ya no se invocaba
+     * con la navegación por gestos, lo que rompía el cierre del panel de Pomodoro.
+     */
+    private void setupBackNavigation() {
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (fragmentManager.getBackStackEntryCount() > 0) {
+                    fragmentManager.popBackStack();
+                    if (fragmentManager.getBackStackEntryCount() == 0) {
+                        binding.pomodoroContainer.setVisibility(android.view.View.GONE);
+                    }
+                } else if (binding.pomodoroContainer.getVisibility() == android.view.View.VISIBLE) {
+                    ocultarPomodoro();
+                } else {
+                    // Nada que manejar: delegar al comportamiento por defecto (salir de la app).
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
             }
-        } else if (binding.pomodoroContainer.getVisibility() == android.view.View.VISIBLE) {
-            ocultarPomodoro();
-        } else {
-            super.onBackPressed();
-        }
+        });
     }
 
     @Override

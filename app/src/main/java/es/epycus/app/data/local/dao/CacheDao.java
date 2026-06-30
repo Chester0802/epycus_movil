@@ -5,6 +5,8 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import java.util.List;
+
 import es.epycus.app.data.local.entity.CacheEntity;
 
 @Dao
@@ -15,6 +17,9 @@ public interface CacheDao {
 
     @Query("SELECT value FROM cache WHERE `key` = :key")
     String getValue(String key);
+
+    @Query("SELECT * FROM cache")
+    List<CacheEntity> getAll();
 
     @Query("DELETE FROM cache WHERE `key` = :key")
     void delete(String key);

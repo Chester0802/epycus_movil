@@ -1,30 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Epycus Card Style -->
-    <style name="Widget.Epycus.Card" parent="Widget.Material3.CardView.Filled">
-        <item name="cardBackgroundColor">?attr/epSurface</item>
-        <item name="cardCornerRadius">?attr/epRoundedXl</item>
-        <item name="cardElevation">2dp</item>
-        <item name="strokeWidth">1dp</item>
-        <item name="strokeColor">?attr/epSurfaceBorder</item>
-        <item name="contentPadding">16dp</item>
-    </style>
 
     <!-- Epycus Stat Card -->
-    <style name="Widget.Epycus.Card.Stat">
-        <item name="cardCornerRadius">?attr/epRoundedLg</item>
-        <item name="strokeWidth">0dp</item>
-    </style>
 
     <!-- Epycus Button -->
-    <style name="Widget.Epycus.Button" parent="Widget.Material3.Button">
-        <item name="backgroundTint">?attr/epAccent</item>
-        <item name="cornerRadius">?attr/epRoundedXl</item>
-        <item name="android:textColor">?attr/epTextOnPrimary</item>
-        <item name="android:textAllCaps">false</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:minHeight">48dp</item>
-    </style>
 
     <!-- Epycus Outline Button -->
     <style name="Widget.Epycus.Button.Outline" parent="Widget.Material3.Button.OutlinedButton">
@@ -36,10 +16,6 @@
     </style>
 
     <!-- Epycus Text Button -->
-    <style name="Widget.Epycus.Button.Text" parent="Widget.Material3.Button.TextButton">
-        <item name="android:textColor">?attr/epAccent</item>
-        <item name="android:textAllCaps">false</item>
-    </style>
 
     <!-- Epycus Input -->
     <style name="Widget.Epycus.Input" parent="Widget.Material3.TextInputLayout.OutlinedBox">
@@ -57,9 +33,4 @@
     </style>
 
     <!-- Epycus Bottom Navigation -->
-    <style name="Widget.Epycus.BottomNavigation" parent="Widget.Material3.BottomNavigationView">
-        <item name="itemIconTint">@color/bottom_nav_color</item>
-        <item name="itemTextColor">@color/bottom_nav_color</item>
-        <item name="backgroundTint">?attr/epSurface</item>
-    </style>
 </resources>

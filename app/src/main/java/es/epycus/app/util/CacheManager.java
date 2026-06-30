@@ -29,6 +29,29 @@ public class CacheManager {
     private CacheManager(Context context) {
         this.database = AppDatabase.getInstance(context.getApplicationContext());
         this.gson = new Gson();
+        // Limpieza inicial: las entradas expiradas que nunca se vuelven a leer no se
+        // borran solas en get(); este barrido evita que la BD crezca indefinidamente.
+        purgeExpired();
+    }
+
+    /** Elimina todas las entradas de cache cuyo TTL haya vencido. */
+    public void purgeExpired() {
+        AppDatabase.getWriteExecutor().execute(() -> {
+            long now = System.currentTimeMillis() / 1000;
+            for (CacheEntity entry : database.cacheDao().getAll()) {
+                try {
+                    JsonObject wrapper = JsonParser.parseString(entry.getValue()).getAsJsonObject();
+                    long cachedAt = wrapper.get("cachedAt").getAsLong();
+                    long ttl = wrapper.get("ttl").getAsLong();
+                    if ((now - cachedAt) > ttl) {
+                        database.cacheDao().delete(entry.getKey());
+                    }
+                } catch (Exception e) {
+                    // Entrada corrupta o con formato antiguo: descartarla.
+                    database.cacheDao().delete(entry.getKey());
+                }
+            }
+        });
     }
 
     public static synchronized CacheManager getInstance(Context context) {

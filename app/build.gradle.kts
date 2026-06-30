@@ -77,6 +77,14 @@ android {
         buildConfigField("String", "API_BASE_URL", "\"https://app.epycus.es/\"")
         buildConfigField("String", "GOOGLE_CLIENT_ID", "\"${googleClientId}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Room: exporta el esquema a /schemas para validar migraciones y permitir
+        // tests de migración (MigrationTestHelper). Requiere exportSchema = true.
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments["room.schemaLocation"] = "$projectDir/schemas"
+            }
+        }
     }
 
     buildTypes {
@@ -102,6 +110,11 @@ android {
         buildConfig = true
         viewBinding = true
     }
+    testOptions {
+        unitTests.isIncludeAndroidResources = true   // Robolectric necesita recursos/manifest
+    }
+    // NOTA: cuando se añadan los tests de migración (Fase 1), exponer los esquemas
+    // exportados a androidTest con: getByName("androidTest").assets ... ("$projectDir/schemas")
 }
 
 dependencies {
@@ -122,6 +135,7 @@ dependencies {
     implementation(libs.lifecycle.livedata)
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
+    implementation(libs.work.runtime)
     implementation(libs.swiperefreshlayout)
     implementation(libs.security.crypto)
     implementation(libs.play.services.auth)
@@ -129,6 +143,11 @@ dependencies {
     implementation(libs.core.splashscreen)
     implementation(libs.viewpager2)
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.ext.junit)
+    testImplementation(libs.room.testing)
+    testImplementation(libs.mockito.core)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }

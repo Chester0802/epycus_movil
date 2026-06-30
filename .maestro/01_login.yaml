@@ -1,0 +1,6 @@
+# Flujo: inicio de sesión correcto.
+appId: es.epycus.app
+---
+- runFlow: login.yaml
+- assertVisible:
+    id: "tvBienvenida"

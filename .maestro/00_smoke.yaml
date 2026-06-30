@@ -1,0 +1,36 @@
+# Flujo smoke end-to-end: login -> recorre tabs -> Pomodoro + atrás -> cerrar sesión.
+# Una sola sesión (no re-loguea entre pasos).
+appId: es.epycus.app
+---
+- runFlow: login.yaml
+# Recorrido de pestañas
+- tapOn:
+    id: "nav_habitos"
+- tapOn:
+    id: "nav_misiones"
+- tapOn:
+    id: "nav_diario"
+- tapOn:
+    id: "nav_inicio"
+- assertVisible:
+    id: "tvBienvenida"
+# Pomodoro + navegación atrás
+- tapOn:
+    id: "cardFocus"
+- assertVisible:
+    id: "tvTiempo"
+- pressKey: Back
+- assertVisible:
+    id: "tvBienvenida"
+# Cerrar sesión
+- tapOn:
+    id: "nav_perfil"
+- scrollUntilVisible:
+    element:
+      id: "btnCerrarSesion"
+    direction: DOWN
+- tapOn:
+    id: "btnCerrarSesion"
+- tapOn: "Sí, cerrar sesión"
+- assertVisible:
+    id: "etCorreo"

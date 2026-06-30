@@ -7,8 +7,12 @@
     </domain-config>
     <domain-config>
         <domain includeSubdomains="true">app.epycus.es</domain>
+        <!-- Pines SPKI de la cadena TLS (hoja + intermedio Let's Encrypt + raíz ISRG Root X2).
+             El respaldo evita que la app quede inutilizable cuando Let's Encrypt rota la hoja. -->
         <pin-set expiration="2027-06-25">
-            <pin digest="SHA-256">REPLACE_WITH_ACTUAL_PIN</pin>
+            <pin digest="SHA-256">3lfk/L2YnLH4PKmnFxaXzoayzzgEKxcG6G+XeqxGuhQ=</pin>
+            <pin digest="SHA-256">s/tdAOmUzd8syaTuqfgGvFcn6DzA5Cmb+Vby1ST+U3Y=</pin>
+            <pin digest="SHA-256">diGVwiVYbubAI3RW4hB9xU8e/CH2GnkuvVFZE8zmgzI=</pin>
         </pin-set>
     </domain-config>
 </network-security-config>
