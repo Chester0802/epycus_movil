@@ -78,6 +78,11 @@ public class DiarioRepository {
     }
 
     public DiarioEntradaEntity toEntity(DiarioEntradaResponse response) {
+        // /diario/hoy devuelve datos no nulo pero con entrada == null cuando aún no hay
+        // entrada para hoy. Sin esta guarda, dto.getFecha() lanzaba NPE.
+        if (response == null || response.getEntrada() == null) {
+            return null;
+        }
         EntradaDiarioDto dto = response.getEntrada();
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
         String fecha = dto.getFecha() != null ? dto.getFecha() : sdf.format(new java.util.Date());

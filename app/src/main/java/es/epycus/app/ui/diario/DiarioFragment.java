@@ -251,8 +251,14 @@ public class DiarioFragment extends Fragment {
                     if (response.isSuccessful() && response.body() != null && response.body().isExito()
                             && response.body().getDatos() != null) {
                         DiarioEntradaEntity entity = diarioRepository.toEntity(response.body().getDatos());
-                        diarioRepository.cacheEntrada(entity);
-                        mostrarEntradaHoy(entity);
+                        if (entity != null) {
+                            diarioRepository.cacheEntrada(entity);
+                            mostrarEntradaHoy(entity);
+                        } else if (cached == null) {
+                            // No hay entrada para hoy: estado vacío.
+                            binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
+                            binding.layoutEmptyDiario.setVisibility(View.VISIBLE);
+                        }
                     } else if (cached == null) {
                         binding.tvEntradaHoy.setText(R.string.sin_entrada_hoy);
                         binding.layoutEmptyDiario.setVisibility(View.VISIBLE);
