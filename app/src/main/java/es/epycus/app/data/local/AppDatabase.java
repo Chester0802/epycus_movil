@@ -58,6 +58,12 @@ public abstract class AppDatabase extends RoomDatabase {
                     // refresh_token, fecha_registro) que se quitaron sin migración -> esto
                     // evita el "Migration didn't properly handle: usuarios" al actualizar.
                     .fallbackToDestructiveMigration()
+                    // La UI offline-first lee el cache de forma síncrona en onCreateView
+                    // (getCachedMisiones/getActivos/getById/CacheManager.get) para pintar
+                    // datos al instante antes de refrescar desde la red. Al ser una BD de
+                    // cache con consultas diminutas, se permiten lecturas en el hilo
+                    // principal (las escrituras siguen yendo por getWriteExecutor()).
+                    .allowMainThreadQueries()
                     .build();
         }
         return instance;
