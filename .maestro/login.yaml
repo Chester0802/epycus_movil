@@ -7,11 +7,8 @@ appId: es.epycus.app
     clearState: true
     permissions:
       all: allow
-# Espera a que termine la animación del SplashActivity y aparezca el login.
-- extendedWaitUntil:
-    visible:
-      id: "etCorreo"
-    timeout: 15000
+- assertVisible:
+    id: "etCorreo"
 - tapOn:
     id: "etCorreo"
 - inputText: "${EMAIL}"

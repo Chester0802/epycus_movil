@@ -16,20 +16,10 @@ y opción clara de cerrar sesión.
 
 ## Credenciales
 
-Se pasan por variables de entorno, **nunca se versionan**. Hay un archivo local
-ignorado por git: `.maestro/secrets.local.ps1` (define `$env:EMAIL` y `$env:PASSWORD`).
-
-Forma recomendada en Windows (PowerShell) — el script carga ese archivo:
-
-```powershell
-.\.maestro\run.ps1                  # todos los flujos
-.\.maestro\run.ps1 00_smoke.yaml    # un flujo concreto
-```
-
-Forma manual (cualquier shell):
+Se pasan por variables de entorno, no se hardcodean:
 
 ```bash
-maestro test -e EMAIL=tu@correo.es -e PASSWORD=tuClave .maestro/00_smoke.yaml
+maestro test -e antonioazanero123castillo@gmail.com -e PASSWORD=Marco12@ .maestro/00_smoke.yaml
 ```
 
 ## Flujos

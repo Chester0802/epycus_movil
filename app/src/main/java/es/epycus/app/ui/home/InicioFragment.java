@@ -267,6 +267,7 @@ public class InicioFragment extends Fragment {
                         if (data.getImagenPersonaje() != null && !data.getImagenPersonaje().isEmpty()) {
                             Glide.with(InicioFragment.this)
                                     .load(es.epycus.app.util.ImageUrls.absolute(data.getImagenPersonaje()))
+                                    .override(300, 600)
                                     .transition(DrawableTransitionOptions.withCrossFade())
                                     .error(R.drawable.ic_profile)
                                     .into(binding.ivPersonaje);
