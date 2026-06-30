@@ -171,6 +171,8 @@ public class DiarioFragment extends Fragment {
                 if (response.isSuccessful()) {
                     Snackbar.make(requireView(), getString(R.string.entrada_diario_guardada),
                             Snackbar.LENGTH_SHORT).show();
+                    // Registrar tambien en el historial de estado de animo
+                    registrarEstadoAnimo(estado, diarioTexto);
                     if (selectedMood != null) {
                         ocultarCheckmark(selectedMood.getId());
                         selectedMood.setBackgroundResource(R.drawable.bg_card_rounded);
@@ -191,6 +193,28 @@ public class DiarioFragment extends Fragment {
                 activeCalls.remove(call);
                 if (!isAlive()) return;
                 mostrarErrorRed(t);
+            }
+        });
+    }
+
+    private void registrarEstadoAnimo(String estadoTexto, String diarioTexto) {
+        JsonObject moodBody = new JsonObject();
+        moodBody.addProperty("estado", estadoTexto);
+        if (!diarioTexto.isEmpty()) {
+            moodBody.addProperty("nota", diarioTexto);
+        }
+        Call<RespuestaApi<Object>> moodCall =
+                RetrofitClient.getInstance(requireContext()).getApiEstadoAnimoService().registrar(moodBody);
+        activeCalls.add(moodCall);
+        moodCall.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<RespuestaApi<Object>> call, Response<RespuestaApi<Object>> response) {
+                activeCalls.remove(call);
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaApi<Object>> call, Throwable t) {
+                activeCalls.remove(call);
             }
         });
     }
