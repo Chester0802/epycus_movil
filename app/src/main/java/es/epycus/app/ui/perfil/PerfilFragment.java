@@ -17,6 +17,10 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
+
+import es.epycus.app.util.ImageUrls;
+import es.epycus.app.util.TopCropTransformation;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -128,7 +132,8 @@ public class PerfilFragment extends Fragment {
 
                         if (perfilResp.getImagenPersonaje() != null && !perfilResp.getImagenPersonaje().isEmpty()) {
                             Glide.with(PerfilFragment.this)
-                                    .load(perfilResp.getImagenPersonaje())
+                                    .load(ImageUrls.absolute(perfilResp.getImagenPersonaje()))
+                                    .transform(new TopCropTransformation())
                                     .error(R.drawable.ic_profile)
                                     .into(binding.ivAvatar);
                         } else {
@@ -196,7 +201,8 @@ public class PerfilFragment extends Fragment {
 
             if (perfilResp.getImagenPersonaje() != null && !perfilResp.getImagenPersonaje().isEmpty()) {
                 Glide.with(PerfilFragment.this)
-                        .load(perfilResp.getImagenPersonaje())
+                        .load(ImageUrls.absolute(perfilResp.getImagenPersonaje()))
+                        .transform(new TopCropTransformation())
                         .error(R.drawable.ic_profile)
                         .into(binding.ivAvatar);
             } else {
@@ -307,7 +313,8 @@ public class PerfilFragment extends Fragment {
                     // Load character image immediately from preview URL
                     if (previewUrl != null && !previewUrl.isEmpty()) {
                         Glide.with(PerfilFragment.this)
-                                .load(previewUrl)
+                                .load(ImageUrls.absolute(previewUrl))
+                                .transform(new TopCropTransformation())
                                 .error(R.drawable.ic_profile)
                                 .into(binding.ivAvatar);
                     }

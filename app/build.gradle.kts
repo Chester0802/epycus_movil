@@ -142,6 +142,7 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.core.splashscreen)
     implementation(libs.viewpager2)
+    implementation(libs.work.runtime)
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.core)

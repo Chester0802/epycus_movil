@@ -92,6 +92,9 @@ public class PomodoroFragment extends Fragment {
     private static final String CACHE_KEY_TIP = "pomodoro_tip";
     private boolean sonidoActivo = true;
     private boolean vibracionActiva = true;
+    // Última configuración completa cargada del servidor; se usa para no perder
+    // ajustes (sonido, volumen, etc.) al guardar solo las duraciones.
+    private PomodoroConfiguracionResponse configActual;
 
     @Nullable
     @Override
@@ -399,6 +402,7 @@ public class PomodoroFragment extends Fragment {
     }
 
     private void aplicarConfiguracion(PomodoroConfiguracionResponse cfg) {
+        configActual = cfg;
         tiempoFoco = cfg.getTiempoEstudio() * 60;
         tiempoPausa = cfg.getTiempoDescanso() * 60;
         tiempoPausaLarga = cfg.getTiempoDescansoLargo() * 60;
@@ -608,11 +612,36 @@ public class PomodoroFragment extends Fragment {
                     return;
                 }
 
+                // El backend exige: descanso < estudio  y  descanso largo > descanso corto.
+                if (descanso >= estudio || descansoLargo <= descanso) {
+                    Snackbar.make(requireView(), R.string.config_valor_invalido, Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+
+                // El backend sobrescribe TODA la configuración, así que enviamos los 4
+                // valores editados + el resto de ajustes actuales para no perderlos.
+                // Nombres con sufijo "Min" para casar con ActualizarConfiguracionPomodoroDto.
+                String sonido = (configActual != null && configActual.getSonidoSeleccionado() != null)
+                        ? configActual.getSonidoSeleccionado() : "campana";
+                int volumen = configActual != null ? (int) Math.round(configActual.getVolumen()) : 100;
+                int modoPersonalizado = (configActual != null && configActual.getModoPersonalizadoMin() != null)
+                        ? configActual.getModoPersonalizadoMin() : 25;
+
                 JsonObject body = new JsonObject();
-                body.addProperty("tiempoEstudio", estudio);
-                body.addProperty("tiempoDescanso", descanso);
-                body.addProperty("tiempoDescansoLargo", descansoLargo);
+                body.addProperty("tiempoEstudioMin", estudio);
+                body.addProperty("tiempoDescansoMin", descanso);
+                body.addProperty("tiempoDescansoLargoMin", descansoLargo);
                 body.addProperty("ciclosAntesDescansoLargo", ciclos);
+                body.addProperty("sonidoActivo", configActual != null && configActual.isSonidoActivo());
+                body.addProperty("sonidoSeleccionado", sonido);
+                body.addProperty("volumen", volumen);
+                body.addProperty("autoIniciarDescanso", configActual != null && configActual.isAutoIniciarDescanso());
+                body.addProperty("autoIniciarEnfoque", configActual != null && configActual.isAutoIniciarEnfoque());
+                body.addProperty("ticTacActivo", configActual != null && configActual.isTicTacActivo());
+                body.addProperty("metaDiariaCiclos", configActual != null ? configActual.getMetaDiariaCiclos() : 0);
+                body.addProperty("modoPersonalizadoMin", modoPersonalizado);
+                body.addProperty("vibracionActiva", configActual == null || configActual.isVibracionActiva());
+                body.addProperty("notificacionDesktop", configActual == null || configActual.isNotificacionDesktop());
 
                 Call<RespuestaApi<SuccessResponseDto>> call = repository.actualizarConfiguracion(body);
                 activeCalls.add(call);
