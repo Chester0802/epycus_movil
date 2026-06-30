@@ -44,7 +44,9 @@ public class SignalRService {
         this.sessionManager = SessionManager.getInstance(context);
         this.listener = listener;
 
-        String hubUrl = BuildConfig.API_BASE_URL + "hubs/notificaciones";
+        // El backend (y el frontend web) mapea el hub en /hub/notificaciones (singular).
+        // Antes se usaba "hubs/" (plural) -> negotiate 400.
+        String hubUrl = BuildConfig.API_BASE_URL + "hub/notificaciones";
 
         this.hubConnection = HubConnectionBuilder.create(hubUrl)
                 .withAccessTokenProvider(Single.fromCallable(() -> sessionManager.getToken()))
