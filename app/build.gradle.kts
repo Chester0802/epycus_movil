@@ -15,7 +15,7 @@ plugins {
 //     - Minor: new features, backward compatible
 //     - Patch: bug fixes, small improvements
 //
-// Current: versionCode=2, versionName="1.1" (first public release candidate)
+// Current: versionCode=2, versionName="1.1" (Aptoide release 1)
 //
 // Signing: the release signing config reads from these sources (in priority):
 //   1. keystore.properties file at project root (see keystore.properties.example)
@@ -51,12 +51,12 @@ android {
             val storeFileProp = getKeystoreProperty("storeFile")
             val storeFileEnv = System.getenv("EPYCUS_STORE_FILE")
             if (storeFileProp != null) {
-                storeFile = file(storeFileProp)
+                storeFile = rootProject.file(storeFileProp)
                 storePassword = getKeystoreProperty("storePassword")
                 keyAlias = getKeystoreProperty("keyAlias")
                 keyPassword = getKeystoreProperty("keyPassword")
             } else if (storeFileEnv != null) {
-                storeFile = file(storeFileEnv)
+                storeFile = rootProject.file(storeFileEnv)
                 storePassword = System.getenv("EPYCUS_STORE_PASSWORD") ?: ""
                 keyAlias = System.getenv("EPYCUS_KEY_ALIAS") ?: ""
                 keyPassword = System.getenv("EPYCUS_KEY_PASSWORD") ?: ""

@@ -34,30 +34,25 @@
 - **Play Store ready**: signing config (keystore.properties + env vars), keystore.properties.example, versionado semántico documentado, ProGuard configurado, permisos revisados (INTERNET, POST_NOTIFICATIONS, USE/SCHEDULE_EXACT_ALARM)
 - **Tipografía personalizada**: Quicksand vía Google Fonts descargable (Downloadable Fonts API, API 28+ nativo)
 - **Play Store checklist actualizado**: permisos, ProGuard, pantallas grandes documentados en AuditoriaUX.md
+- **Pomodoro 500 fix**: commit fdc6250 deployeado a /var/www/epycus-web/
+- **Auth NRE fix**: null checks en Login/Refresh/Registro endpoints
+- **AddApplicationPart removido**: API controllers ya no caen en pipeline MVC con antiforgery
+- **nginx WebSocket fix**: map $connection_upgrade para SignalR
+- **Glide OOM fix**: .override(300,600) en ivPersonaje
 
 ### In Progress
 - (ninguno)
 
 ### Pending
-- TalkBack testing manual en todas las pantallas
+- Build de Release APK para Aptoide
 - Pruebas en pantalla plegada/desplegada y landscape
+- TalkBack testing manual en todas las pantallas
 
 ## Key Decisions
 - No se usó GridLayout para los stat cards porque layout_columnWeight no es estándar en framework GridLayout; se optó por LinearLayouts anidados (2 filas × 2 columnas)
 - Theme toggle se eliminó del diálogo de configuración y se dejó como botón independiente en perfil (no requiere pantalla aparte)
 - DIA-03 (Chat Edy) se dejó como Activity lanzada desde MainContainerActivity en lugar de BottomSheetDialogFragment para evitar refactor mayor
 - mostrarCargandoMision recibe el overlay View directamente (no dialog.findViewById) para evitar problemas de compatibilidad
-
-## Next Steps
-- ~~Verificar que el proyecto compile~~ ✅
-- ~~Hacer commit de todos los cambios~~ ✅
-- ~~Auditoria accesibilidad completa (contentDescriptions, spinners, loading bars)~~ ✅
-- ~~Guia de prueba TalkBack documentada en AuditoriaUX.md~~ ✅
-- ~~Analisis de rendimiento (overdraw, layout depth)~~ ✅
-- ~~Play Store: versionado, firma, google-services.json~~ ✅
-- ~~#19 Tipografia personalizada (Quicksand via Google Fonts)~~ ✅
-- Probar TalkBack en todas las pantallas (ejecucion manual)
-- Probar en pantalla plegada/desplegada y landscape
 
 ## Relevant Files
 - app/src/main/res/values/dimens.xml: sistema completo de dimensiones
