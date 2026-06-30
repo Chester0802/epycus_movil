@@ -126,6 +126,12 @@ UI/UX y correctness adicionales:
 
 ---
 
+## 🛠️ Backend (producción) — 30/06/2026
+
+- **B-08 — `pomodoro/racha` 500.** `ObtenerRachaActualAsync` usaba SQL cruda mapeando a un `ValueTuple` (no soportado por EF) y pasaba los parámetros como objeto anónimo (no se enlazaban `@usuarioId/@hace30`). ✅ Reescrito con LINQ en memoria (acotado a 30 días). Verificado **200** en producción.
+- **B-09 — `pomodoro/historial` 500.** El cliente manda `pagina=0` → `Skip((0-1)*tamano)` = OFFSET negativo. ✅ `pagina` clampada a `>=1` en el controller. Verificado **200** en producción.
+- **CI/CD roto → arreglado.** El job `build` fallaba (`NETSDK1004`: el paso de tests usaba `--no-restore` sin restaurar el proyecto de Tests) y, además, los secrets del VPS estaban vacíos y el deploy usaba clave SSH inexistente. ✅ Restaurado el proyecto de Tests + cambiado el deploy a **password auth** + configurados los 5 secrets (`VPS_HOST/USER/PORT/APP_PATH/PASSWORD`). Ahora **push a `main` despliega a `app.epycus.es`** (build → test → SCP → migraciones → `systemctl restart epycus-web` → health check OK).
+
 ## 🆕 Requisitos de publicación que faltaban en el plan original
 
 ### R-01 — Soporte de páginas de 16 KB (Android 15+)
