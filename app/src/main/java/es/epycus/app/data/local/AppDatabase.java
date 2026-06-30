@@ -2,12 +2,9 @@ package es.epycus.app.data.local;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import androidx.room.migration.Migration;
-import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,7 +26,7 @@ import es.epycus.app.data.local.entity.WriteBackEntity;
 
 @Database(entities = {UsuarioEntity.class, HabitoEntity.class, ProgresoEntity.class,
         CacheEntity.class, MisionEntity.class, DiarioEntradaEntity.class, WriteBackEntity.class},
-        version = 4, exportSchema = true)
+        version = 5, exportSchema = true)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase instance;
@@ -53,31 +50,16 @@ public abstract class AppDatabase extends RoomDatabase {
                     context.getApplicationContext(),
                     AppDatabase.class,
                     "epycus_cache")
-                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
+                    // Esta BD es un CACHE (los datos se re-piden al servidor) y la cola
+                    // write-back es transitoria. Ante cualquier cambio de esquema o
+                    // migración incompleta, recrear la BD es preferible a crashear.
+                    // (Los tokens NO están aquí; viven en EncryptedSharedPreferences.)
+                    // Versiones previas tenían columnas extra en 'usuarios' (token,
+                    // refresh_token, fecha_registro) que se quitaron sin migración -> esto
+                    // evita el "Migration didn't properly handle: usuarios" al actualizar.
+                    .fallbackToDestructiveMigration()
                     .build();
         }
         return instance;
     }
-
-    static final Migration MIGRATION_2_3 = new Migration(2, 3) {
-        @Override
-        public void migrate(@NonNull SupportSQLiteDatabase database) {
-            // Migración 2->3: tabla progresos ya existía en v2, no hay cambios de esquema
-            // Si hubiera cambios, agregar ALTER TABLE aquí
-        }
-    };
-
-    static final Migration MIGRATION_3_4 = new Migration(3, 4) {
-        @Override
-        public void migrate(@NonNull SupportSQLiteDatabase database) {
-            database.execSQL("CREATE TABLE IF NOT EXISTS write_back_queue (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "operationType TEXT NOT NULL," +
-                    "endpoint TEXT NOT NULL," +
-                    "requestBody TEXT NOT NULL," +
-                    "createdAt INTEGER NOT NULL," +
-                    "retryCount INTEGER NOT NULL DEFAULT 0," +
-                    "status TEXT NOT NULL DEFAULT 'pending')");
-        }
-    };
 }
